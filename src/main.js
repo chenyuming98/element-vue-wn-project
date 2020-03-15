@@ -7,6 +7,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 //配置axios
 import axios from 'axios'
+import $ from 'jquery'
 //导入字体图标
 import './assets/fonts/iconfont.css'
 //导入全局样式
@@ -17,7 +18,7 @@ Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.prototype.$http = axios;
 //配置请求的根路径
-axios.defaults.baseURL = 'http://127.0.0.1:8090/'
+axios.defaults.baseURL = 'http://www.tianyu.com/';
 
 /* eslint-disable no-new */
 new Vue({

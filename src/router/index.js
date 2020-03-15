@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
 import Index from '../components/Index.vue'
-import userPage from '../components/module-system/page/index.vue'
+import UserPage from '../components/module-system/page/UserPage.vue'
 
 Vue.use(VueRouter);
 
@@ -13,11 +13,12 @@ const routes = [
   { path: '/home' , component: Home,redirect:'/index'
     ,children:[
       { path: '/index',component: Index},
-      { path: '/userPage',component: userPage},
+      { path: '/userPage',component: UserPage},
     ]},
 ];
 
 const router = new VueRouter({
+  mode: 'history',
   routes
 });
 
