@@ -15,7 +15,7 @@ Vue.config.productionTip = false;
 
 // Vue使用ElementUI
 Vue.use(ElementUI);
-Vue.prototype.$http = axios
+Vue.prototype.$http = axios;
 //配置请求的根路径
 axios.defaults.baseURL = 'http://127.0.0.1:8090/'
 
