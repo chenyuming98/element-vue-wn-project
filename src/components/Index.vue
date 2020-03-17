@@ -1,6 +1,6 @@
 <template>
   <el-card class="box-card">
-    <h2>welcome</h2>
+    <h2>welcome-child-html</h2>
   </el-card>
 </template>
 
