@@ -13,4 +13,6 @@ html,body,#app,.el-container,.el-card{
   margin-bottom: 15px;
   font-size: 13px;
 }
-
+.tableCard{
+  margin: 10px 0 0;
+}
