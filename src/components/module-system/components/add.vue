@@ -27,12 +27,12 @@
   import {add} from "@/api/base/users"
   export default {
     name: "UserAddForm",
+
     data() {
       return {
 
         //定义弹框绑定显示状态
         dialogFormVisible: false,
-
         //定义表单初始化参数
         formBase: {
           username: '',
@@ -88,7 +88,9 @@
     },
     // 创建完毕状态
     created: function () {
-
+        if (this.rowEditData){
+          this.$message.success(this.rowEditData);
+        }
 
     },
   }

@@ -7,7 +7,7 @@ const instance = axios.create({
   timeout: 5000 // request timeout
 })
 
-const ok = "10000";
+
 
 export const createAPI = (url, method, data) => {
   let config = {}
@@ -15,6 +15,11 @@ export const createAPI = (url, method, data) => {
     config.params = data
   } else {
     config.data = data
+    config.headers = {
+      'Cache-Control': 'no-cache',
+      'Content-Type': 'application/json'
+    }
+    config.responseType = 'json'
   }
   return instance({
     url,
@@ -22,3 +27,4 @@ export const createAPI = (url, method, data) => {
     ...config
   })
 }
+
