@@ -95,7 +95,6 @@
   const  multipleSelectionList =  new Set([]);
     export default {
 
-
       data() {
         return {
           userAdd: 'UserAdd',
@@ -113,6 +112,7 @@
           formTitle : '添加',
           //定义表单初始化参数
           formBase: {
+            userId: '',
             username: '',
             userPassword: '',
           },
@@ -127,8 +127,12 @@
           },
         }
       },
+
       methods: {
-        // 列表查询
+
+        /*
+        * 查询表格
+        */
         doQuery(params) {
           list(this.requestParameters)
             .then(res => {
@@ -138,6 +142,7 @@
 
             })
         },
+
         /*
         *改变每页显示数
         */
@@ -145,6 +150,7 @@
           this.requestParameters.size = val;
           this.doQuery()
         },
+
         /*
         *改变当前页码数
        */
@@ -152,6 +158,10 @@
           this.requestParameters.page = val;
           this.doQuery()
         },
+
+        /**
+         * 表格格式化内容
+         */
         formatterRoles(row, column) {
           let roles = row['roles'];
           let rolesNames = '';
@@ -166,20 +176,28 @@
           }
           return rolesNames;
         },
-        // 添加新员工
+
+        /**
+         * 添加新员工
+         */
         handleAdd() {
           // this.$refs.addUser.dialogFormVisible = true
+          this.formTitle = "添加";
           this.dialogFormVisible = true
         },
 
+        /**
+         * 表格行编辑
+         */
         handleRowEdit(rowData){
           this.dialogFormVisible = true;
           this.rowEditData = rowData;
           this.formTitle = "编辑"
-          // this.$refs.addUser.dialogFormVisible = true
         },
 
-        // 表格行删除员工
+        /**
+         * 表格行删除员工
+         */
         handleRowDelete(item) {
           this.$confirm(
             `本次操作将删除${item.username}删除后账号将不可恢复，您确认删除吗？`, {
@@ -198,7 +216,10 @@
               })
           })
         },
-        // 表头批量删除员工
+
+        /**
+         *  表头批量删除员工
+         */
         batchDelete() {
           let list = this.$refs.multipleTable.selection;
           if (list.length===0){
@@ -234,34 +255,54 @@
 
         },
 
-        //取消对话框事件
+        /**
+         * 表单取消对话框事件
+         */
         cancel() {
-          this.dialogFormVisible = false
+          this.dialogFormVisible = false;
           this.$refs['refForm'].resetFields();
         },
+
+        /**
+         * 提交表单
+         */
         submitForm(){
+          debugger
           this.$refs['refForm'].validate((valid) => {
             if (valid) {
-              add(this.formBase).then(res => {
-                let resp  = res.data;
-                this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
-                if(resp.code===200) {
-                  this.dialogFormVisible = false;
-                  this.$refs['refForm'].resetFields();
-                  this.doQuery();
-                }
-              })
+              if (this.formTitle === '编辑'){
+                update( this.rowEditData.userId).then(res => {
+                  let resp  = res.data;
+                  this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+                  if(resp.code===200) {
+                    this.dialogFormVisible = false;
+                    this.$refs['refForm'].resetFields();
+                    this.doQuery();
+                  }
+                })
+              }else {
+                add(this.formBase).then(res => {
+                  let resp  = res.data;
+                  this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+                  if(resp.code===200) {
+                    this.dialogFormVisible = false;
+                    this.$refs['refForm'].resetFields();
+                    this.doQuery();
+                  }
+                })
+              }
             } else {
               return false;
             }
           });
 
         },
-        resetForm(formName) {
-          this.$nextTick(() => {
-            this.$refs[formName].resetFields();
-          })
-        },
+
+        // resetForm(formName) {
+        //   this.$nextTick(() => {
+        //     this.$refs[formName].resetFields();
+        //   })
+        // },
       },
       // 创建完毕状态
       created: function () {
