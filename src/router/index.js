@@ -3,7 +3,8 @@ import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
 import Index from '../components/Index.vue'
-import UserPage from '../components/module-system/page/index.vue'
+import UserPage from '../components/module-system/user/index.vue'
+import rolePage from '../components/module-system/role/index.vue'
 
 Vue.use(VueRouter);
 
@@ -14,6 +15,7 @@ const routes = [
     ,children:[
       { path: '/index',component: Index},
       { path: '/userPage',component: UserPage},
+      { path: '/rolePage',component: rolePage},
     ]},
 ];
 

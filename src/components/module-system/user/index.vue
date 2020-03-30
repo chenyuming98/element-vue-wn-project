@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
@@ -37,10 +38,7 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column
-          fixed="right"
-          label="操作"
-          width="180">
+        <el-table-column  fixed="right"  label="操作"  width="180">
           <template slot-scope="scope">
             <el-button @click="handleRowDetail(scope.row)" type="text" size="small">查看</el-button>
             <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
@@ -70,11 +68,11 @@
       <!-- :model绑定表单对象  status-icon控制每一行表单校验通过后图标显示正确和错误   :rules绑定校验规则
               autocomplete="off" 关闭表单默认以及功能-->
       <el-form :model="formBase" status-icon :rules="rules" ref="refForm" label-width="120px">
-        <el-form-item label="用户名" prop="username" >
+        <el-form-item label="用户名" prop="formUsername" >
           <el-input v-model="formBase.username" autocomplete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="密码" prop="userPassword" >
+        <el-form-item label="密码" prop="formUserPassword" >
           <el-input v-model="formBase.userPassword" autocomplete="off"></el-input>
         </el-form-item>
 
@@ -99,7 +97,6 @@
         return {
           userAdd: 'UserAdd',
           dataList: [],
-          rowEditData: {}, //表格行数据组件值传递
           multipleSelection: multipleSelectionList,
           total: 0,
           requestParameters: {
@@ -182,6 +179,11 @@
          */
         handleAdd() {
           // this.$refs.addUser.dialogFormVisible = true
+          this.formBase = {
+            userId: '',
+            username: '',
+            userPassword: '',
+          };
           this.formTitle = "添加";
           this.dialogFormVisible = true
         },
@@ -191,20 +193,24 @@
          */
         handleRowEdit(rowData){
           this.dialogFormVisible = true;
-          this.rowEditData = rowData;
-          this.formTitle = "编辑"
+          this.formTitle = "编辑";
+          this.formBase = {
+            userId: rowData.userId,
+            username: rowData.username,
+            userPassword: rowData.userPassword,
+          }
         },
 
         /**
          * 表格行删除员工
          */
-        handleRowDelete(item) {
+        handleRowDelete(rowData) {
           this.$confirm(
-            `本次操作将删除${item.username}删除后账号将不可恢复，您确认删除吗？`, {
+            `本次操作将删除${rowData.username}删除后账号将不可恢复，您确认删除吗？`, {
               type: 'warning'
             }
           ).then(() => {
-            remove({id: item.userId})
+            remove({id: rowData.userId})
               .then(res => {
                 let resp = res.data;
                 if (resp.code === 200) {
@@ -263,15 +269,15 @@
           this.$refs['refForm'].resetFields();
         },
 
+
         /**
          * 提交表单
          */
         submitForm(){
-          debugger
           this.$refs['refForm'].validate((valid) => {
             if (valid) {
-              if (this.formTitle === '编辑'){
-                update( this.rowEditData.userId).then(res => {
+              if (this.formBase.userId){
+                update(this.formBase).then(res => {
                   let resp  = res.data;
                   this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
                   if(resp.code===200) {

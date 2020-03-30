@@ -28,3 +28,20 @@ export const createAPI = (url, method, data) => {
   })
 }
 
+
+export const createFormAPI = (url, method, data) => {
+  let config = {}
+  config.data = data
+  config.headers = {
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+  config.responseType = 'json'
+
+  return instance({
+    url,
+    method,
+    ...config
+  })
+}
+
