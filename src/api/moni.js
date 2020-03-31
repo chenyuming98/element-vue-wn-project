@@ -1,9 +1,10 @@
 export default {
-	maxexpandId: 95,
-	treelist: [{  
-	    id: 1,  
-	    name: "北京市",  
-	    ProSort: 1,  
+	maxExpandId: 95,
+	treelist: [
+	  {
+	    id: 1,
+	    name: "北京市",
+	    ProSort: 1,
 	    remark: "直辖市",
 	    pid: '',
 	    isEdit: false,
@@ -50,10 +51,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 2,  
-	    name: "天津市",  
-	    ProSort: 2,  
+	}, {
+	    id: 2,
+	    name: "天津市",
+	    ProSort: 2,
 	    remark: "直辖市",
 	    pid: '',
 	    isEdit: false,
@@ -86,10 +87,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 3,  
-	    name: "河北省",  
-	    ProSort: 5,  
+	}, {
+	    id: 3,
+	    name: "河北省",
+	    ProSort: 5,
 	    remark: "省份",
 	    pid: '',
 	    isEdit: false,
@@ -129,11 +130,11 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 4,  
-	    name: "山西省",  
-	    ProSort: 6,  
-	    remark: "省份",    
+	}, {
+	    id: 4,
+	    name: "山西省",
+	    ProSort: 6,
+	    remark: "省份",
 	    pid: '',
 	    isEdit: false,
 	    children: [{
@@ -144,10 +145,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 5,  
-	    name: "内蒙古自治区",  
-	    ProSort: 32,  
+	}, {
+	    id: 5,
+	    name: "内蒙古自治区",
+	    ProSort: 32,
 	    remark: "自治区",
 	    pid: '',
 	    isEdit: false,
@@ -159,10 +160,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 6,  
-	    name: "辽宁省",  
-	    ProSort: 8,  
+	}, {
+	    id: 6,
+	    name: "辽宁省",
+	    ProSort: 8,
 	    remark: "省份",
 	    pid: '',
 	    isEdit: false,
@@ -181,10 +182,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 7,  
-	    name: "吉林省",  
-	    ProSort: 9,  
+	}, {
+	    id: 7,
+	    name: "吉林省",
+	    ProSort: 9,
 	    remark: "省份",
 	    pid: '',
 	    isEdit: false,
@@ -196,10 +197,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 8,  
-	    name: "黑龙江省",  
-	    ProSort: 10,  
+	}, {
+	    id: 8,
+	    name: "黑龙江省",
+	    ProSort: 10,
 	    remark: "省份",
 	    pid: '',
 	    isEdit: false,
@@ -211,10 +212,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 9,  
-	    name: "上海市",  
-	    ProSort: 3,  
+	}, {
+	    id: 9,
+	    name: "上海市",
+	    ProSort: 3,
 	    remark: "直辖市",
 	    pid: '',
 	    isEdit: false,
@@ -226,10 +227,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 10,  
-	    name: "江苏省",  
-	    ProSort: 11,  
+	}, {
+	    id: 10,
+	    name: "江苏省",
+	    ProSort: 11,
 	    remark: "省份",
 	    pid: '',
 	    isEdit: false,
@@ -248,10 +249,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 11,  
-	    name: "浙江省",  
-	    ProSort: 12,  
+	}, {
+	    id: 11,
+	    name: "浙江省",
+	    ProSort: 12,
 	    remark: "省份",
 	    pid: '',
 	    isEdit: false,
@@ -263,10 +264,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 12,  
-	    name: "安徽省",  
-	    ProSort: 13,  
+	}, {
+	    id: 12,
+	    name: "安徽省",
+	    ProSort: 13,
 	    remark: "省份",
 	    pid: '',
 	    isEdit: false,
@@ -278,10 +279,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 13,  
-	    name: "福建省",  
-	    ProSort: 14,  
+	}, {
+	    id: 13,
+	    name: "福建省",
+	    ProSort: 14,
 	    remark: "省份",
 	    pid: '',
 	    isEdit: false,
@@ -293,10 +294,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 14,  
-	    name: "江西省",  
-	    ProSort: 15,  
+	}, {
+	    id: 14,
+	    name: "江西省",
+	    ProSort: 15,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -308,10 +309,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 15,  
-	    name: "山东省",  
-	    ProSort: 16,  
+	}, {
+	    id: 15,
+	    name: "山东省",
+	    ProSort: 16,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -323,10 +324,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 16,  
-	    name: "河南省",  
-	    ProSort: 17,  
+	}, {
+	    id: 16,
+	    name: "河南省",
+	    ProSort: 17,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -338,10 +339,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 17,  
-	    name: "湖北省",  
-	    ProSort: 18,  
+	}, {
+	    id: 17,
+	    name: "湖北省",
+	    ProSort: 18,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -360,10 +361,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 18,  
-	    name: "湖南省",  
-	    ProSort: 19,  
+	}, {
+	    id: 18,
+	    name: "湖南省",
+	    ProSort: 19,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -375,10 +376,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 19,  
-	    name: "广东省",  
-	    ProSort: 20,  
+	}, {
+	    id: 19,
+	    name: "广东省",
+	    ProSort: 20,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -404,10 +405,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 20,  
-	    name: "海南省",  
-	    ProSort: 24,  
+	}, {
+	    id: 20,
+	    name: "海南省",
+	    ProSort: 24,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -419,10 +420,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 21,  
-	    name: "广西壮族自治区",  
-	    ProSort: 28,  
+	}, {
+	    id: 21,
+	    name: "广西壮族自治区",
+	    ProSort: 28,
 	    remark: "自治区"  ,
 	    pid: '',
 	    isEdit: false,
@@ -441,10 +442,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 22,  
-	    name: "甘肃省",  
-	    ProSort: 21,  
+	}, {
+	    id: 22,
+	    name: "甘肃省",
+	    ProSort: 21,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -456,10 +457,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 23,  
-	    name: "陕西省",  
-	    ProSort: 27,  
+	}, {
+	    id: 23,
+	    name: "陕西省",
+	    ProSort: 27,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -478,10 +479,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 24,  
-	    name: "新疆维吾尔自治区",  
-	    ProSort: 31,  
+	}, {
+	    id: 24,
+	    name: "新疆维吾尔自治区",
+	    ProSort: 31,
 	    remark: "自治区"  ,
 	    pid: '',
 	    isEdit: false,
@@ -507,10 +508,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 25,  
-	    name: "青海省",  
-	    ProSort: 26,  
+	}, {
+	    id: 25,
+	    name: "青海省",
+	    ProSort: 26,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -522,10 +523,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 26,  
-	    name: "宁夏回族自治区",  
-	    ProSort: 30,  
+	}, {
+	    id: 26,
+	    name: "宁夏回族自治区",
+	    ProSort: 30,
 	    remark: "自治区"  ,
 	    pid: '',
 	    isEdit: false,
@@ -537,10 +538,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 27,  
-	    name: "重庆市",  
-	    ProSort: 4,  
+	}, {
+	    id: 27,
+	    name: "重庆市",
+	    ProSort: 4,
 	    remark: "直辖市"  ,
 	    pid: '',
 	    isEdit: false,
@@ -559,10 +560,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 28,  
-	    name: "四川省",  
-	    ProSort: 22,  
+	}, {
+	    id: 28,
+	    name: "四川省",
+	    ProSort: 22,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -588,10 +589,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 29,  
-	    name: "贵州省",  
-	    ProSort: 23,  
+	}, {
+	    id: 29,
+	    name: "贵州省",
+	    ProSort: 23,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -603,10 +604,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 30,  
-	    name: "云南省",  
-	    ProSort: 25,  
+	}, {
+	    id: 30,
+	    name: "云南省",
+	    ProSort: 25,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -625,10 +626,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 31,  
-	    name: "西藏自治区",  
-	    ProSort: 29,  
+	}, {
+	    id: 31,
+	    name: "西藏自治区",
+	    ProSort: 29,
 	    remark: "自治区"  ,
 	    pid: '',
 	    isEdit: false,
@@ -647,10 +648,10 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 32,  
-	    name: "台湾省",  
-	    ProSort: 7,  
+	}, {
+	    id: 32,
+	    name: "台湾省",
+	    ProSort: 7,
 	    remark: "省份"  ,
 	    pid: '',
 	    isEdit: false,
@@ -669,18 +670,18 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}, {  
-	    id: 33,  
-	    name: "澳门特别行政区",  
-	    ProSort: 33,  
+	}, {
+	    id: 33,
+	    name: "澳门特别行政区",
+	    ProSort: 33,
 	    remark: "特别行政区"  ,
 	    pid: '',
 	    isEdit: false,
 	    children: []
-	}, {  
-	    id: 34,  
-	    name: "香港特别行政区",  
-	    ProSort: 34,  
+	}, {
+	    id: 34,
+	    name: "香港特别行政区",
+	    ProSort: 34,
 	    remark: "特别行政区"  ,
 	    pid: '',
 	    isEdit: false,
@@ -699,5 +700,5 @@ export default {
 			isEdit: false,
 			children: []
 		}]
-	}]  
+	}]
 }

@@ -9,16 +9,16 @@
 
             <!-- 权限树结构 -->
             <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="id"  ref="SlotMenuList"
-                                 :filter-node-method="filterNode"  @node-contextmenu='rihgtClick' accordion   >
+                                 :filter-node-method="filterNode"  @node-contextmenu='rihgtClick' accordion  @node-click="changeFormData()"  >
               <span class="slot-t-node" slot-scope="{ node, data }">
               <span v-show="!node.isEdit">
                 <span v-show="data.children && data.children.length >= 1">
                   <i :class="{ 'fa fa-plus-square': !node.expanded, 'fa fa-minus-square':node.expanded}" />
-                  <span :class="[data.id >= maxexpandId ? 'slot-t-node--label' : '']">{{node.label}}</span>
+                  <span :class="[data.id >= maxExpandId ? 'slot-t-node--label' : '']">{{node.label}}</span>
                 </span>
                 <span v-show="!data.children || data.children.length == 0">
                   <i class='' style='margin-right:10px'></i>
-                  <span :class="[data.id >= maxexpandId ? 'slot-t-node--label' : '']">{{node.label}}</span>
+                  <span :class="[data.id >= maxExpandId ? 'slot-t-node--label' : '']">{{node.label}}</span>
                 </span>
               </span>
               <!-- 编辑输入框 -->
@@ -63,20 +63,20 @@
               <!-- 表单 -->
               <el-form ref="permForm" :model="permForm" label-width="80px" size="mini"  >
                 <el-form-item label="父节点">
-                  <el-input v-model="permForm.name"></el-input>
+                  <el-input v-model="permForm.parentId"></el-input>
                 </el-form-item>
                 <el-form-item label="标题">
-                  <el-input v-model="permForm.name"></el-input>
+                  <el-input v-model="permForm.title"></el-input>
                 </el-form-item>
 
                 <el-form-item label="类型">
-                  <el-radio-group v-model="permForm.resource">
+                  <el-radio-group v-model="permForm.type">
                     <el-radio label="菜单"></el-radio>
                     <el-radio label="权限"></el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item label="请求方法">
-                  <el-select v-model="permForm.region" placeholder="请求方法">
+                  <el-select v-model="permForm.hrefMethod" placeholder="请求方法">
                     <el-option label="GET" value="GET"></el-option>
                     <el-option label="POST" value="POST"></el-option>
                     <el-option label="PUT" value="PUT"></el-option>
@@ -84,22 +84,20 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="url地址">
-                  <el-input v-model="permForm.name"></el-input>
+                  <el-input v-model="permForm.href"></el-input>
                 </el-form-item>
                 <el-form-item label="菜单图标">
-                  <el-input v-model="permForm.name"></el-input>
+                  <el-input v-model="permForm.icon"></el-input>
                 </el-form-item>
                 <el-form-item label="是否展开">
-                  <el-switch v-model="permForm.delivery"></el-switch>
+                  <el-switch v-model="permForm.spread"  :active-value= 1 :inactive-value=  0></el-switch>
                 </el-form-item>
                 <el-form-item label="是否可见">
-                  <el-switch v-model="permForm.delivery"></el-switch>
+                  <el-switch v-model="permForm.enable"  :active-value= 1 :inactive-value=  0></el-switch>
                 </el-form-item>
                 <el-form-item label="排序号">
-                  <el-input v-model="permForm.name"></el-input>
+                  <el-input v-model="permForm.sortNumber"></el-input>
                 </el-form-item>
-
-
 
 <!--                <el-form-item>-->
 <!--                  <el-button type="primary" @click="onSubmit">立即创建</el-button>-->
@@ -190,8 +188,9 @@
 </template>
 <script>
   import ElCol from "element-ui/packages/col/src/col";
-  import api from '@/api/moni'
-  api.treelist = api.treelist.splice(0,10)
+  import {getMenuList} from "@/api/base/permission";
+
+
   let id = 1000;
   export default {
     // watch: {
@@ -210,16 +209,21 @@
       };
       return {
         permForm: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        },
+          parentId: "",
+          permissionId: "",
+          title: "",
+          type: "",
+          icon: "",
+          href: "",
+          hrefMethod: "",
+          code: "",
+          sortNumber: "",
+          spread: 1,
+          enable: 1,
 
+          roleId: "",
+          roleName: "",
+        },
 
         DATA: null,
         NODE: null,
@@ -227,13 +231,15 @@
         dialogFormVisible: false,
         dialogClassifyVisible: false,
 
-        maxexpandId: api.maxexpandId,//新增节点开始id
-        non_maxexpandId: api.maxexpandId,//新增节点开始id(不更改)
+        maxExpandId: 99999999999999999999,//新增节点开始id
+        non_maxexpandId: 99999999999999999999,//新增节点开始id(不更改)
         isLoadingTree: true,//是否加载节点树
-        setTree: api.treelist,//节点树数据
+        // setTree: api.treelist,//节点树数据
+        setTree: [],
+
         defaultProps: {
-          children: 'children',
-          label: 'name'
+          label: 'title',
+          children: 'children'
         },
         filterText: '',
         input: "",
@@ -248,6 +254,16 @@
       };
     },
     methods: {
+      /*
+      * 查询树结构
+      */
+      doQuery() {
+        getMenuList()
+          .then(res => {
+            let resp = res.data;
+            this.setTree = resp.data;
+          })
+      },
       onSubmit() {
         console.log('submit!');
       },
@@ -291,7 +307,7 @@
       },
       // handleAddTop(){//添加顶级节点
       // 	this.setTree.push({
-      // 		id: ++this.maxexpandId,
+      // 		id: ++this.maxExpandId,
       // 		name: '新增顶级节点',
       // 		pid: '',
       // 		children: []
@@ -351,7 +367,7 @@
         }
         //新增数据
         d.children.push({
-          id: ++this.maxexpandId,
+          id: ++this.maxExpandId,
           name: '新增节点',
           pid: d.id,
           children: []
@@ -413,7 +429,17 @@
       },
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+      },
+
+      changeFormData(){
+        console.log(this.$refs.SlotMenuList.getCurrentNode())
+        this.permForm = this.$refs.SlotMenuList.getCurrentNode();
+
       }
+    },
+    // 创建完毕状态
+    created: function () {
+      this.doQuery()
     }
   };
 </script>

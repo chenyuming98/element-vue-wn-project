@@ -1,4 +1,4 @@
-import {createAPI,createFormAPI} from '@/utils/request'
+import {createAPI} from '@/utils/request'
 
 export const list = data => createAPI('/system/role', 'get', data)
 export const add = data => createAPI('/system/role', 'post', data)
