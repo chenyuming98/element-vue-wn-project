@@ -25,7 +25,7 @@
             <el-menu-item-group>
               <el-menu-item index="/userPage">用户管理</el-menu-item>
               <el-menu-item index="/rolePage">角色管理</el-menu-item>
-              <el-menu-item index="1—3">权限管理</el-menu-item>
+              <el-menu-item index="/permPage">权限管理</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
 
@@ -49,6 +49,10 @@
 </script>
 
 <style>
+  .el-aside{
+
+  }
+
   .home-container {
     /*
     * 整个容器高度

@@ -5,6 +5,7 @@ import Home from '../components/Home.vue'
 import Index from '../components/Index.vue'
 import UserPage from '../components/module-system/user/index.vue'
 import rolePage from '../components/module-system/role/index.vue'
+import permPage from '../components/module-system/permission/index.vue'
 
 Vue.use(VueRouter);
 
@@ -16,6 +17,7 @@ const routes = [
       { path: '/index',component: Index},
       { path: '/userPage',component: UserPage},
       { path: '/rolePage',component: rolePage},
+      { path: '/permPage',component: permPage},
     ]},
 ];
 

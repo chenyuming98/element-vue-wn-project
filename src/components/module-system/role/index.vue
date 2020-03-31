@@ -10,7 +10,6 @@
       <!--表头菜单-->
       <div class="tableHeaderToolButtonGroup">
         <el-button icon="el-icon-plus" size="mini"  @click="handleAdd" ></el-button>
-        <el-button  icon="el-icon-edit" size="mini" ></el-button>
         <el-button  icon="el-icon-delete" size="mini"   @click="batchDelete" ></el-button>
       </div>
     </el-card>
@@ -23,7 +22,6 @@
 
         <el-table-column  fixed="right"  label="操作"  width="180">
           <template slot-scope="scope">
-            <el-button @click="handleRowDetail(scope.row)" type="text" size="small">查看</el-button>
             <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
             <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
           </template>

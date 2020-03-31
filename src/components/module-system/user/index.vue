@@ -10,7 +10,6 @@
       <!--表头菜单-->
       <div class="tableHeaderToolButtonGroup">
         <el-button icon="el-icon-plus" size="mini"  @click="handleAdd" ></el-button>
-        <el-button  icon="el-icon-edit" size="mini" ></el-button>
         <el-button  icon="el-icon-delete" size="mini"   @click="batchDelete" ></el-button>
       </div>
     </el-card>

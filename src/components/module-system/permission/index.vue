@@ -1,319 +1,467 @@
 <template>
+  <el-container style="border: 1px solid #eee">
+    <el-row style="width: 100%">
+      <el-col :xs="10" :sm="10" :md="8" :lg="6" :xl="4" class="aside">
 
-  <div>
-    <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>系统管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-    </el-breadcrumb>
-    <el-card class="box-card">
-      <!--表头菜单-->
-      <div class="tableHeaderToolButtonGroup">
-        <el-button icon="el-icon-plus" size="mini"  @click="handleAdd" ></el-button>
-        <el-button  icon="el-icon-edit" size="mini" ></el-button>
-        <el-button  icon="el-icon-delete" size="mini"   @click="batchDelete" ></el-button>
-      </div>
-    </el-card>
-    <el-card class="tableCard" >
-      <!--表格内容  ref绑定选中内容-->
-      <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable" >
-        <el-table-column type="selection" width="40" prop="userId"> </el-table-column>
-        <el-table-column  prop="username"  label="用户名"  width="180"> </el-table-column>
-        <el-table-column
-          prop="role"
-          label="角色"
-          :formatter="formatterRoles"
-          width="250">
-        </el-table-column>
-        <el-table-column
-          prop="userStatus"
-          label="状态">
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.userStatus"
-              active-color="#13ce66"
-              :active-value= 0
-              :inactive-value=  1
-              @change="handleStatus(scope.row)">
-            </el-switch>
-          </template>
-        </el-table-column>
-        <el-table-column  fixed="right"  label="操作"  width="180">
-          <template slot-scope="scope">
-            <el-button @click="handleRowDetail(scope.row)" type="text" size="small">查看</el-button>
-            <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
-            <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!--表格分页-->
-      <div class="block">
-        <!-- current-page 当前页数  每页显示数-->
-        <div class="tablePagination">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="requestParameters.page"
-            :page-size="requestParameters.size"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total">
-          </el-pagination>
-        </div>
-      </div>
+        <el-aside  >
+          <el-card class="box-card">
+            <el-input  placeholder="搜索权限"  prefix-icon="el-icon-search"   v-model="filterText"  size="medium"  style=" width: 240px; ">  </el-input>
 
-    </el-card>
+            <!-- 权限树结构 -->
+            <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="id"  ref="SlotMenuList"
+                                 :filter-node-method="filterNode"  @node-contextmenu='rihgtClick' accordion   >
+              <span class="slot-t-node" slot-scope="{ node, data }">
+              <span v-show="!node.isEdit">
+                <span v-show="data.children && data.children.length >= 1">
+                  <i :class="{ 'fa fa-plus-square': !node.expanded, 'fa fa-minus-square':node.expanded}" />
+                  <span :class="[data.id >= maxexpandId ? 'slot-t-node--label' : '']">{{node.label}}</span>
+                </span>
+                <span v-show="!data.children || data.children.length == 0">
+                  <i class='' style='margin-right:10px'></i>
+                  <span :class="[data.id >= maxexpandId ? 'slot-t-node--label' : '']">{{node.label}}</span>
+                </span>
+              </span>
+              <!-- 编辑输入框 -->
+              <span v-show="node.isEdit">
+                <el-input class="slot-t-input" size="mini" autofocus
+                          v-model="data.name"
+                          :ref="'slotTreeInput'+data.id"
+                          @blur.stop="NodeBlur(node, data)"
+                          @keyup.enter.native="NodeBlur(node, data)"></el-input>
+              </span>
+            </span>
+            </el-tree>
+          </el-card>
+            <!--树结构鼠标右键点击出现页面-->
+          <div v-show="menuVisible" >
+            <el-menu
+              id = "rightClickMenu"
+              class="el-menu-vertical"
+              @select="handleRightSelect"
+              active-text-color="#fff"
+              text-color="#fff" >
+              <el-menu-item index="1" class="menuItem">
+                <span slot="title">添加</span>
+              </el-menu-item>
+              <el-menu-item index="2" class="menuItem">
+                <span slot="title">编辑</span>
+              </el-menu-item>
+              <el-menu-item index="3" class="menuItem">
+                <span slot="title">删除</span>
+              </el-menu-item>
 
-    <!--2. 添加编辑表单  -->
-    <el-dialog :title="formTitle"  :visible.sync="dialogFormVisible" :before-close="cancel" :close-on-click-modal="false" :width="'40%'">
-      <!-- :model绑定表单对象  status-icon控制每一行表单校验通过后图标显示正确和错误   :rules绑定校验规则
-              autocomplete="off" 关闭表单默认以及功能-->
-      <el-form :model="formBase" status-icon :rules="rules" ref="refForm" label-width="120px">
-        <el-form-item label="用户名" prop="username" >
-          <el-input v-model="formBase.username" autocomplete="off"></el-input>
+            </el-menu>
+          </div>
+        </el-aside>
+      </el-col>
+
+      <el-col :xs="14" :sm="14" :md="16" :lg="18" :xl="20">
+        <el-container>
+          <el-main>
+            <el-card class="box-card">
+              <el-button  icon="el-icon-edit" size="mini" ></el-button>
+              <!-- 表单 -->
+              <el-form ref="permForm" :model="permForm" label-width="80px" size="mini"  >
+                <el-form-item label="父节点">
+                  <el-input v-model="permForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="标题">
+                  <el-input v-model="permForm.name"></el-input>
+                </el-form-item>
+
+                <el-form-item label="类型">
+                  <el-radio-group v-model="permForm.resource">
+                    <el-radio label="菜单"></el-radio>
+                    <el-radio label="权限"></el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="请求方法">
+                  <el-select v-model="permForm.region" placeholder="请求方法">
+                    <el-option label="GET" value="GET"></el-option>
+                    <el-option label="POST" value="POST"></el-option>
+                    <el-option label="PUT" value="PUT"></el-option>
+                    <el-option label="DELETE" value="DELETE"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="url地址">
+                  <el-input v-model="permForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="菜单图标">
+                  <el-input v-model="permForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="是否展开">
+                  <el-switch v-model="permForm.delivery"></el-switch>
+                </el-form-item>
+                <el-form-item label="是否可见">
+                  <el-switch v-model="permForm.delivery"></el-switch>
+                </el-form-item>
+                <el-form-item label="排序号">
+                  <el-input v-model="permForm.name"></el-input>
+                </el-form-item>
+
+
+
+<!--                <el-form-item>-->
+<!--                  <el-button type="primary" @click="onSubmit">立即创建</el-button>-->
+<!--                  <el-button>取消</el-button>-->
+<!--                </el-form-item>-->
+              </el-form>
+            </el-card>
+          </el-main>
+        </el-container>
+      </el-col>
+    </el-row>
+
+
+
+
+
+    <!-- modal edit -->
+    <el-dialog title="标签属性修改" :visible.sync="dialogFormVisible" width='30%'>
+      <el-form :model="editObj" label-width="80px">
+        <el-form-item label="标签名称">
+          <el-input
+            type="textarea"
+            :rows="2"
+            autocomplete="off"
+            placeholder="请输入内容"
+            v-model="editObj.name">
+          </el-input>
         </el-form-item>
-
-        <el-form-item label="密码" prop="userPassword" >
-          <el-input v-model="formBase.userPassword" autocomplete="off"></el-input>
-        </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <!--        <el-button @click="resetForm('refForm')">重置</el-button>-->
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
       </div>
     </el-dialog>
-  </div>
+    <!-- modal Classify edit -->
+    <el-dialog title="标签分类修改" :visible.sync="dialogClassifyVisible" width='30%'>
 
+      <!--鼠标右键点击出现页面-->
+      <div v-show="menuVisible2">
+        <el-menu
+          id = "rightClickMenu2"
+          class="el-menu-vertical"
+          @select="handleRightSelect1"
+          active-text-color="#fff"
+          text-color="#fff">
+          <el-menu-item index="1" class="menuItem">
+            <span slot="title">添加分类</span>
+          </el-menu-item>
+          <el-menu-item index="2" class="menuItem">
+            <span slot="title">修改分类</span>
+          </el-menu-item>
+          <el-menu-item index="3" class="menuItem">
+            <span slot="title">删除分类</span>
+          </el-menu-item>
+          <hr style="color: #ffffff">
+          <el-menu-item index="4" class="menuItem">
+            <span slot="title">添加标签</span>
+          </el-menu-item>
+        </el-menu>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogClassifyVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogClassifyVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- modal new edit -->
+    <el-dialog title="创建标签" :visible.sync="dialogNewFormVisible" width='30%'>
+      <el-form label-width="80px">
+        <el-form-item label="标签名称">
+          <el-input autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="标签描述">
+          <el-input
+            type="textarea"
+            :rows="3"
+            autocomplete="off"
+            placeholder="请输入内容"
+          >
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogNewFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogNewFormConfirm">确 定</el-button>
+      </div>
+    </el-dialog>
+  </el-container>
 </template>
-<!--主页面板-->
 <script>
-  import {list,add,update,remove,batchRemove} from "@/api/base/users"
+  import ElCol from "element-ui/packages/col/src/col";
+  import api from '@/api/moni'
+  api.treelist = api.treelist.splice(0,10)
+  let id = 1000;
+  export default {
+    // watch: {
+    //   filterText(val) {
+    //     this.$refs.SlotMenuList.filter(val);
+    //   }
+    // },
+    components: { ElCol },
+    data() {
+      const item = {
+        tagID: "ID001",
+        name: "地区",
+        description: "此处是改内容的详细描述...",
+        creatorID: "Admin",
+        regeneratorID: "Admin"
+      };
+      return {
+        permForm: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        },
 
-  const  multipleSelectionList =  new Set([]);
-    export default {
 
-      data() {
-        return {
-          userAdd: 'UserAdd',
-          dataList: [],
-          multipleSelection: multipleSelectionList,
-          total: 0,
-          requestParameters: {
-            page: 1,
-            size: 10,
-          },
+        DATA: null,
+        NODE: null,
+        dialogNewFormVisible: false,
+        dialogFormVisible: false,
+        dialogClassifyVisible: false,
 
-          //定义弹框绑定显示状态
-          dialogFormVisible: false,
-          formTitle : '添加',
-          //定义表单初始化参数
-          formBase: {
-            userId: '',
-            username: '',
-            userPassword: '',
-          },
-          //v-model 绑定校验规则
-          rules: {
-            username: [
-              {required: true, message: '请输入用户名', trigger: 'blur'},
-              {min: 6, max: 11, message: '用户名长度在 6 到 11 个字符', trigger: 'blur'}
-            ],
-            userPassword: [{required: true, message: '请输入密码', trigger: 'blur'},
-              {min: 6, max: 16, message: '密码长度在 6 到 16个字符', trigger: 'blur'}]
-          },
+        maxexpandId: api.maxexpandId,//新增节点开始id
+        non_maxexpandId: api.maxexpandId,//新增节点开始id(不更改)
+        isLoadingTree: true,//是否加载节点树
+        setTree: api.treelist,//节点树数据
+        defaultProps: {
+          children: 'children',
+          label: 'name'
+        },
+        filterText: '',
+        input: "",
+        input2: "",
+        currentPage4: 4,
+        editObj: {},
+        menuVisible: false,
+        objectID: null,
+        /*分类修改*/
+        menuVisible2: false,
+        objectID2: null
+      };
+    },
+    methods: {
+      onSubmit() {
+        console.log('submit!');
+      },
+
+      filterNode(value, data) {
+        console.log('value:',value)
+        console.log('data:',data)
+        if (!value) return true;
+        return data.label.indexOf(value) !== -1;
+      },
+      handleRightSelect(key) {
+        console.log(key);
+        if (key == 1) {
+          this.NodeAdd(this.NODE, this.DATA);
+          this.menuVisible = false;
+        } else if (key == 2) {
+          this.NodeEdit(this.NODE, this.DATA);
+          this.menuVisible = false;
+        } else if (key == 3) {
+          this.NodeDel(this.NODE, this.DATA);
+          this.menuVisible = false;
+        } else if(key == 4){
+          console.log('4')
+          this.menuVisible = false;
         }
       },
-
-      methods: {
-
-        /*
-        * 查询表格
-        */
-        doQuery(params) {
-          list(this.requestParameters)
-            .then(res => {
-              let resp = res.data;
-              this.dataList = resp.data;
-              this.total = resp.total;
-
-            })
-        },
-
-        /*
-        *改变每页显示数
-        */
-        handleSizeChange(val) {
-          this.requestParameters.size = val;
-          this.doQuery()
-        },
-
-        /*
-        *改变当前页码数
-       */
-        handleCurrentChange(val) {
-          this.requestParameters.page = val;
-          this.doQuery()
-        },
-
-        /**
-         * 表格格式化内容
-         */
-        formatterRoles(row, column) {
-          let roles = row['roles'];
-          let rolesNames = '';
-          if (roles) {
-            $.each(roles, function (index, val) { //index是数组对象索引，val是对象
-              if (index === 0) {
-                rolesNames = val.roleName;
-              } else {
-                rolesNames = rolesNames + ',' + val.roleName;
-              }
-            });
-          }
-          return rolesNames;
-        },
-
-        /**
-         * 添加新员工
-         */
-        handleAdd() {
-          // this.$refs.addUser.dialogFormVisible = true
-          this.formBase = {
-            userId: '',
-            username: '',
-            userPassword: '',
-          };
-          this.formTitle = "添加";
-          this.dialogFormVisible = true
-        },
-
-        /**
-         * 表格行编辑
-         */
-        handleRowEdit(rowData){
-          this.dialogFormVisible = true;
-          this.formTitle = "编辑";
-          this.formBase = rowData;
-        },
-
-        /**
-         * 表格行删除员工
-         */
-        handleRowDelete(rowData) {
-          this.$confirm(
-            `本次操作将删除${rowData.username}删除后账号将不可恢复，您确认删除吗？`, {
-              type: 'warning'
-            }
-          ).then(() => {
-            remove({id: rowData.userId})
-              .then(res => {
-                let resp = res.data;
-                if (resp.code === 200) {
-                  this.$message.success('删除成功!');
-                  this.doQuery();
-                } else {
-                  this.$message.success(resp.msg);
-                }
-              })
-          })
-        },
-
-        /**
-         *  表头批量删除员工
-         */
-        batchDelete() {
-          let list = this.$refs.multipleTable.selection;
-          if (list.length===0){
-            this.$message.warning("请勾选操作对象！");
-            return false;
-          }
-          let deleteNames,deleteIds;
-          let submitData = new FormData();
-          for (let i = 0; i < list.length; i++) {
-            if (i===0){
-              deleteNames = list[i].username;
-              deleteIds = list[i].userId;
-            }else {
-              deleteNames += ","+list[i].username;
-              deleteIds +=  ","+list[i].userId;
-            }
-          }
-          this.$confirm(  `本次操作将删除[${ deleteNames }],删除后账号将不可恢复，您确认删除吗？`, {
-              type: 'warning'
-            }  ).then(() => {
-            submitData.append("ids",deleteIds);
-            batchRemove(submitData)
-              .then(res => {
-                let resp = res.data;
-                if (resp.code === 200) {
-                  this.$message.success('删除成功!');
-                  this.doQuery();
-                } else {
-                  this.$message.error(resp.msg);
-                }
-              })
-          })
-
-        },
-
-        /**
-         * 表单取消对话框事件
-         */
-        cancel() {
-          this.dialogFormVisible = false;
-          this.$refs['refForm'].resetFields();
-        },
-
-        /**
-         * 提交表单
-         */
-        submitForm(){
-          this.$refs['refForm'].validate((valid) => {
-            if (valid) {
-              if (this.formTitle === '编辑'){
-                update(this.formBase.userId).then(res => {
-                  let resp  = res.data;
-                  this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
-                  if(resp.code===200) {
-                    this.dialogFormVisible = false;
-                    this.$refs['refForm'].resetFields();
-                    this.doQuery();
-                  }
-                })
-              }else {
-                add(this.formBase).then(res => {
-                  let resp  = res.data;
-                  this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
-                  if(resp.code===200) {
-                    this.dialogFormVisible = false;
-                    this.$refs['refForm'].resetFields();
-                    this.doQuery();
-                  }
-                })
-              }
-            } else {
-              return false;
-            }
-          });
-
-        },
-
-        // resetForm(formName) {
-        //   this.$nextTick(() => {
-        //     this.$refs[formName].resetFields();
-        //   })
-        // },
+      handleRightSelect1(key) {
+        console.log(key);
+        if (key == 1) {
+          this.NodeAdd(this.NODE, this.DATA);
+          this.menuVisible2 = false;
+        } else if (key == 2) {
+          this.NodeEdit(this.NODE, this.DATA);
+          this.menuVisible2 = false;
+        } else if (key == 3) {
+          this.NodeDel(this.NODE, this.DATA);
+          this.menuVisible2 = false;
+        } else if(key == 4){
+          console.log('4')
+        }
       },
-      // 创建完毕状态
-      created: function () {
-        this.doQuery()
+      // handleAddTop(){//添加顶级节点
+      // 	this.setTree.push({
+      // 		id: ++this.maxexpandId,
+      // 		name: '新增顶级节点',
+      // 		pid: '',
+      // 		children: []
+      // 	})
+      // },
+      NodeBlur(n, d){//输入框失焦
+        console.log(n, d)
+        if(n.isEdit){
+          this.$set(n, 'isEdit', false)
+        }
+        this.$nextTick(() => {
+          this.$refs['slotTreeInput'+d.id].$refs.input.focus()
+        })
+      },
+      NodeEdit(n, d){//编辑节点
+        console.log(n, d)
+        if(!n.isEdit){//检测isEdit是否存在or是否为false
+          this.$set(n, 'isEdit', true)
+        }
+      },
+      NodeDel(n, d){//删除节点
+        console.log(n, d)
+        let that = this;
+        if(d.children && d.children.length !== 0){
+          this.$message.error("此节点有子级，不可删除！")
+          return false;
+        }else{
+          //新增节点可直接删除，已存在的节点要二次确认
+          //删除操作
+          let DelFun = () => {
+            let _list = n.parent.data.children || n.parent.data;//节点同级数据
+            let _index = _list.map((c) => c.id).indexOf(d.id);
+            console.log(_index)
+            _list.splice(_index, 1);
+            this.$message.success("删除成功！")
+          }
+          //二次确认
+          let ConfirmFun = () => {
+            this.$confirm("是否删除此节点？","提示",{
+              confirmButtonText: "确认",
+              cancelButtonText: "取消",
+              type: "warning"
+            }).then(() => {
+              DelFun()
+            }).catch(() => {})
+          }
+          //判断是否是新增节点
+          d.id > this.non_maxexpandId ? DelFun() : ConfirmFun()
+        }
+      },
+      NodeAdd(n, d){//新增节点
+        console.log(n, d)
+        //判断层级
+        if(n.level >= 3){
+          this.$message.error("最多只支持三级！")
+          return false;
+        }
+        //新增数据
+        d.children.push({
+          id: ++this.maxexpandId,
+          name: '新增节点',
+          pid: d.id,
+          children: []
+        })
+        //同时展开节点
+        if(!n.expanded){
+          n.expanded = true
+        }
+      },
+      rihgtClick(event, object, value, element) {
+        if (this.objectID !== object.id) {
+          this.objectID = object.id;
+          this.menuVisible = true;
+          this.DATA = object;
+          this.NODE = value;
+        } else {
+          this.menuVisible = !this.menuVisible;
+        }
+        document.addEventListener('click',(e)=>{
+          this.menuVisible = false;
+        })
+        let menu = document.querySelector("#rightClickMenu");
+        /* 菜单定位基于鼠标点击位置 */
+        menu.style.left = event.clientX + 20 -205 + "px";
+        menu.style.top = event.clientY - 30 - 20 + "px";
+        menu.style.position = "absolute"; // 为新创建的DIV指定绝对定位
+        menu.style.width = 160 + "px";
+        /*console.log("右键被点击的左侧:",menu.style.left);
+          console.log("右键被点击的顶部:",menu.style.top);*/
+        //        console.log("右键被点击的event:",event);
+        // console.log("右键被点击的object:", object);
+        // console.log("右键被点击的value:", value);
+        // console.log("右键被点击的element:", element);
+      },
+
+      dialogNewFormConfirm() {
+        (this.dialogNewFormVisible = false),
+          this.$message({
+            type: "success",
+            message: "新建成功!"
+          });
+      },
+      handleNew() {
+        this.dialogNewFormVisible = true;
+      },
+      handleEdit(index, row) {
+        this.editObj = row;
+        this.dialogFormVisible = true;
+        console.log(index, row);
+      },
+      handleClassifyEdit(index, row) {
+        console.log(index);
+        console.log(row);
+        this.dialogClassifyVisible = true;
+        // console.log(index, row);
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
       }
     }
+  };
 </script>
+<style lang="less" scoped>
 
-<style scoped>
-  .el-input{
+  .asideButton .el-row{
+    padding: 10px;
+  }
+  .asideButton .el-row i{
+    color: #bdc1ca;
+  }
+  .asideButton .el-input{
+    width: 220px;
+  }
+  .asideButton .el-input input{
+    border-radius: 35px;
+  }
+  label{
+    line-height: 40px;
+  }
+
+  .block{
+    padding-top: 5%;
+  }
+  .block i{
+    color: #777777;
+  }
+  /*************************标签鼠标右击页面样式******************************/
+  .el-menu-vertical{
+    border: 3px solid rgb(84, 92, 100);
+    border-radius: 10px;
+    z-index: 100;
+  }
+  .el-menu-vertical i{
+    color: #777777;
+  }
+  .menuItem{
+    height: 40px;
+    line-height: 40px;
+    background-color: #545c64;
+    font-size: 1.2rem;
+  }
+  .menuItem:hover{
+    background-color: #409EFF;
+  }
+
+  .el-container .el-main .el-card .el-form .el-form-item .el-input {
     width: 300px;
   }
 </style>
+
