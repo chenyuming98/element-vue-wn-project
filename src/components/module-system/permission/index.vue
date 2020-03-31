@@ -9,7 +9,7 @@
 
             <!-- 权限树结构 -->
             <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="id"  ref="SlotMenuList"
-                                 :filter-node-method="filterNode"  @node-contextmenu='rihgtClick' accordion  @node-click="changeFormData()"  >
+                                 :filter-node-method="filterNode"  @node-contextmenu='rightClick' accordion  @node-click="changeFormData()"  >
               <span class="slot-t-node" slot-scope="{ node, data }">
               <span v-show="!node.isEdit">
                 <span v-show="data.children && data.children.length >= 1">
@@ -34,22 +34,16 @@
           </el-card>
             <!--树结构鼠标右键点击出现页面-->
           <div v-show="menuVisible" >
-            <el-menu
-              id = "rightClickMenu"
-              class="el-menu-vertical"
-              @select="handleRightSelect"
-              active-text-color="#fff"
-              text-color="#fff" >
+            <el-menu  id = "rightClickMenu"  class="el-menu-vertical"   @select="handleRightSelect"   active-text-color="#fff"  text-color="#fff" >
               <el-menu-item index="1" class="menuItem">
-                <span slot="title">添加</span>
+                <span slot="title">添加节点</span>
               </el-menu-item>
               <el-menu-item index="2" class="menuItem">
-                <span slot="title">编辑</span>
+                <span slot="title">编辑子节点</span>
               </el-menu-item>
               <el-menu-item index="3" class="menuItem">
                 <span slot="title">删除</span>
               </el-menu-item>
-
             </el-menu>
           </div>
         </el-aside>
@@ -71,8 +65,8 @@
 
                 <el-form-item label="类型">
                   <el-radio-group v-model="permForm.type">
-                    <el-radio label="菜单"></el-radio>
-                    <el-radio label="权限"></el-radio>
+                    <el-radio :label=1>菜单</el-radio>
+                    <el-radio :label=0>权限</el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item label="请求方法">
@@ -212,7 +206,7 @@
           parentId: "",
           permissionId: "",
           title: "",
-          type: "",
+          type: 1,
           icon: "",
           href: "",
           hrefMethod: "",
@@ -274,37 +268,9 @@
         if (!value) return true;
         return data.label.indexOf(value) !== -1;
       },
-      handleRightSelect(key) {
-        console.log(key);
-        if (key == 1) {
-          this.NodeAdd(this.NODE, this.DATA);
-          this.menuVisible = false;
-        } else if (key == 2) {
-          this.NodeEdit(this.NODE, this.DATA);
-          this.menuVisible = false;
-        } else if (key == 3) {
-          this.NodeDel(this.NODE, this.DATA);
-          this.menuVisible = false;
-        } else if(key == 4){
-          console.log('4')
-          this.menuVisible = false;
-        }
-      },
-      handleRightSelect1(key) {
-        console.log(key);
-        if (key == 1) {
-          this.NodeAdd(this.NODE, this.DATA);
-          this.menuVisible2 = false;
-        } else if (key == 2) {
-          this.NodeEdit(this.NODE, this.DATA);
-          this.menuVisible2 = false;
-        } else if (key == 3) {
-          this.NodeDel(this.NODE, this.DATA);
-          this.menuVisible2 = false;
-        } else if(key == 4){
-          console.log('4')
-        }
-      },
+
+
+
       // handleAddTop(){//添加顶级节点
       // 	this.setTree.push({
       // 		id: ++this.maxExpandId,
@@ -358,37 +324,77 @@
           d.id > this.non_maxexpandId ? DelFun() : ConfirmFun()
         }
       },
-      NodeAdd(n, d){//新增节点
-        console.log(n, d)
+
+      /*
+      *  添加子节点
+      *  n 当前操作节点包含html对象
+      *  d 当前操作节点纯对象
+      */
+       addChildNode(nodeData, object){
         //判断层级
-        if(n.level >= 3){
-          this.$message.error("最多只支持三级！")
+        if(nodeData.level >= 3){
+          this.$message.error("最多只支持三级！");
           return false;
         }
         //新增数据
-        d.children.push({
-          id: ++this.maxExpandId,
-          name: '新增节点',
-          pid: d.id,
+        object.children.push({
+          permissionId: ++this.maxExpandId,
+          title: '新增节点',
+          parentId: object.permissionId,
+          spread: 0,
+          enable: 1,
+          type: 1,
           children: []
-        })
+        });
         //同时展开节点
-        if(!n.expanded){
-          n.expanded = true
+        if(!nodeData.expanded){
+          nodeData.expanded = true
         }
       },
-      rihgtClick(event, object, value, element) {
-        if (this.objectID !== object.id) {
-          this.objectID = object.id;
+
+      /*
+      *  添加同级节点
+      *  n 当前操作节点包含html对象
+      *  d 当前操作节点纯对象
+      */
+       addSameNode(nodeData, object){
+        //判断层级
+        //新增数据
+        object.children.push({
+          permissionId: ++this.maxExpandId,
+          title: '新增节点',
+          parentId: object.permissionId,
+          spread: 0,
+          enable: 1,
+          type: 1,
+          children: []
+        });
+        //同时展开节点
+        if(!nodeData.expanded){
+          nodeData.expanded = true
+        }
+      },
+
+      /*
+      * 右键点击触发菜单
+      *  object 当前节点数据
+      *  value 当前html对象
+      */
+      rightClick(event, object, value, element) {
+        debugger
+        if (this.objectID !== object.permissionId) {
+          this.objectID = object.permissionId;
           this.menuVisible = true;
-          this.DATA = object;
-          this.NODE = value;
+          this.DATA = value.parent.data;
+          this.NODE = value.parent;
         } else {
           this.menuVisible = !this.menuVisible;
         }
+        // 给右键菜单添加 点击关闭事件
         document.addEventListener('click',(e)=>{
           this.menuVisible = false;
-        })
+        });
+        //给悬浮口菜单添加 相对位置样式
         let menu = document.querySelector("#rightClickMenu");
         /* 菜单定位基于鼠标点击位置 */
         menu.style.left = event.clientX + 20 -205 + "px";
@@ -401,6 +407,52 @@
         // console.log("右键被点击的object:", object);
         // console.log("右键被点击的value:", value);
         // console.log("右键被点击的element:", element);
+      },
+
+      handleRightSelect1(key) {
+        console.log(key);
+        if (key == 1) {
+          this. addChildNode(this.NODE, this.DATA);
+          this.menuVisible2 = false;
+        } else if (key == 2) {
+          this.NodeEdit(this.NODE, this.DATA);
+          this.menuVisible2 = false;
+        } else if (key == 3) {
+          this.NodeDel(this.NODE, this.DATA);
+          this.menuVisible2 = false;
+        } else if(key == 4){
+          console.log('4')
+        }
+      },
+
+      /*
+      * 菜单激活回调
+      */
+      handleRightSelect(key) {
+        console.log(key);
+        debugger
+        if (key === "1") {
+          this. addSameNode(this.NODE, this.DATA);
+          this.menuVisible = false;
+        }
+        else if (key === "2") {
+          this. addChildNode(this.NODE, this.DATA);
+          this.menuVisible = false;
+        } else if (key === "3") {
+          this.NodeDel(this.NODE, this.DATA);
+          this.menuVisible = false;
+        }
+        // if (key === "1") {
+        //   this. addChildNode(this.NODE, this.DATA);
+        //   this.menuVisible = false;
+        // }
+        // else if (key === "2") {
+        //   this.NodeEdit(this.NODE, this.DATA);
+        //   this.menuVisible = false;
+        // } else if (key === "3") {
+        //   this.NodeDel(this.NODE, this.DATA);
+        //   this.menuVisible = false;
+        // }
       },
 
       dialogNewFormConfirm() {
