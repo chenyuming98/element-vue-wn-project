@@ -7,8 +7,8 @@
           <el-card class="box-card">
             <el-input  placeholder="搜索权限"  prefix-icon="el-icon-search"   v-model="filterText"  size="medium"  style=" width: 240px; ">  </el-input>
 
-            <!-- 权限树结构 -->
-            <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="id"  ref="SlotMenuList"
+            <!-- 权限树结构 node-key指定自定义的树结构ID的主键 -->
+            <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="permissionId"  ref="SlotMenuList"
                                  :filter-node-method="filterNode"  @node-contextmenu='rightClick' accordion  @node-click="nodeClick()"  >
               <span class="slot-t-node" slot-scope="{ node, data }">
                  <!-- 菜单图标 -->
@@ -20,7 +20,7 @@
                   <i :class="{ 'fa fa-plus-square': !node.expanded, 'fa fa-minus-square':node.expanded}" />
                   <span :class="[data.id >= maxExpandId ? 'slot-t-node--label' : '']">{{node.label}}</span>
                 </span>
-                <span v-show="!data.children || data.children.length == 0">
+                <span v-show="!data.children || data.children.length === 0">
                   <i class='' style='margin-right:10px'></i>
                   <span :class="[data.id >= maxExpandId ? 'slot-t-node--label' : '']">{{node.label}}</span>
                 </span>
@@ -101,7 +101,7 @@
                   <el-input v-model="permForm.sortNumber" :readonly="readForm"></el-input>
                 </el-form-item>
 
-                <div  v-show="permShow">
+                <div  v-show="!menuShow">
                   <el-form-item label="权限代码">
                     <el-input v-model="permForm.code" :readonly="readForm"></el-input>
                   </el-form-item>
@@ -109,7 +109,7 @@
 
                 <el-form-item>
                   <el-button type="primary" @click="onSubmit">提交</el-button>
-                  <el-button>取消</el-button>
+                  <el-button @click="restForm">重置</el-button>
                 </el-form-item>
               </el-form>
 
@@ -125,7 +125,8 @@
 </template>
 <script>
   import ElCol from "element-ui/packages/col/src/col";
-  import {getMenuList,add,update} from "@/api/base/permission";
+  import {getMenuList,add,update,remove} from "@/api/base/permission";
+
 
   let id = 1000;
   export default {
@@ -147,10 +148,10 @@
           spread: 1,
           enable: 1,
         },
+        tempForm: null, //修改前重置按钮用的数据
         readForm: true,
         disabledForm: true,
         menuShow: true,
-        permShow: false,
         currentNodeObject: null,
         currentNodeData: null,
         currentNodeParentObject: null,
@@ -194,13 +195,24 @@
           })
       },
       onSubmit() {
-        update(this.permForm).then(res => {
-          let resp  = res.data;
-          this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
-          if(resp.code===200) {
-            this.doQuery();
-          }
-        })
+        if (this.permForm.permissionId){
+          update(this.permForm).then(res => {
+            let resp  = res.data;
+            this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+            if(resp.code===200) {
+              this.doQuery();
+            }
+          })
+        }else {
+          add(this.permForm).then(res => {
+            let resp  = res.data;
+            this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+            if(resp.code===200) {
+              this.doQuery();
+            }
+          })
+        }
+
       },
 
       filterNode(value, data) {
@@ -226,34 +238,30 @@
           this.$set(n, 'isEdit', true)
         }
       },
+
       NodeDel(n, d){//删除节点
-        console.log(n, d)
         let that = this;
-        if(d.children && d.children.length !== 0){
+        debugger
+        if(this.currentNodeData.children && this.currentNodeData.children.length !== 0){
           this.$message.error("此节点有子级，不可删除！");
           return false;
         }else{
-          //新增节点可直接删除，已存在的节点要二次确认
-          //删除操作
-          let DelFun = () => {
-            let _list = n.parent.data.children || n.parent.data;//节点同级数据
-            let _index = _list.map((c) => c.id).indexOf(d.id);
-            console.log(_index)
-            _list.splice(_index, 1);
-            this.$message.success("删除成功！")
-          };
-          //二次确认
-          let ConfirmFun = () => {
-            this.$confirm("是否删除此节点？","提示",{
-              confirmButtonText: "确认",
-              cancelButtonText: "取消",
-              type: "warning"
-            }).then(() => {
-              DelFun()
-            }).catch(() => {})
-          }
-          //判断是否是新增节点
-          d.id > this.non_maxexpandId ? DelFun() : ConfirmFun()
+          this.$confirm(
+            `本次操作将删除${this.currentNodeData.title}菜单权限对象，您确认删除吗？`, {
+              type: 'warning'
+            }
+          ).then(() => {
+            remove({id: this.currentNodeData.permissionId})
+              .then(res => {
+                let resp = res.data;
+                if (resp.code === 200) {
+                  this.$message.success('删除成功!');
+                  this.doQuery();
+                } else {
+                  this.$message.success(resp.msg);
+                }
+              })
+          })
         }
       },
 
@@ -301,19 +309,24 @@
           return false;
         }
         //新增数据
-        object.children.push({
-          permissionId: ++this.maxExpandId,
-          title: '新增节点',
-          parentId: object.permissionId,
-          spread: 0,
-          enable: 1,
-          type: 1,
-          children: []
-        });
-        //同时展开节点
-        if(!nodeData.expanded){
-          nodeData.expanded = true
-        }
+         let childData = {
+           title: '新增子节点',
+           parentId: object.permissionId,
+           hrefMethod: "GET",
+           spread: 0,
+           enable: 1,
+           type: 1,
+           sortNumber:99,
+           children: []
+         };
+        object.children.push(childData);
+         this.disabledForm = false;
+         this.readForm = false;
+         this.permForm = childData;
+         //同时展开节点
+         if(!nodeData.expanded){
+           nodeData.expanded = true
+         }
       },
 
       /*
@@ -322,17 +335,24 @@
       *  nodeData 当前操作节点纯对象
       */
        addSameNode(object,nodeData){
-         this.$refs.SlotMenuList.insertAfter({
+         let childData = {
+           parentId: this.currentNodeData.parentId,
            title: '新增节点',
+           hrefMethod: "GET",
            spread: 0,
            enable: 1,
            type: 1,
+           sortNumber:99,
            children: []
-         } ,this.currentNodeData.id);
-        //同时展开节点
-        if(!object.expanded){
-          object.expanded = true
-        }
+         };
+         this.$refs.SlotMenuList.insertAfter( childData,this.currentNodeData.permissionId);
+         this.permForm = childData;
+         this.disabledForm = false;
+         this.readForm = false;
+         //同时展开节点
+         if(!nodeData.expanded){
+           nodeData.expanded = true
+         }
       },
 
       /*
@@ -344,7 +364,6 @@
           this.menuVisible = false;
         }
         else if (key === "2") {
-          debugger
           this. addChildNode(this.currentNodeObject, this.currentNodeData);
           this.menuVisible = false;
         } else if (key === "3") {
@@ -378,7 +397,7 @@
       },
 
       /*
-      *  单击菜单树结构，
+      *  左键单击菜单树结构，
       *  1.控制表单的展示类型
       *  2.恢复默认只读和禁用状态
       */
@@ -386,14 +405,13 @@
         this.disabledForm = true;
         this.readForm = true;
         this.permForm = this.$refs.SlotMenuList.getCurrentNode();
+        this.tempForm =  JSON.parse(JSON.stringify(this.permForm));
         if ( this.permForm.type===1){
           // 1为菜单权限
           this.menuShow = true;
-          this.permShow = false;
         }else {
           // 0为菜单权限
           this.menuShow = false;
-          this.permShow = true;
         }
       },
       /*
@@ -401,14 +419,22 @@
       *  动态改变表单显示类型
       */
       formTypeChange(val){
-        if ( val===1){
+        if( val===1){
           // 1为菜单权限
           this.menuShow = true;
-          this.permShow = false;
         }else {
           // 0为菜单权限
           this.menuShow = false;
-          this.permShow = true;
+        }
+      },
+
+      /*
+      *  重置表单到加载时的值
+      */
+      restForm(){
+        if (this.tempForm){
+          this.permForm =  this.tempForm;
+          this.tempForm =  JSON.parse(JSON.stringify( this.permForm));
         }
       },
 
