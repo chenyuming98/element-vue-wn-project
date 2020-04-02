@@ -11,6 +11,7 @@
             <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="id"  ref="SlotMenuList"
                                  :filter-node-method="filterNode"  @node-contextmenu='rightClick' accordion  @node-click="changeFormData()"  >
               <span class="slot-t-node" slot-scope="{ node, data }">
+                 <!-- 菜单图标 -->
               <span>
                  <i :class="data.icon"></i>
               </span>
@@ -56,24 +57,24 @@
         <el-container>
           <el-main>
             <el-card class="box-card">
-              <el-button  icon="el-icon-edit" size="mini" ></el-button>
+              <!-- 表单编辑按钮 -->
+              <el-button  icon="el-icon-edit" size="mini" @click="handleRemoveFormDisable()"></el-button>
               <!-- 表单 -->
-              <el-form ref="permForm" :model="permForm" label-width="80px" size="mini"  >
+              <el-form ref="permForm" :model="permForm" label-width="80px" size="mini" >
                 <el-form-item label="父节点">
-                  <el-input v-model="permForm.parentId"></el-input>
+                  <el-input v-model="permForm.parentId" disabled="true"></el-input>
                 </el-form-item>
                 <el-form-item label="标题">
-                  <el-input v-model="permForm.title"></el-input>
+                  <el-input v-model="permForm.title" :readonly="readForm"></el-input>
                 </el-form-item>
-
-                <el-form-item label="类型">
+                <el-form-item label="类型"   >
                   <el-radio-group v-model="permForm.type">
-                    <el-radio :label=1>菜单</el-radio>
-                    <el-radio :label=0>权限</el-radio>
+                    <el-radio :label=1  :disabled="disabledForm" >菜单</el-radio>
+                    <el-radio :label=0 :disabled="disabledForm" >权限</el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item label="请求方法">
-                  <el-select v-model="permForm.hrefMethod" placeholder="请求方法">
+                  <el-select v-model="permForm.hrefMethod" placeholder="请求方法" :disabled="disabledForm">
                     <el-option label="GET" value="GET"></el-option>
                     <el-option label="POST" value="POST"></el-option>
                     <el-option label="PUT" value="PUT"></el-option>
@@ -81,26 +82,27 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="url地址">
-                  <el-input v-model="permForm.href"></el-input>
+                  <el-input v-model="permForm.href" :readonly="readForm"></el-input>
                 </el-form-item>
                 <el-form-item label="菜单图标">
-                  <el-input v-model="permForm.icon"></el-input>
+                  <el-input v-model="permForm.icon" :readonly="readForm"></el-input>
                 </el-form-item>
                 <el-form-item label="是否展开">
-                  <el-switch v-model="permForm.spread"  :active-value= 1 :inactive-value=  0></el-switch>
+                  <el-switch v-model="permForm.spread"  :active-value= 1 :inactive-value= 0 :disabled="disabledForm" ></el-switch>
                 </el-form-item>
                 <el-form-item label="是否可见">
-                  <el-switch v-model="permForm.enable"  :active-value= 1 :inactive-value=  0></el-switch>
+                  <el-switch v-model="permForm.enable"  :active-value= 1 :inactive-value= 0  :disabled="disabledForm"   ></el-switch>
                 </el-form-item>
                 <el-form-item label="排序号">
-                  <el-input v-model="permForm.sortNumber"></el-input>
+                  <el-input v-model="permForm.sortNumber" :readonly="readForm"></el-input>
                 </el-form-item>
 
 <!--                <el-form-item>-->
-<!--                  <el-button type="primary" @click="onSubmit">立即创建</el-button>-->
+<!--                  <el-button type="primary" @click="onSubmit">提交</el-button>-->
 <!--                  <el-button>取消</el-button>-->
 <!--                </el-form-item>-->
               </el-form>
+
             </el-card>
           </el-main>
         </el-container>
@@ -113,16 +115,11 @@
 </template>
 <script>
   import ElCol from "element-ui/packages/col/src/col";
-  import {getMenuList} from "@/api/base/permission";
-
+  import {getMenuList,add,update} from "@/api/base/permission";
 
   let id = 1000;
   export default {
-    // watch: {
-    //   filterText(val) {
-    //     this.$refs.SlotMenuList.filter(val);
-    //   }
-    // },
+
     components: { ElCol },
     data() {
 
@@ -140,6 +137,8 @@
           spread: 1,
           enable: 1,
         },
+        readForm: true,
+        disabledForm: true,
         currentNodeObject: null,
         currentNodeData: null,
         currentNodeParentObject: null,
@@ -194,15 +193,6 @@
       },
 
 
-
-      // handleAddTop(){//添加顶级节点
-      // 	this.setTree.push({
-      // 		id: ++this.maxExpandId,
-      // 		name: '新增顶级节点',
-      // 		pid: '',
-      // 		children: []
-      // 	})
-      // },
       NodeBlur(n, d){//输入框失焦
         console.log(n, d)
         if(n.isEdit){
@@ -222,7 +212,7 @@
         console.log(n, d)
         let that = this;
         if(d.children && d.children.length !== 0){
-          this.$message.error("此节点有子级，不可删除！")
+          this.$message.error("此节点有子级，不可删除！");
           return false;
         }else{
           //新增节点可直接删除，已存在的节点要二次确认
@@ -233,7 +223,7 @@
             console.log(_index)
             _list.splice(_index, 1);
             this.$message.success("删除成功！")
-          }
+          };
           //二次确认
           let ConfirmFun = () => {
             this.$confirm("是否删除此节点？","提示",{
@@ -314,9 +304,6 @@
       *  nodeData 当前操作节点纯对象
       */
        addSameNode(object,nodeData){
-        //判断层级
-
-         debugger
          this.$refs.SlotMenuList.insertAfter({
            title: '新增节点',
            spread: 0,
@@ -329,10 +316,6 @@
           object.expanded = true
         }
       },
-
-
-
-
 
       /*
       * 菜单激活回调
@@ -365,16 +348,7 @@
         // }
       },
 
-      dialogNewFormConfirm() {
-        (this.dialogNewFormVisible = false),
-          this.$message({
-            type: "success",
-            message: "新建成功!"
-          });
-      },
-      handleNew() {
-        this.dialogNewFormVisible = true;
-      },
+
       handleEdit(index, row) {
         this.editObj = row;
         this.dialogFormVisible = true;
@@ -387,11 +361,16 @@
         // console.log(index, row);
       },
 
-
       changeFormData(){
-        console.log(this.$refs.SlotMenuList.getCurrentNode())
+        this.disabledForm = true;
+        this.readForm = true;
         this.permForm = this.$refs.SlotMenuList.getCurrentNode();
+      },
 
+
+      handleRemoveFormDisable(){
+         this.readForm = false;
+         this.disabledForm = false;
       }
     },
     // 创建完毕状态
