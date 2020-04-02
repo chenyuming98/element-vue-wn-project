@@ -1,39 +1,35 @@
 <template>
   <el-container style="border: 1px solid #eee">
     <el-row style="width: 100%">
-      <el-col :xs="10" :sm="10" :md="8" :lg="6" :xl="4" class="aside">
-
-        <el-aside  >
+      <el-col :xs="4" :sm="10" :md="8" :lg="6" :xl="4" class="aside">
           <el-card class="box-card">
-            <el-input  placeholder="搜索权限"  prefix-icon="el-icon-search"   v-model="filterText"  size="medium"  style=" width: 240px; ">  </el-input>
+            <el-input  placeholder="搜索权限"  prefix-icon="el-icon-search"   v-model="searchText"  size="medium"  style=" width: 240px; ">  </el-input>
 
-            <!-- 权限树结构 node-key指定自定义的树结构ID的主键 -->
+            <!-- 权限树结构  自定义参数配置 1. node-key指定自定义的树结构ID的主键  2.:props="defaultProps 配置其他数据对象绑定 -->
             <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="permissionId"  ref="SlotMenuList"
                                  :filter-node-method="filterNode"  @node-contextmenu='rightClick' accordion  @node-click="nodeClick()"  >
-              <span class="slot-t-node" slot-scope="{ node, data }">
-                 <!-- 菜单图标 -->
-              <span>
-                 <i :class="data.icon"></i>
-              </span>
-              <span v-show="!node.isEdit">
-                <span v-show="data.children && data.children.length >= 1">
-                  <i :class="{ 'fa fa-plus-square': !node.expanded, 'fa fa-minus-square':node.expanded}" />
-                  <span :class="[data.id >= maxExpandId ? 'slot-t-node--label' : '']">{{node.label}}</span>
-                </span>
-                <span v-show="!data.children || data.children.length === 0">
-                  <i class='' style='margin-right:10px'></i>
-                  <span :class="[data.id >= maxExpandId ? 'slot-t-node--label' : '']">{{node.label}}</span>
-                </span>
-              </span>
-              <!-- 编辑输入框 -->
-              <span v-show="node.isEdit">
-                <el-input class="slot-t-input" size="mini" autofocus
-                          v-model="data.name"
-                          :ref="'slotTreeInput'+data.id"
-                          @blur.stop="NodeBlur(node, data)"
-                          @keyup.enter.native="NodeBlur(node, data)"></el-input>
-              </span>
-              </span>
+          <span class="slot-t-node" slot-scope="{ node, data }">
+             <span >
+              <i :class="data.icon"></i>
+              <span :class="[data.id ? 'slot-t-node--label' : '']">{{node.label}}</span>
+            </span>
+<!--          <i :class="data.icon"></i>-->
+          <span v-show="!node.isEdit">
+
+<!--            <span v-show="!data.children || data.children.length == 0">-->
+<!--              <i class='' style='margin-right:10px'></i>-->
+<!--              <span :class="[data.id ? 'slot-t-node&#45;&#45;label' : '']">{{node.label}}</span>-->
+<!--            </span>-->
+          </span>
+                    <!-- 编辑输入框 -->
+<!--          <span v-show="node.isEdit">-->
+<!--            <el-input class="slot-t-input" size="mini" autofocus-->
+<!--                      v-model="data.name"-->
+<!--                      :ref="'slotTreeInput'+data.id"-->
+<!--                      @blur.stop="NodeBlur(node, data)"-->
+<!--                      @keyup.enter.native="NodeBlur(node, data)"></el-input>-->
+<!--          </span>-->
+        </span>
             </el-tree>
           </el-card>
             <!--树结构鼠标右键点击出现页面-->
@@ -50,15 +46,15 @@
               </el-menu-item>
             </el-menu>
           </div>
-        </el-aside>
       </el-col>
 
-      <el-col :xs="14" :sm="14" :md="16" :lg="18" :xl="20">
-        <el-container>
-          <el-main>
-            <el-card class="box-card">
-              <!-- 表单编辑按钮 -->
-              <el-button  icon="el-icon-edit" size="mini" @click="handleRemoveFormDisable()"></el-button>
+      <el-col :xs="8" :sm="14" :md="16" :lg="18" :xl="20" >
+        <el-card class="box-card">
+          <div>
+            <!-- 表单编辑按钮 -->
+            <el-button  icon="el-icon-edit" size="mini" @click="handleRemoveFormDisable()"></el-button>
+
+            <div style="">
               <!-- 表单 -->
               <el-form ref="permForm" :model="permForm" label-width="80px" size="mini" >
                 <el-form-item label="父节点">
@@ -112,15 +108,12 @@
                   <el-button @click="restForm">重置</el-button>
                 </el-form-item>
               </el-form>
+            </div>
+          </div>
 
-            </el-card>
-          </el-main>
-        </el-container>
+        </el-card>
       </el-col>
     </el-row>
-
-
-
   </el-container>
 </template>
 <script>
@@ -130,8 +123,13 @@
 
   let id = 1000;
   export default {
-
     components: { ElCol },
+
+    watch: {
+      searchText(val) {
+        this.$refs.SlotMenuList.filter(val);
+      }
+    },
     data() {
 
       return {
@@ -142,45 +140,36 @@
           type: 1,
           icon: "",
           href: "",
-          hrefMethod: "",
+          hrefMethod: "GET",
           code: "",
           sortNumber: "",
           spread: 1,
           enable: 1,
         },
         tempForm: null, //修改前重置按钮用的数据
-        readForm: true,
-        disabledForm: true,
-        menuShow: true,
+        readForm: true, //控制表单只读
+        disabledForm: true, //控制表单禁用状态
+        menuShow: true, //控制表单展示权限还是菜单
         currentNodeObject: null,
         currentNodeData: null,
         currentNodeParentObject: null,
         currentNodeParentData: null,
-        DATA: null,
-        NODE: null,
-        dialogNewFormVisible: false,
         dialogFormVisible: false,
         dialogClassifyVisible: false,
 
-        maxExpandId: 99999999999999999999,//新增节点开始id
-        non_maxexpandId: 99999999999999999999,//新增节点开始id(不更改)
-        isLoadingTree: true,//是否加载节点树
-        setTree: [],
+        setTree: [],  //全部后台树结构数据绑定对象
 
-        defaultProps: {
+        defaultProps: {//绑定树结构映射基础参数
           label: 'title',
           children: 'children'
         },
-        filterText: '',
+        searchText: '',
         input: "",
         input2: "",
-        currentPage4: 4,
         editObj: {},
-        menuVisible: false,
+        menuVisible: false, //树结构右键 显示框 v-show
         objectID: null,
-        /*分类修改*/
-        menuVisible2: false,
-        objectID2: null
+
       };
     },
     methods: {
@@ -195,6 +184,7 @@
           })
       },
       onSubmit() {
+        debugger
         if (this.permForm.permissionId){
           update(this.permForm).then(res => {
             let resp  = res.data;
@@ -215,13 +205,13 @@
 
       },
 
+      /*
+      * 树结构搜索过滤器
+      */
       filterNode(value, data) {
-        console.log('value:',value)
-        console.log('data:',data)
         if (!value) return true;
-        return data.label.indexOf(value) !== -1;
+        return data.title.indexOf(value) !== -1;
       },
-
 
       NodeBlur(n, d){//输入框失焦
         console.log(n, d)
@@ -240,27 +230,40 @@
       },
 
       NodeDel(n, d){//删除节点
-        let that = this;
-        debugger
+
+        // deleteNewChild 方法删除还没有入库 没有id的节点
+        let deleteNewChildNotInDataDB = () => {
+          let _list = n.parent.data.children || n.parent.data;//节点同级数据
+          let _index = _list.map((c) => c.id).indexOf(d.id);
+          console.log(_index)
+          _list.splice(_index, 1);
+          this.$message.success("删除成功！")
+        }
         if(this.currentNodeData.children && this.currentNodeData.children.length !== 0){
           this.$message.error("此节点有子级，不可删除！");
           return false;
         }else{
+          let tempDeleteNode =  this.currentNodeData; // 弹出框莫名其妙数据丢失
           this.$confirm(
             `本次操作将删除${this.currentNodeData.title}菜单权限对象，您确认删除吗？`, {
               type: 'warning'
             }
           ).then(() => {
-            remove({id: this.currentNodeData.permissionId})
-              .then(res => {
-                let resp = res.data;
-                if (resp.code === 200) {
-                  this.$message.success('删除成功!');
-                  this.doQuery();
-                } else {
-                  this.$message.success(resp.msg);
-                }
-              })
+            if (tempDeleteNode.permissionId){
+              remove({id: tempDeleteNode.permissionId})
+                .then(res => {
+                  let resp = res.data;
+                  if (resp.code === 200) {
+                    this.$message.success('删除成功!');
+                    this.doQuery();
+                  } else {
+                    this.$message.success(resp.msg);
+                  }
+                })
+            }else {
+              deleteNewChildNotInDataDB()
+            }
+
           })
         }
       },
@@ -290,7 +293,8 @@
         let menu = document.querySelector("#rightClickMenu");
         /* 菜单定位基于鼠标点击位置 */
         menu.style.left = event.clientX + 20 -205 + "px";
-        menu.style.top = event.clientY - 30 - 20 + "px";
+        menu.style.top = event.clientY - 30 - 60 + "px";
+
         menu.style.position = "absolute"; // 为新创建的DIV指定绝对定位
         menu.style.width = 130 + "px"; //设置右键菜单的宽度
 
@@ -313,6 +317,7 @@
            title: '新增子节点',
            parentId: object.permissionId,
            hrefMethod: "GET",
+           icon: 'el-icon-document',
            spread: 0,
            enable: 1,
            type: 1,
@@ -339,6 +344,7 @@
            parentId: this.currentNodeData.parentId,
            title: '新增节点',
            hrefMethod: "GET",
+           icon: 'el-icon-document',
            spread: 0,
            enable: 1,
            type: 1,
