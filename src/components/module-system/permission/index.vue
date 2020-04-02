@@ -11,6 +11,9 @@
             <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="id"  ref="SlotMenuList"
                                  :filter-node-method="filterNode"  @node-contextmenu='rightClick' accordion  @node-click="changeFormData()"  >
               <span class="slot-t-node" slot-scope="{ node, data }">
+              <span>
+                 <i :class="data.icon"></i>
+              </span>
               <span v-show="!node.isEdit">
                 <span v-show="data.children && data.children.length >= 1">
                   <i :class="{ 'fa fa-plus-square': !node.expanded, 'fa fa-minus-square':node.expanded}" />
@@ -29,20 +32,20 @@
                           @blur.stop="NodeBlur(node, data)"
                           @keyup.enter.native="NodeBlur(node, data)"></el-input>
               </span>
-            </span>
+              </span>
             </el-tree>
           </el-card>
             <!--树结构鼠标右键点击出现页面-->
           <div v-show="menuVisible" >
             <el-menu  id = "rightClickMenu"  class="el-menu-vertical"   @select="handleRightSelect"   active-text-color="#fff"  text-color="#fff" >
               <el-menu-item index="1" class="menuItem">
-                <span slot="title">添加节点</span>
+                <span slot="title">添加同级菜单</span>
               </el-menu-item>
               <el-menu-item index="2" class="menuItem">
-                <span slot="title">编辑子节点</span>
+                <span slot="title">添加子级菜单</span>
               </el-menu-item>
               <el-menu-item index="3" class="menuItem">
-                <span slot="title">删除</span>
+                <span slot="title">删除当前菜单</span>
               </el-menu-item>
             </el-menu>
           </div>
@@ -106,78 +109,6 @@
 
 
 
-
-
-    <!-- modal edit -->
-    <el-dialog title="标签属性修改" :visible.sync="dialogFormVisible" width='30%'>
-      <el-form :model="editObj" label-width="80px">
-        <el-form-item label="标签名称">
-          <el-input
-            type="textarea"
-            :rows="2"
-            autocomplete="off"
-            placeholder="请输入内容"
-            v-model="editObj.name">
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!-- modal Classify edit -->
-    <el-dialog title="标签分类修改" :visible.sync="dialogClassifyVisible" width='30%'>
-
-      <!--鼠标右键点击出现页面-->
-      <div v-show="menuVisible2">
-        <el-menu
-          id = "rightClickMenu2"
-          class="el-menu-vertical"
-          @select="handleRightSelect1"
-          active-text-color="#fff"
-          text-color="#fff">
-          <el-menu-item index="1" class="menuItem">
-            <span slot="title">添加分类</span>
-          </el-menu-item>
-          <el-menu-item index="2" class="menuItem">
-            <span slot="title">修改分类</span>
-          </el-menu-item>
-          <el-menu-item index="3" class="menuItem">
-            <span slot="title">删除分类</span>
-          </el-menu-item>
-          <hr style="color: #ffffff">
-          <el-menu-item index="4" class="menuItem">
-            <span slot="title">添加标签</span>
-          </el-menu-item>
-        </el-menu>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogClassifyVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogClassifyVisible = false">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!-- modal new edit -->
-    <el-dialog title="创建标签" :visible.sync="dialogNewFormVisible" width='30%'>
-      <el-form label-width="80px">
-        <el-form-item label="标签名称">
-          <el-input autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="标签描述">
-          <el-input
-            type="textarea"
-            :rows="3"
-            autocomplete="off"
-            placeholder="请输入内容"
-          >
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogNewFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogNewFormConfirm">确 定</el-button>
-      </div>
-    </el-dialog>
   </el-container>
 </template>
 <script>
@@ -194,13 +125,7 @@
     // },
     components: { ElCol },
     data() {
-      const item = {
-        tagID: "ID001",
-        name: "地区",
-        description: "此处是改内容的详细描述...",
-        creatorID: "Admin",
-        regeneratorID: "Admin"
-      };
+
       return {
         permForm: {
           parentId: "",
@@ -214,11 +139,11 @@
           sortNumber: "",
           spread: 1,
           enable: 1,
-
-          roleId: "",
-          roleName: "",
         },
-
+        currentNodeObject: null,
+        currentNodeData: null,
+        currentNodeParentObject: null,
+        currentNodeParentData: null,
         DATA: null,
         NODE: null,
         dialogNewFormVisible: false,
@@ -228,7 +153,6 @@
         maxExpandId: 99999999999999999999,//新增节点开始id
         non_maxexpandId: 99999999999999999999,//新增节点开始id(不更改)
         isLoadingTree: true,//是否加载节点树
-        // setTree: api.treelist,//节点树数据
         setTree: [],
 
         defaultProps: {
@@ -249,7 +173,7 @@
     },
     methods: {
       /*
-      * 查询树结构
+      * 查询菜单树结构
       */
       doQuery() {
         getMenuList()
@@ -326,6 +250,38 @@
       },
 
       /*
+      * 右键点击触发菜单
+      *  object 当前节点数据
+      *  value 当前html对象
+      */
+      rightClick(event, object, value, element) {
+
+        if (this.objectID !== object.permissionId) {
+          this.objectID = object.permissionId;
+          this.menuVisible = true;
+          this.currentNodeObject =  value ;
+          this.currentNodeData = object;
+          this.currentNodeParentObject =  value.parent;
+          this.currentNodeParentData = value.parent.data;
+        } else {
+          this.menuVisible = !this.menuVisible;
+        }
+        // 给右键菜单添加 点击关闭事件
+        document.addEventListener('click',(e)=>{
+          this.menuVisible = false;
+        });
+        //给悬浮口菜单添加 相对位置样式
+        let menu = document.querySelector("#rightClickMenu");
+        /* 菜单定位基于鼠标点击位置 */
+        menu.style.left = event.clientX + 20 -205 + "px";
+        menu.style.top = event.clientY - 30 - 20 + "px";
+        menu.style.position = "absolute"; // 为新创建的DIV指定绝对定位
+        menu.style.width = 130 + "px"; //设置右键菜单的宽度
+
+      },
+
+
+      /*
       *  添加子节点
       *  n 当前操作节点包含html对象
       *  d 当前操作节点纯对象
@@ -354,92 +310,46 @@
 
       /*
       *  添加同级节点
-      *  n 当前操作节点包含html对象
-      *  d 当前操作节点纯对象
+      *  object 当前操作节点包含html对象
+      *  nodeData 当前操作节点纯对象
       */
-       addSameNode(nodeData, object){
+       addSameNode(object,nodeData){
         //判断层级
-        //新增数据
-        object.children.push({
-          permissionId: ++this.maxExpandId,
-          title: '新增节点',
-          parentId: object.permissionId,
-          spread: 0,
-          enable: 1,
-          type: 1,
-          children: []
-        });
+
+         debugger
+         this.$refs.SlotMenuList.insertAfter({
+           title: '新增节点',
+           spread: 0,
+           enable: 1,
+           type: 1,
+           children: []
+         } ,this.currentNodeData.id);
         //同时展开节点
-        if(!nodeData.expanded){
-          nodeData.expanded = true
+        if(!object.expanded){
+          object.expanded = true
         }
       },
 
-      /*
-      * 右键点击触发菜单
-      *  object 当前节点数据
-      *  value 当前html对象
-      */
-      rightClick(event, object, value, element) {
-        debugger
-        if (this.objectID !== object.permissionId) {
-          this.objectID = object.permissionId;
-          this.menuVisible = true;
-          this.DATA = value.parent.data;
-          this.NODE = value.parent;
-        } else {
-          this.menuVisible = !this.menuVisible;
-        }
-        // 给右键菜单添加 点击关闭事件
-        document.addEventListener('click',(e)=>{
-          this.menuVisible = false;
-        });
-        //给悬浮口菜单添加 相对位置样式
-        let menu = document.querySelector("#rightClickMenu");
-        /* 菜单定位基于鼠标点击位置 */
-        menu.style.left = event.clientX + 20 -205 + "px";
-        menu.style.top = event.clientY - 30 - 20 + "px";
-        menu.style.position = "absolute"; // 为新创建的DIV指定绝对定位
-        menu.style.width = 160 + "px";
-        /*console.log("右键被点击的左侧:",menu.style.left);
-          console.log("右键被点击的顶部:",menu.style.top);*/
-        //        console.log("右键被点击的event:",event);
-        // console.log("右键被点击的object:", object);
-        // console.log("右键被点击的value:", value);
-        // console.log("右键被点击的element:", element);
-      },
 
-      handleRightSelect1(key) {
-        console.log(key);
-        if (key == 1) {
-          this. addChildNode(this.NODE, this.DATA);
-          this.menuVisible2 = false;
-        } else if (key == 2) {
-          this.NodeEdit(this.NODE, this.DATA);
-          this.menuVisible2 = false;
-        } else if (key == 3) {
-          this.NodeDel(this.NODE, this.DATA);
-          this.menuVisible2 = false;
-        } else if(key == 4){
-          console.log('4')
-        }
-      },
+
+
 
       /*
       * 菜单激活回调
       */
       handleRightSelect(key) {
         console.log(key);
-        debugger
+
         if (key === "1") {
-          this. addSameNode(this.NODE, this.DATA);
+          this. addSameNode(this.currentNodeObject, this.currentNodeData);
           this.menuVisible = false;
         }
         else if (key === "2") {
-          this. addChildNode(this.NODE, this.DATA);
+          debugger
+          this. addChildNode(this.currentNodeObject, this.currentNodeData);
           this.menuVisible = false;
         } else if (key === "3") {
-          this.NodeDel(this.NODE, this.DATA);
+          this.NodeDel(this.currentNodeObject, this.currentNodeObject);
           this.menuVisible = false;
         }
         // if (key === "1") {
@@ -476,12 +386,7 @@
         this.dialogClassifyVisible = true;
         // console.log(index, row);
       },
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-      },
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-      },
+
 
       changeFormData(){
         console.log(this.$refs.SlotMenuList.getCurrentNode())
@@ -532,7 +437,7 @@
     height: 40px;
     line-height: 40px;
     background-color: #545c64;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
   }
   .menuItem:hover{
     background-color: #409EFF;
