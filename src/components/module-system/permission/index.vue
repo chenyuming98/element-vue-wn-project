@@ -9,7 +9,7 @@
 
             <!-- 权限树结构 -->
             <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="id"  ref="SlotMenuList"
-                                 :filter-node-method="filterNode"  @node-contextmenu='rightClick' accordion  @node-click="changeFormData()"  >
+                                 :filter-node-method="filterNode"  @node-contextmenu='rightClick' accordion  @node-click="nodeClick()"  >
               <span class="slot-t-node" slot-scope="{ node, data }">
                  <!-- 菜单图标 -->
               <span>
@@ -62,13 +62,13 @@
               <!-- 表单 -->
               <el-form ref="permForm" :model="permForm" label-width="80px" size="mini" >
                 <el-form-item label="父节点">
-                  <el-input v-model="permForm.parentId" disabled="true"></el-input>
+                  <el-input v-model="permForm.parentId" :disabled="true"></el-input>
                 </el-form-item>
                 <el-form-item label="标题">
                   <el-input v-model="permForm.title" :readonly="readForm"></el-input>
                 </el-form-item>
                 <el-form-item label="类型"   >
-                  <el-radio-group v-model="permForm.type">
+                  <el-radio-group v-model="permForm.type" @change="formTypeChange">
                     <el-radio :label=1  :disabled="disabledForm" >菜单</el-radio>
                     <el-radio :label=0 :disabled="disabledForm" >权限</el-radio>
                   </el-radio-group>
@@ -81,26 +81,36 @@
                     <el-option label="DELETE" value="DELETE"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="url地址">
-                  <el-input v-model="permForm.href" :readonly="readForm"></el-input>
-                </el-form-item>
-                <el-form-item label="菜单图标">
-                  <el-input v-model="permForm.icon" :readonly="readForm"></el-input>
-                </el-form-item>
-                <el-form-item label="是否展开">
-                  <el-switch v-model="permForm.spread"  :active-value= 1 :inactive-value= 0 :disabled="disabledForm" ></el-switch>
-                </el-form-item>
-                <el-form-item label="是否可见">
-                  <el-switch v-model="permForm.enable"  :active-value= 1 :inactive-value= 0  :disabled="disabledForm"   ></el-switch>
-                </el-form-item>
+
+                <div v-show="menuShow">
+                  <el-form-item label="url地址">
+                    <el-input v-model="permForm.href" :readonly="readForm"></el-input>
+                  </el-form-item>
+                  <el-form-item label="菜单图标">
+                    <el-input v-model="permForm.icon" :readonly="readForm"></el-input>
+                  </el-form-item>
+                  <el-form-item label="是否展开">
+                    <el-switch v-model="permForm.spread"  :active-value= 1 :inactive-value= 0 :disabled="disabledForm" ></el-switch>
+                  </el-form-item>
+                  <el-form-item label="是否可见">
+                    <el-switch v-model="permForm.enable"  :active-value= 1 :inactive-value= 0  :disabled="disabledForm"   ></el-switch>
+                  </el-form-item>
+                </div>
+
                 <el-form-item label="排序号">
                   <el-input v-model="permForm.sortNumber" :readonly="readForm"></el-input>
                 </el-form-item>
 
-<!--                <el-form-item>-->
-<!--                  <el-button type="primary" @click="onSubmit">提交</el-button>-->
-<!--                  <el-button>取消</el-button>-->
-<!--                </el-form-item>-->
+                <div  v-show="permShow">
+                  <el-form-item label="权限代码">
+                    <el-input v-model="permForm.code" :readonly="readForm"></el-input>
+                  </el-form-item>
+                </div>
+
+                <el-form-item>
+                  <el-button type="primary" @click="onSubmit">提交</el-button>
+                  <el-button>取消</el-button>
+                </el-form-item>
               </el-form>
 
             </el-card>
@@ -139,6 +149,8 @@
         },
         readForm: true,
         disabledForm: true,
+        menuShow: true,
+        permShow: false,
         currentNodeObject: null,
         currentNodeData: null,
         currentNodeParentObject: null,
@@ -182,7 +194,13 @@
           })
       },
       onSubmit() {
-        console.log('submit!');
+        update(this.permForm).then(res => {
+          let resp  = res.data;
+          this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+          if(resp.code===200) {
+            this.doQuery();
+          }
+        })
       },
 
       filterNode(value, data) {
@@ -321,8 +339,6 @@
       * 菜单激活回调
       */
       handleRightSelect(key) {
-        console.log(key);
-
         if (key === "1") {
           this. addSameNode(this.currentNodeObject, this.currentNodeData);
           this.menuVisible = false;
@@ -361,12 +377,40 @@
         // console.log(index, row);
       },
 
-      changeFormData(){
+      /*
+      *  单击菜单树结构，
+      *  1.控制表单的展示类型
+      *  2.恢复默认只读和禁用状态
+      */
+      nodeClick(){
         this.disabledForm = true;
         this.readForm = true;
         this.permForm = this.$refs.SlotMenuList.getCurrentNode();
+        if ( this.permForm.type===1){
+          // 1为菜单权限
+          this.menuShow = true;
+          this.permShow = false;
+        }else {
+          // 0为菜单权限
+          this.menuShow = false;
+          this.permShow = true;
+        }
       },
-
+      /*
+      *  单击表单的类型单选按钮
+      *  动态改变表单显示类型
+      */
+      formTypeChange(val){
+        if ( val===1){
+          // 1为菜单权限
+          this.menuShow = true;
+          this.permShow = false;
+        }else {
+          // 0为菜单权限
+          this.menuShow = false;
+          this.permShow = true;
+        }
+      },
 
       handleRemoveFormDisable(){
          this.readForm = false;
