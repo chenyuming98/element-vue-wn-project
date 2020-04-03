@@ -84,7 +84,7 @@
                   </el-form-item>
                   <el-form-item label="菜单图标">
                     <div style="width: 300px">
-                      <e-icon-picker v-model="permForm.icon" :readonly="readForm"   width="800"/>
+                      <e-icon-picker v-model="permForm.icon" :readonly="readForm"   :width="800"/>
                     </div>
                   </el-form-item>
                   <el-form-item label="是否展开">
