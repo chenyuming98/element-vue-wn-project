@@ -13,11 +13,7 @@
         </el-form-item>
         <!--密码-->
         <el-form-item prop="password">
-          <el-input
-            v-model="loginForm.password"
-            prefix-icon="iconfont icon-3702mima"
-            show-password
-          ></el-input>
+          <el-input   v-model="loginForm.password"  prefix-icon="iconfont icon-3702mima" show-password ></el-input>
         </el-form-item>
         <!--按钮区域-->
         <el-form-item class="btns">

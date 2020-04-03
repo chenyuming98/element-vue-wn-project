@@ -83,7 +83,9 @@
                     <el-input v-model="permForm.href" :readonly="readForm"></el-input>
                   </el-form-item>
                   <el-form-item label="菜单图标">
-                    <el-input v-model="permForm.icon" :readonly="readForm"></el-input>
+                    <div style="width: 300px">
+                      <e-icon-picker v-model="permForm.icon" :readonly="readForm"   width="800"/>
+                    </div>
                   </el-form-item>
                   <el-form-item label="是否展开">
                     <el-switch v-model="permForm.spread"  :active-value= 1 :inactive-value= 0 :disabled="disabledForm" ></el-switch>
@@ -120,8 +122,6 @@
   import ElCol from "element-ui/packages/col/src/col";
   import {getMenuList,add,update,remove} from "@/api/base/permission";
 
-
-  let id = 1000;
   export default {
     components: { ElCol },
 
@@ -131,7 +131,6 @@
       }
     },
     data() {
-
       return {
         permForm: {
           parentId: "",
@@ -501,5 +500,10 @@
   .el-container .el-main .el-card .el-form .el-form-item .el-input {
     width: 300px;
   }
+   .iconMenuTool{
+    width: 300px;
+  }
+
+
 </style>
 

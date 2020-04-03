@@ -12,10 +12,16 @@ import $ from 'jquery'
 import './assets/fonts/iconfont.css'
 //导入全局样式
 import './assets/css/global.css'
+//图标库
+import iconPicker from 'e-icon-picker';
+import 'e-icon-picker/dist/index.css';//基础样式
+import 'e-icon-picker/dist/main.css'; //fontAwesome 图标库样式
+
 Vue.config.productionTip = false;
 
 // Vue使用ElementUI
 Vue.use(ElementUI);
+Vue.use(iconPicker);
 Vue.prototype.$http = axios;
 //配置请求的根路径
 axios.defaults.baseURL = 'http://www.tianyu.com/';

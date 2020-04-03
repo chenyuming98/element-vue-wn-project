@@ -18,18 +18,33 @@
       <!--左侧菜单  <el-aside>：侧边栏容器。-->
       <el-aside width="200px"  style="background-color: rgb(238, 241, 246)">
         <!--开启路由跳转 -->
-        <el-menu :default-openeds="['1']" :router="true">
+<!--        <el-menu :default-openeds="['1']" :router="true">-->
 
-          <el-submenu index="1">
-            <template slot="title"><i class="el-icon-menu"></i>系统管理</template>
-            <el-menu-item-group>
-              <el-menu-item index="/userPage">用户管理</el-menu-item>
-              <el-menu-item index="/rolePage">角色管理</el-menu-item>
-              <el-menu-item index="/permPage">权限管理</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
+<!--          <el-submenu index="1">-->
+<!--            <template slot="title"><i class="el-icon-menu"></i>系统管理</template>-->
+<!--            <el-menu-item-group>-->
+<!--              <el-menu-item index="/userPage">用户管理</el-menu-item>-->
+<!--              <el-menu-item index="/rolePage">角色管理</el-menu-item>-->
+<!--              <el-menu-item index="/permPage">权限管理</el-menu-item>-->
+<!--            </el-menu-item-group>-->
+<!--          </el-submenu>-->
 
-        </el-menu>
+<!--        </el-menu>-->
+
+
+        <el-menu :router="true">
+            <template v-for="item in menuDataList">
+              <el-submenu :index="item.href" v-if="item.children">
+                <template slot="title" ><i :class="item.icon"/>{{item.title}}</template>
+                <template v-for="item2 in item.children">
+                  <el-menu-item-group>
+                    <template slot="title"> <el-menu-item :index="item2.href"> <i :class="item2.icon"/>{{item2.title}}</el-menu-item>
+                    </template>
+                  </el-menu-item-group>
+                </template>
+              </el-submenu>
+            </template>
+         </el-menu>
       </el-aside>
 
       <!--右侧主要内容区域-->
@@ -41,9 +56,28 @@
 </template>
 
 <script>
+  import {getMenuList} from "@/api/base/permission";
   export default {
     data() {
-      return {}
+      return {
+        menuDataList: null,
+      }
+    },
+    methods: {
+      /*
+      * 查询菜单树结构
+      */
+      doQuery() {
+        getMenuList()
+          .then(res => {
+            let resp = res.data;
+            this.menuDataList = resp.data;
+          })
+      },
+    },
+    // 创建完毕状态
+    created: function () {
+      this.doQuery()
     }
   };
 </script>
