@@ -3,27 +3,32 @@
     <el-row style="width: 100%">
       <el-col :xs="6" :sm="10" :md="8" :lg="6" :xl="4" class="aside">
           <el-card class="box-card" style="   width: 430px;  height: 552px;">
-            <div >
+            <div style=" width: 335px; ">
               <el-row style=" padding-bottom: 7px;">
                 <el-button type="primary" size="small" @click="addChildNode">添加子级菜单</el-button>
                 <el-button type="primary" size="small"  @click="addSameNode">添加同级菜单</el-button>
 
-                <el-dropdown @command="handleCommand">
-                  <el-button type="primary" size="small">
-                    更多菜单<i class="el-icon-arrow-down el-icon--right"></i>
-                  </el-button>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="chooseAll">全部勾选</el-dropdown-item>
-                    <el-dropdown-item command="notChooseAll">全部取消</el-dropdown-item>
-                    <el-dropdown-item command="expandAll">全部展开</el-dropdown-item>
-                    <el-dropdown-item command="notExpandAll">全部合并</el-dropdown-item>
-                    <el-dropdown-item command="batchDelete">批量删除</el-dropdown-item>
-                    <el-dropdown-item command="changCheckStatus">开启复选框</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-
+                  <el-dropdown @command="handleCommand" style="  margin-left: 10px;   border-left-width: 1px; ">
+                    <el-button   size="small">
+                      更多菜单<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown" style="  margin-left: 18px;   border-left-width: 2px; ">
+                      <el-dropdown-item command="changCheckStatus">复选框</el-dropdown-item>
+                      <el-dropdown-item command="chooseAll">全部勾选</el-dropdown-item>
+                      <el-dropdown-item command="notChooseAll">全部取消</el-dropdown-item>
+                      <el-dropdown-item command="expandAll">展开所有</el-dropdown-item>
+                      <el-dropdown-item command="notExpandAll">合并所有</el-dropdown-item>
+                      <el-dropdown-item command="batchDelete">批量删除</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
               </el-row>
-              <el-input  placeholder="搜索权限"  prefix-icon="el-icon-search"   v-model="searchText"  size="medium"  style=" width: 240px; "/>
+              <template v-if="this.currentNodeData">
+                <el-tag  style=" width: 335px; "> 当前操作对象： {{ this.currentNodeData.title}}</el-tag>
+              </template>
+              <template v-else>
+                <el-tag  style=" width: 335px; ">当前操作对象： 请选择 </el-tag>
+              </template>
+              <el-input  placeholder="搜索权限"  prefix-icon="el-icon-search"   v-model="searchText"  size="medium"  style=" width: 335px; margin-top: 5px;"/>
 
               <!-- 权限树结构  自定义参数配置 1. node-key指定自定义的树结构ID的主键  2.:props="defaultProps 配置其他数据对象绑定 -->
               <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="permissionId"  ref="treeObject"
@@ -143,7 +148,7 @@
 </template>
 <script>
   import ElCol from "element-ui/packages/col/src/col";
-  import {getMenuList,add,update,remove} from "@/api/base/permission";
+  import {getMenuList,add,update,remove,batchRemove} from "@/api/base/permission";
 
   export default {
     components: { ElCol },
@@ -155,19 +160,6 @@
     },
     data() {
       return {
-        permForm: {
-          parentId: "",
-          permissionId: "",
-          title: "",
-          type: 1,
-          icon: "",
-          href: "",
-          hrefMethod: "GET",
-          code: "",
-          sortNumber: "",
-          spread: 1,
-          enable: 1,
-        },
         tempForm: null, //修改前重置按钮用的数据
         readForm: true, //控制表单只读
         disabledForm: true, //控制表单禁用状态
@@ -191,7 +183,19 @@
         editObj: {},
         menuVisible: false, //树结构右键 显示框 v-show
         objectID: null,
-
+        permForm: {
+          parentId: "",
+          permissionId: "",
+          title: "",
+          type: 1,
+          icon: "",
+          href: "",
+          hrefMethod: "GET",
+          code: "",
+          sortNumber: "",
+          spread: 1,
+          enable: 1,
+        },
       };
     },
     methods: {
@@ -226,7 +230,7 @@
             let resp  = res.data;
             this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
             if(resp.code===200) {
-              this.doQuery();
+              this.doQuery(resp.data);
             }
           })
         }
@@ -334,7 +338,9 @@
       *  d 当前操作节点纯对象
       */
        addChildNode(){
-         debugger
+         if (this.currentNodeObject==null){
+           this.$message.error("请选择一个操作节点！");
+         }
         //判断层级
         if(this.currentNodeObject.level >= 3){
           this.$message.error("最多只支持三级！");
@@ -357,6 +363,7 @@
          this.readForm = false;
          this.permForm = childData;
          //同时展开节点
+         this.onSubmit();
          if(!this.currentNodeObject.expanded){
            this.currentNodeObject.expanded = true
          }
@@ -383,6 +390,7 @@
          this.permForm = childData;
          this.disabledForm = false;
          this.readForm = false;
+         this.onSubmit();
          //同时展开节点
          if(!this.currentNodeData.expanded){
            this.currentNodeData.expanded = true
@@ -467,6 +475,41 @@
         }
       },
 
+      batchDelete() {
+        let list = this.$refs.treeObject.getCheckedNodes();
+        if (list.length===0){
+          this.$message.warning("请勾选操作对象！");
+          return false;
+        }
+        let deleteNames,deleteIds;
+        let submitData = new FormData();
+        for (let i = 0; i < list.length; i++) {
+          if (i===0){
+            deleteNames = list[i].title;
+            deleteIds = list[i].permissionId;
+          }else {
+            deleteNames += ","+list[i].title;
+            deleteIds +=  ","+list[i].permissionId;
+          }
+        }
+        this.$confirm(  `本次操作将删除[${ deleteNames }],删除后菜单将不可恢复，您确认删除吗？`, {
+          type: 'warning'
+        }  ).then(() => {
+          submitData.append("ids",deleteIds);
+          batchRemove(submitData)
+            .then(res => {
+              let resp = res.data;
+              if (resp.code === 200) {
+                this.$message.success('删除成功!');
+                this.doQuery();
+              } else {
+                this.$message.error(resp.msg);
+              }
+            })
+        })
+
+      },
+
       /*
       *  重置表单到加载时的值
       */
@@ -491,9 +534,18 @@
         if (command==="changCheckStatus"){
           this.useCheck = !this.useCheck
         }else if (command==="chooseAll"){
-          this.$refs.treeObject.setCheckedNodes(this.setTree);
+          if (this.useCheck){
+            this.$refs.treeObject.setCheckedNodes(this.setTree);
+          }else {
+            this.$message({message: "请先开启复选框！",type:  "error"});
+          }
         }else if (command==="notChooseAll"){
-          this.$refs.treeObject.setCheckedKeys([]);
+          if (this.useCheck){
+            this.$refs.treeObject.setCheckedKeys([]);
+          }
+          else {
+            this.$message({message: "请先开启复选框！",type:  "error"});
+          }
         }else if (command==="expandAll"){
           for(let i=0;i<this.$refs.treeObject.store._getAllNodes().length;i++){
             this.$refs.treeObject.store._getAllNodes()[i].expanded=true;
@@ -503,7 +555,11 @@
             this.$refs.treeObject.store._getAllNodes()[i].expanded=false;
           }
         }else if (command==="batchDelete"){
-
+            if (this.useCheck){
+              this.batchDelete();
+            }else {
+              this.$message({message: "请先开启复选框！",type:  "error"});
+            }
         }
       }
     },
