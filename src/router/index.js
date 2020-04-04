@@ -15,9 +15,9 @@ const routes = [
   { path: '/home' , component: Home,redirect:'/index'
     ,children:[
       { path: '/index',component: Index},
-      { path: '/userPage',component: UserPage},
-      { path: '/rolePage',component: rolePage},
-      { path: '/permPage',component: permPage},
+      { path: '/userpage',component: UserPage},
+      { path: '/rolepage',component: rolePage},
+      { path: '/permpage',component: permPage},
     ]},
 ];
 

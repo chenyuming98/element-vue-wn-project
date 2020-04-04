@@ -51,11 +51,22 @@
         <el-form-item label="角色名称" prop="roleName" >
           <el-input v-model="formBase.roleName" autocomplete="off"></el-input>
         </el-form-item>
-
         <el-form-item label="描述" prop="description" >
           <el-input v-model="formBase.description" autocomplete="off"></el-input>
         </el-form-item>
 
+        <el-divider content-position="left">权限分配</el-divider>
+        <!-- 权限树结构  自定义参数配置 1. node-key指定自定义的树结构ID的主键  2.:props="defaultProps 配置其他数据对象绑定
+                accordion手风琴模式    show-checkbox节点显示选中框  -->
+        <el-tree style="margin-top: 10px"  :data="setRoleTree"   :props="defaultProps"  node-key="permissionId"  ref="SlotRoleMenuList"
+                 accordion   show-checkbox   :default-checked-keys="roleHavePermList">
+          <span class="slot-t-node" slot-scope="{ node, data }">
+             <span >
+              <i :class="data.icon"></i>
+              <span :class="[data.id ? 'slot-t-node--label' : '']">{{node.label}}</span>
+            </span>
+        </span>
+        </el-tree>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
@@ -68,8 +79,9 @@
 </template>
 <!--主页面板-->
 <script>
-  import {list,add,update,remove,batchRemove} from "@/api/base/role"
-
+  import { getMenuList} from "@/api/base/permission";
+  import {list,add,update,remove,batchRemove,findRoleHavePerms,assignRolePerms} from "@/api/base/role";
+  import {api} from '@/utils/request';
   const  multipleSelectionList =  new Set([]);
     export default {
 
@@ -83,15 +95,22 @@
             page: 1,
             size: 10,
           },
-
+          defaultProps: {//绑定树结构映射基础参数
+            label: 'title',
+            children: 'children'
+          },
           //定义弹框绑定显示状态
           dialogFormVisible: false,
           formTitle : '添加',
+          showTree : false,
+          setRoleTree:[],
+          roleHavePermList:[], //角色拥有的权限
           //定义表单初始化参数
           formBase: {
             roleId: '',
             roleName: '',
             description: '',
+            permissions: [],
           },
           //v-model 绑定校验规则
           rules: {
@@ -119,6 +138,17 @@
         },
 
         /*
+        * 加载权限树结构 用于提供角色选取权限
+        */
+        doQueryMenuList() {
+          getMenuList( )
+            .then(res => {
+              let resp = res.data;
+              this.setRoleTree = resp.data;
+            })
+        },
+
+        /*
         *改变每页显示数
         */
         handleSizeChange(val) {
@@ -134,37 +164,86 @@
           this.doQuery()
         },
 
-
-
         /**
-         * 添加新员工
+         * 添加新角色
          */
         handleAdd() {
-          // this.$refs.addUser.dialogFormVisible = true
+          this.doQueryMenuList();
+          this.$nextTick(() => {
+            this.$refs.SlotRoleMenuList.setCheckedKeys([]);
+          });
           this.formBase = {
             formRoleId: '',
             roleName: '',
             description: '',
+            permission: [],
           };
           this.formTitle = "添加";
           this.dialogFormVisible = true
         },
 
         /**
-         * 表格行编辑
+         * 编辑角色 表格行
          */
         handleRowEdit(rowData){
-          this.dialogFormVisible = true;
           this.formTitle = "编辑";
+          this.doQueryMenuList();
+          let chooseList = [];
+          //从角色行数据中获取拥有权限列表，循环遍历获取权限key
+          for (let i = 0; i < rowData.permissions.length; i++) {
+            chooseList.push(rowData.permissions[i].permissionId);
+          }
+          //$nextTick() vue 存在dom没渲染好 这时候调用elementUI对象会出错undefined
+          this.$nextTick(() => {
+            this.$refs.SlotRoleMenuList.setCheckedKeys(chooseList);
+          });
+          //表单赋值
           this.formBase = {
             roleId: rowData.roleId,
             roleName: rowData.roleName,
             description: rowData.description,
           };
+          this.dialogFormVisible = true;
         },
 
         /**
-         * 表格行删除员工
+         * 提交表单
+         */
+        submitForm(){
+          this.$refs['refForm'].validate((valid) => {
+            if (valid) {
+              // getCheckedNodes()获取树对象选中值
+              this.formBase.permissions = this.$refs.SlotRoleMenuList.getCheckedNodes();
+              if (this.formBase.roleId){
+                update(this.formBase).then(res => {
+                  let resp  = res.data;
+                  this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+                  if(resp.code===200) {
+                    this.dialogFormVisible = false;
+                    this.$refs['refForm'].resetFields();
+                    this.doQuery();
+                  }
+                });
+              }else {
+                add(this.formBase).then(res => {
+                  let resp  = res.data;
+                  this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+                  if(resp.code===200) {
+                    this.dialogFormVisible = false;
+                    this.$refs['refForm'].resetFields();
+                    this.doQuery();
+                  }
+                })
+              }
+            } else {
+              return false;
+            }
+          });
+
+        },
+
+        /**
+         * 表格行删除角色
          */
         handleRowDelete(rowData) {
           this.$confirm(
@@ -186,7 +265,7 @@
         },
 
         /**
-         *  表头批量删除员工
+         *  表头批量删除角色
          */
         batchDelete() {
           let list = this.$refs.multipleTable.selection;
@@ -206,8 +285,8 @@
             }
           }
           this.$confirm(  `本次操作将删除[${ deleteNames }],删除后角色将不可恢复，您确认删除吗？`, {
-              type: 'warning'
-            }  ).then(() => {
+            type: 'warning'
+          }  ).then(() => {
             submitData.append("ids",deleteIds);
             batchRemove(submitData)
               .then(res => {
@@ -231,40 +310,6 @@
           this.$refs['refForm'].resetFields();
         },
 
-        /**
-         * 提交表单
-         */
-        submitForm(){
-          this.$refs['refForm'].validate((valid) => {
-            if (valid) {
-              if (this.formBase.roleId){
-                update(this.formBase).then(res => {
-                  let resp  = res.data;
-                  this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
-                  if(resp.code===200) {
-                    this.dialogFormVisible = false;
-                    this.$refs['refForm'].resetFields();
-                    this.doQuery();
-                  }
-                })
-              }else {
-                add(this.formBase).then(res => {
-                  let resp  = res.data;
-                  this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
-                  if(resp.code===200) {
-                    this.dialogFormVisible = false;
-                    this.$refs['refForm'].resetFields();
-                    this.doQuery();
-                  }
-                })
-              }
-            } else {
-              return false;
-            }
-          });
-
-        },
-
         // resetForm(formName) {
         //   this.$nextTick(() => {
         //     this.$refs[formName].resetFields();
@@ -273,7 +318,7 @@
       },
       // 创建完毕状态
       created: function () {
-        this.doQuery()
+        this.doQuery();
       }
     }
 </script>
