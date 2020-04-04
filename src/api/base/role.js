@@ -1,5 +1,6 @@
 import {createAPI} from '@/utils/request'
 
+export const allRoles = data => createAPI('/system/role', 'get', data);
 export const list = data => createAPI('/system/role', 'get', data);
 export const add = data => createAPI('/system/role', 'post', data);
 export const update = data => createAPI(`/system/role/${data.roleId}`, 'put', data);

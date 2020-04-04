@@ -39,7 +39,6 @@
         </el-table-column>
         <el-table-column  fixed="right"  label="操作"  width="180">
           <template slot-scope="scope">
-            <el-button @click="handleRowDetail(scope.row)" type="text" size="small">查看</el-button>
             <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
             <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
           </template>
@@ -74,7 +73,12 @@
         <el-form-item label="密码" prop="formUserPassword" >
           <el-input v-model="formBase.userPassword" autocomplete="off"></el-input>
         </el-form-item>
-
+        <el-form-item label="角色分配" prop="" >
+          <el-select v-model="userHaveRoles" multiple placeholder="请选择" >
+            <el-option  v-for="item in rolesData" :key="item.roleId"   :label="item.roleName"   :value="item.roleId">
+            </el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
@@ -88,6 +92,7 @@
 <!--主页面板-->
 <script>
   import {list,add,update,remove,batchRemove} from "@/api/base/users"
+  import {allRoles} from "@/api/base/role";
 
   const  multipleSelectionList =  new Set([]);
     export default {
@@ -102,7 +107,8 @@
             page: 1,
             size: 10,
           },
-
+          userHaveRoles: [],
+          rolesData: [],
           //定义弹框绑定显示状态
           dialogFormVisible: false,
           formTitle : '添加',
@@ -111,6 +117,7 @@
             userId: '',
             username: '',
             userPassword: '',
+            roleIds:[],
           },
           //v-model 绑定校验规则
           rules: {
@@ -127,7 +134,7 @@
       methods: {
 
         /*
-        * 查询表格
+        * 查询用户表格
         */
         doQuery(params) {
           list(this.requestParameters)
@@ -136,6 +143,17 @@
               this.dataList = resp.data;
               this.total = resp.total;
 
+            })
+        },
+
+        /*
+        * 查询所有角色
+        */
+        doQueryRoles() {
+          allRoles(this.requestParameters)
+            .then(res => {
+              let resp = res.data;
+              this.rolesData = resp.data;
             })
         },
 
@@ -177,7 +195,7 @@
          * 添加新员工
          */
         handleAdd() {
-          // this.$refs.addUser.dialogFormVisible = true
+          this.doQueryRoles();
           this.formBase = {
             userId: '',
             username: '',
@@ -191,13 +209,22 @@
          * 表格行编辑
          */
         handleRowEdit(rowData){
-          this.dialogFormVisible = true;
+          this.doQueryRoles();
+          let roles = rowData['roles'];
+          if (roles) {
+            let roleIds = [];
+            $.each(roles, function (index, val) { //index是数组对象索引，val是对象
+              roleIds.push(val.roleId)
+            });
+            this.userHaveRoles = roleIds
+          }
           this.formTitle = "编辑";
           this.formBase = {
             userId: rowData.userId,
             username: rowData.username,
             userPassword: rowData.userPassword,
-          }
+          };
+          this.dialogFormVisible = true;
         },
 
         /**
@@ -265,6 +292,7 @@
          */
         cancel() {
           this.dialogFormVisible = false;
+          this.userHaveRoles = [];
           this.$refs['refForm'].resetFields();
         },
 
@@ -275,6 +303,7 @@
         submitForm(){
           this.$refs['refForm'].validate((valid) => {
             if (valid) {
+              this.formBase.roleIds =  this.userHaveRoles;
               if (this.formBase.userId){
                 update(this.formBase).then(res => {
                   let resp  = res.data;
@@ -300,6 +329,7 @@
               return false;
             }
           });
+          this.userHaveRoles = [];
         },
 
         // resetForm(formName) {
@@ -317,6 +347,9 @@
 
 <style scoped>
   .el-input{
+    width: 300px;
+  }
+  .el-select{
     width: 300px;
   }
 </style>
