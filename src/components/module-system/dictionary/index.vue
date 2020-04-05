@@ -26,8 +26,14 @@
             <template v-if="scope.row.isOneMenuInfo">
               <el-button @click="handleAdd(scope.row)"   type="text" size="small">添加</el-button>
             </template>
-            <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
 
+                <!--  TODO 正式系统开启上方-->
+<!--            <template v-if="scope.row.isEdit">-->
+<!--              <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>-->
+<!--              <el-button @click="batchDelete(scope.row)" type="text" size="small">删除</el-button>-->
+<!--            </template>-->
+
+            <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
             <el-button @click="batchDelete(scope.row)" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -235,8 +241,13 @@
         let deleteNames='',deleteIds='',notDeleteNames='';
         let submitData = new FormData();
         if (rowData['dictionaryId']){
-          deleteNames = rowData.dictionaryName;
-          deleteIds  = rowData.dictionaryId;
+          debugger
+          if (rowData['systemCode']===1){
+            notDeleteNames = rowData.dictionaryName;
+          }else {
+            deleteNames = rowData.dictionaryName;
+            deleteIds  = rowData.dictionaryId;
+          }
         }else {
           let list = this.$refs.multipleTable.selection;
           if (list.length===0){
