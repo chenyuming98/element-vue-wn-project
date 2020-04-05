@@ -92,7 +92,7 @@
 <!--主页面板-->
 <script>
   import {list,add,update,remove,batchRemove} from "@/api/base/users"
-  import {allRoles} from "@/api/base/role";
+  import {findRoleAll} from "@/api/base/role";
 
   const  multipleSelectionList =  new Set([]);
     export default {
@@ -150,7 +150,7 @@
         * 查询所有角色
         */
         doQueryRoles() {
-          allRoles(this.requestParameters)
+          findRoleAll()
             .then(res => {
               let resp = res.data;
               this.rolesData = resp.data;

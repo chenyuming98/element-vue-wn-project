@@ -18,6 +18,7 @@
       <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable" >
         <el-table-column type="selection" width="40" prop="roleId"> </el-table-column>
         <el-table-column  prop="roleName"  label="角色名称"  width="180"> </el-table-column>
+        <el-table-column  prop="roleCode"  label="角色编码"  width="180"> </el-table-column>
         <el-table-column  prop="description"  label="描述"  > </el-table-column>
 
         <el-table-column  fixed="right"  label="操作"  width="180">
@@ -45,11 +46,14 @@
     </el-card>
 
     <!--2. 添加编辑表单  -->
-    <el-dialog :title="formTitle"  :visible.sync="dialogFormVisible" :before-close="cancel" :close-on-click-modal="false" :width="'40%'">
+    <el-dialog :title="formTitle"   :visible.sync="dialogFormVisible" :before-close="cancel" :close-on-click-modal="false" :width="'40%'">
       <!-- :model绑定表单对象  status-icon控制每一行表单校验通过后图标显示正确和错误   :rules绑定校验规则  autocomplete="off" 关闭表单默认以及功能-->
       <el-form :model="formBase" status-icon :rules="rules" ref="refForm" label-width="120px">
         <el-form-item label="角色名称" prop="roleName" >
           <el-input v-model="formBase.roleName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="角色编码" prop="roleCode" >
+          <el-input v-model="formBase.roleCode" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="描述" prop="description" >
           <el-input v-model="formBase.description" autocomplete="off"></el-input>
@@ -58,7 +62,7 @@
         <el-divider content-position="left">权限分配</el-divider>
         <!-- 权限树结构  自定义参数配置 1. node-key指定自定义的树结构ID的主键  2.:props="defaultProps 配置其他数据对象绑定
                 accordion手风琴模式    show-checkbox节点显示选中框  -->
-        <el-tree style="margin-top: 10px"  :data="setRoleTree"   :props="defaultProps"  node-key="permissionId"  ref="SlotRoleMenuList"
+        <el-tree style="margin-top: 10px;padding-left: 50px;width: 300px;"  :data="setRoleTree"   :props="defaultProps"  node-key="permissionId"  ref="SlotRoleMenuList"
                  accordion   show-checkbox   :default-checked-keys="roleHavePermList">
           <span class="slot-t-node" slot-scope="{ node, data }">
              <span >
@@ -71,7 +75,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
         <el-button type="primary" @click="submitForm">确 定</el-button>
-        <!--        <el-button @click="resetForm('refForm')">重置</el-button>-->
+        <el-button @click="resetForm('refForm')">重置</el-button>
       </div>
     </el-dialog>
   </div>
@@ -109,6 +113,7 @@
           formBase: {
             roleId: '',
             roleName: '',
+            roleCode: '',
             description: '',
             permissions: [],
           },
@@ -201,6 +206,7 @@
           this.formBase = {
             roleId: rowData.roleId,
             roleName: rowData.roleName,
+            roleCode: rowData.roleCode,
             description: rowData.description,
           };
           this.dialogFormVisible = true;
@@ -310,11 +316,11 @@
           this.$refs['refForm'].resetFields();
         },
 
-        // resetForm(formName) {
-        //   this.$nextTick(() => {
-        //     this.$refs[formName].resetFields();
-        //   })
-        // },
+        resetForm() {
+          this.$nextTick(() => {
+            this.$refs['refForm'].resetFields();
+          })
+        },
       },
       // 创建完毕状态
       created: function () {

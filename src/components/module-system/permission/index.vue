@@ -101,7 +101,7 @@
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item label="排序号">
-                  <el-input-number size="mini" min="0" v-model="permForm.sortNumber" :readonly="readForm"></el-input-number>
+                  <el-input-number size="mini" :min="numberNum" v-model="permForm.sortNumber" :readonly="readForm"></el-input-number>
                 </el-form-item>
                 <el-form-item label="请求方法">
                   <el-select v-model="permForm.hrefMethod" placeholder="请求方法" :disabled="disabledForm">
@@ -170,6 +170,7 @@
         currentNodeParentData: null,
         dialogFormVisible: false,
         dialogClassifyVisible: false,
+        numberNum: 1,
         initCheckNode: [],// 默认展开节点
         setTree: [],  //全部后台树结构数据绑定对象
         useCheck:false,
@@ -192,7 +193,7 @@
           href: "",
           hrefMethod: "GET",
           code: "",
-          sortNumber: "",
+          sortNumber: 99,
           spread: 1,
           enable: 1,
         },
@@ -276,7 +277,7 @@
         }else{
           let tempDeleteNode =  this.currentNodeData; // 弹出框莫名其妙数据丢失
           this.$confirm(
-            `本次操作将删除${this.currentNodeData.title}菜单权限对象，您确认删除吗？`, {
+            `本次操作将删除[ ${this.currentNodeData.title} ]菜单权限对象，您确认删除吗？`, {
               type: 'warning'
             }
           ).then(() => {
@@ -351,6 +352,7 @@
            title: '新增子节点',
            parentId: this.currentNodeData.permissionId,
            hrefMethod: "GET",
+           href: "",
            icon: 'el-icon-document',
            spread: 0,
            enable: 1,
@@ -379,6 +381,7 @@
            parentId: this.currentNodeData.parentId,
            title: '新增节点',
            hrefMethod: "GET",
+           href: "",
            icon: 'el-icon-document',
            spread: 0,
            enable: 1,

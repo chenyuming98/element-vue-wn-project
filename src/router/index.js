@@ -7,6 +7,7 @@ import userPage from '../components/module-system/user/index.vue'
 import rolePage from '../components/module-system/role/index.vue'
 import permPage from '../components/module-system/permission/index.vue'
 import companyPage from '../components/module-company/company/index.vue'
+import dictionaryPage from '../components/module-system/dictionary/index.vue'
 
 Vue.use(VueRouter);
 
@@ -20,6 +21,7 @@ const routes = [
       { path: '/rolepage',component: rolePage},
       { path: '/permpage',component: permPage},
       { path: '/companypage',component: companyPage},
+      { path: '/dictionarypage',component: dictionaryPage},
     ]},
 ];
 
