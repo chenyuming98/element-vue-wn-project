@@ -27,7 +27,8 @@
               <el-button @click="handleAdd(scope.row)"   type="text" size="small">添加</el-button>
             </template>
             <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
-            <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
+
+            <el-button @click="batchDelete(scope.row)" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -83,8 +84,6 @@
 <script>
   import {list,add,update,remove,batchRemove,allParentList} from "@/api/base/dictionary.js"
 
-
-
   export default {
 
     data() {
@@ -126,7 +125,6 @@
             let resp = res.data;
             this.dataList = resp.data;
             this.total = resp.total;
-
           })
       },
 
@@ -165,26 +163,20 @@
       },
 
       /**
-       * 添加新员工
+       * 添加新字典
        */
       handleAdd(rowData) {
         this.doQueryAllParentList(); //加载父级下拉框
         if (rowData && rowData.dictionaryParentId){
-          this.selectFormChooseId = rowData.dictionaryParentId;
-          this.selectFormParentNameUse = false;
-        }else {
-          this.selectFormChooseId = "一级字典";
+          this.selectFormChooseId = rowData.dictionaryId;
           this.selectFormParentNameUse = true;
-        }
-        if (rowData){
-          this.formBase = {
-            dictionaryParentId: rowData.dictionaryParentId,
-          };
         }else {
-          this.formBase = {
-          };
+          this.selectFormChooseId = "0";
+          this.selectFormParentNameUse = false;
         }
 
+        this.formBase = {
+        };
         this.formTitle = "添加";
         this.dialogFormVisible = true
       },
@@ -194,6 +186,13 @@
        */
       handleRowEdit(rowData){
         this.doQueryAllParentList(); //加载父级下拉框
+        if (rowData.dictionaryParentId ==="0"){
+          this.selectFormChooseId = rowData.dictionaryParentId;
+          this.selectFormParentNameUse = true;
+        }else {
+          this.selectFormChooseId = rowData.dictionaryId;
+          this.selectFormParentNameUse = false;
+        }
         this.formTitle = "编辑";
         if (rowData.dictionaryParentId !=="0"){
           this.selectFormChooseId = rowData.dictionaryParentId;
@@ -208,7 +207,7 @@
       },
 
       /**
-       * 表格行删除员工
+       * 表格行删除字典
        */
       handleRowDelete(rowData) {
         this.$confirm(
@@ -230,24 +229,43 @@
       },
 
       /**
-       *  表头批量删除员工
+       *  批量删除字典
        */
-      batchDelete() {
-        let list = this.$refs.multipleTable.selection;
-        if (list.length===0){
-          this.$message.warning("请勾选操作对象！");
-          return false;
-        }
-        let deleteNames,deleteIds;
+      batchDelete(rowData) {
+        let deleteNames='',deleteIds='',notDeleteNames='';
         let submitData = new FormData();
-        for (let i = 0; i < list.length; i++) {
-          if (i===0){
-            deleteNames = list[i].dictionaryName;
-            deleteIds = list[i].dictionaryId;
-          }else {
-            deleteNames += ","+list[i].dictionaryName;
-            deleteIds +=  ","+list[i].dictionaryId;
+        if (rowData['dictionaryId']){
+          deleteNames = rowData.dictionaryName;
+          deleteIds  = rowData.dictionaryId;
+        }else {
+          let list = this.$refs.multipleTable.selection;
+          if (list.length===0){
+            this.$message.warning("请勾选操作对象！");
+            return false;
           }
+          for (let i = 0; i < list.length; i++) {
+              if ( list[i].systemCode ===1){
+                if (notDeleteNames){
+                  notDeleteNames += ","+list[i].dictionaryName;
+                }else {
+                  notDeleteNames = list[i].dictionaryName;
+                }
+                continue;
+              }
+              deleteNames += ","+list[i].dictionaryName;
+              deleteIds +=  ","+list[i].dictionaryId;
+
+          }
+        }
+        if (deleteNames.substr(0,1)===','){
+          deleteNames=deleteNames.substr(1);
+        }
+        if (deleteIds.substr(0,1)===','){
+          deleteIds=deleteIds.substr(1);
+        }
+        if (notDeleteNames){ this.$message.error( "系统参数[ "+ notDeleteNames +" ]禁止删除"); }
+        if (deleteIds === ''){
+          return false;
         }
         this.$confirm(  `本次操作将删除[ ${ deleteNames } ],删除后将不可恢复，您确认删除吗？`, {
           type: 'warning'
@@ -263,7 +281,8 @@
                 this.$message.error(resp.msg);
               }
             })
-        })
+        }).catch(() => {
+        });
 
       },
 

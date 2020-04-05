@@ -296,7 +296,8 @@
               deleteNewChildNotInDataDB()
             }
 
-          })
+          }).catch(() => {
+          });
         }
       },
 

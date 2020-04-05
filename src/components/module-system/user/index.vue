@@ -232,7 +232,7 @@
          */
         handleRowDelete(rowData) {
           this.$confirm(
-            `本次操作将删除${rowData.username}删除后账号将不可恢复，您确认删除吗？`, {
+            `本次操作将删除[ ${rowData.username} ]删除后账号将不可恢复，您确认删除吗？`, {
               type: 'warning'
             }
           ).then(() => {
@@ -246,7 +246,8 @@
                   this.$message.success(resp.msg);
                 }
               })
-          })
+          }).catch(() => {
+          });
         },
 
         /**
@@ -269,7 +270,7 @@
               deleteIds +=  ","+list[i].userId;
             }
           }
-          this.$confirm(  `本次操作将删除[${ deleteNames }],删除后账号将不可恢复，您确认删除吗？`, {
+          this.$confirm(  `本次操作将删除[ ${ deleteNames } ],删除后账号将不可恢复，您确认删除吗？`, {
               type: 'warning'
             }  ).then(() => {
             submitData.append("ids",deleteIds);
@@ -283,7 +284,8 @@
                   this.$message.error(resp.msg);
                 }
               })
-          })
+          }).catch(() => {
+          });
 
         },
 
