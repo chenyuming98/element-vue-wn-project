@@ -18,6 +18,7 @@
       <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable" >
         <el-table-column type="selection" width="40" prop="userId"> </el-table-column>
         <el-table-column  prop="username"  label="用户名"  width="180"> </el-table-column>
+        <el-table-column  prop="sex_dictText"  label="性别"  width="50"> </el-table-column>
         <el-table-column
           prop="role"
           label="角色"

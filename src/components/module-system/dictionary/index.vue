@@ -17,9 +17,9 @@
       <!--表格内容  ref绑定选中内容-->
       <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable"  row-key="dictionaryId">
         <el-table-column type="selection" width="40" prop="dictionaryId"> </el-table-column>
-        <el-table-column  prop="dictionaryName"  label="名称"  width="180"/>
-        <el-table-column  prop="dictionaryCode"  label="编码"  width="180"/>
-        <el-table-column  prop="dictionaryParentName"  label="父级名称"  width="180"/>
+        <el-table-column  prop="dictionaryName"  label="字典名称"  width="180"/>
+        <el-table-column  prop="dictionaryCode"  label="字典编码"  width="180"/>
+        <el-table-column  prop="dictionaryValue"  label="字典参数"  width="180"/>
         <el-table-column  prop="dictionaryInfo"  label="描述"  width="250"/>
         <el-table-column  fixed="right"  label="操作"  width="180">
           <template slot-scope="scope">
@@ -60,7 +60,7 @@
       <!-- :model绑定表单对象  status-icon控制每一行表单校验通过后图标显示正确和错误   :rules绑定校验规则
               autocomplete="off" 关闭表单默认以及功能-->
       <el-form :model="formBase" status-icon  ref="refForm" label-width="120px">
-        <el-form-item label="名称" prop="formUsername" >
+        <el-form-item label="字典名称" prop="formUsername" >
           <el-input v-model="formBase.dictionaryName" autocomplete="off"></el-input>
         </el-form-item>
 
@@ -71,10 +71,13 @@
             </el-select>
           </el-form-item>
 
-        <el-form-item label="编码" prop="formUsername" >
+        <el-form-item label="字典编码" prop="formUsername" >
           <el-input v-model="formBase.dictionaryCode" autocomplete="off"></el-input>
         </el-form-item>
 
+        <el-form-item label="字典参数" prop="formUsername" >
+          <el-input v-model="formBase.dictionaryValue" autocomplete="off"></el-input>
+        </el-form-item>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -114,6 +117,7 @@
           dictionaryName: '',
           dictionaryParentId: '',
           dictionaryCode: '',
+          dictionaryValue: '',
         },
         allParentDataList: [],
         selectFormChooseId: '',
@@ -208,6 +212,7 @@
           dictionaryName: rowData.dictionaryName,
           dictionaryParentId: rowData.dictionaryParentId,
           dictionaryCode: rowData.dictionaryCode,
+          dictionaryValue: rowData.dictionaryValue,
         };
         this.dialogFormVisible = true;
       },
