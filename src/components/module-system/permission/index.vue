@@ -23,8 +23,11 @@
                   </el-dropdown>
               </el-row>
               <template v-if="this.currentNodeData">
-                <el-tag  style=" width: 335px; "> 当前操作对象： {{ this.currentNodeData.title}}</el-tag>
+                <el-tag  style=" width: 335px; ">
+                  当前操作对象： {{ this.currentNodeData.title}}  <i class="el-icon-info" style="margin-left: 30px;" @click="cancelChooseNode">  取消</i>
+                </el-tag>
               </template>
+
               <template v-else>
                 <el-tag  style=" width: 335px; ">当前操作对象： 请选择 </el-tag>
               </template>
@@ -135,8 +138,10 @@
                 </div>
 
                 <el-form-item>
-                  <el-button type="primary" @click="onSubmit">提交</el-button>
-                  <el-button @click="restForm">重置</el-button>
+                  <div v-show="showSubmitButton" >
+                    <el-button type="primary" @click="onSubmit">提交</el-button>
+                    <el-button @click="restForm">重置</el-button>
+                  </div>
                 </el-form-item>
               </el-form>
             </div>
@@ -170,6 +175,7 @@
         currentNodeParentData: null,
         dialogFormVisible: false,
         dialogClassifyVisible: false,
+        showSubmitButton:false, //右侧提交 重置按钮显示隐藏
         numberNum: 1,
         initCheckNode: [],// 默认展开节点
         setTree: [],  //全部后台树结构数据绑定对象
@@ -288,7 +294,7 @@
                   if (resp.code === 200) {
                     this.$message.success('删除成功!');
                     this.doQuery();
-                  } else {
+                  } else {getMenuList
                     this.$message.success(resp.msg);
                   }
                 })
@@ -452,7 +458,6 @@
         this.currentNodeData = object;
         this.currentNodeParentObject =  value.parent;
         this.currentNodeParentData = value.parent.data;
-
         this.disabledForm = true;
         this.readForm = true;
         this.permForm = this.$refs.treeObject.getCurrentNode();
@@ -464,6 +469,7 @@
           // 0为菜单权限
           this.menuShow = false;
         }
+        this.showSubmitButton= false;
       },
       /*
       *  单击表单的类型单选按钮
@@ -524,9 +530,17 @@
         }
       },
 
+      /*
+      *  点击右侧表单上方编辑按钮 解除编辑表单的禁用
+      */
       handleRemoveFormDisable(){
-         this.readForm = false;
-         this.disabledForm = false;
+          if (!this.permForm['permissionId']){
+          this.$message.error("请选择一个节点！");
+          return
+          }
+          this.readForm = false;
+          this.disabledForm = false;
+          this.showSubmitButton = true;
       },
 
       initChooseNode(lastNodeId){
@@ -534,6 +548,9 @@
         this.initCheckNode = [ lastNodeId ]
       },
 
+      /*
+      *  左侧树结构 多功能菜单功能
+      */
       handleCommand(command) {
         if (command==="changCheckStatus"){
           this.useCheck = !this.useCheck
@@ -565,7 +582,17 @@
               this.$message({message: "请先开启复选框！",type:  "error"});
             }
         }
-      }
+      },
+
+      /*
+      *  取消选中的树节点
+      */
+      cancelChooseNode(){
+        this.permForm = {};
+        this.currentNodeData = [];
+        this.currentNodeData['title'] = "请选择";
+        this.showSubmitButton = false;
+      },
     },
     // 创建完毕状态
     created: function () {

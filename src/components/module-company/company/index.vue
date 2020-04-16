@@ -2,38 +2,40 @@
   <el-container style="border: 1px solid #eee">
     <el-row style="width: 100%">
       <el-col :xs="6" :sm="10" :md="8" :lg="6" :xl="4" class="aside">
-          <el-card class="box-card" style="   width: 430px;  height: 552px;">
-            <div style=" width: 335px; ">
-              <el-row style=" padding-bottom: 7px;">
-                <el-button type="primary" size="small" @click="addChildNode">添加子级菜单</el-button>
-                <el-button type="primary" size="small"  @click="addSameNode">添加同级菜单</el-button>
+        <el-card class="box-card" style="   width: 430px;  height: 552px;">
+          <div style=" width: 335px; ">
+            <el-row style=" padding-bottom: 7px;">
+              <el-button type="primary" size="small" @click="addChildNode">添加子级</el-button>
+              <el-button type="primary" size="small"  @click="addSameNode">添加同级</el-button>
 
-                  <el-dropdown @command="handleCommand" style="  margin-left: 10px;   border-left-width: 1px; ">
-                    <el-button   size="small">
-                      更多菜单<i class="el-icon-arrow-down el-icon--right"></i>
-                    </el-button>
-                    <el-dropdown-menu slot="dropdown" style="  margin-left: 18px;   border-left-width: 2px; ">
-                      <el-dropdown-item command="changCheckStatus">复选框</el-dropdown-item>
-                      <el-dropdown-item command="chooseAll">全部勾选</el-dropdown-item>
-                      <el-dropdown-item command="notChooseAll">全部取消</el-dropdown-item>
-                      <el-dropdown-item command="expandAll">展开所有</el-dropdown-item>
-                      <el-dropdown-item command="notExpandAll">合并所有</el-dropdown-item>
-                      <el-dropdown-item command="batchDelete">批量删除</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-              </el-row>
-              <template v-if="this.currentNodeData">
-                <el-tag  style=" width: 335px; "> 当前选择： {{ this.currentNodeData.title}}</el-tag>
-              </template>
-              <template v-else>
-                <el-tag  style=" width: 335px; ">当前选择： 请选择 </el-tag>
-              </template>
-              <el-input  placeholder="搜索权限"  prefix-icon="el-icon-search"   v-model="searchText"  size="medium"  style=" width: 335px; margin-top: 5px;"/>
+              <el-dropdown @command="handleCommand" style="  margin-left: 10px;   border-left-width: 1px; ">
+                <el-button   size="small">
+                  更多功能<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown" style="  margin-left: 18px;   border-left-width: 2px; ">
+                  <el-dropdown-item command="changCheckStatus">复选框</el-dropdown-item>
+                  <el-dropdown-item command="chooseAll">全部勾选</el-dropdown-item>
+                  <el-dropdown-item command="notChooseAll">全部取消</el-dropdown-item>
+                  <el-dropdown-item command="expandAll">展开所有</el-dropdown-item>
+                  <el-dropdown-item command="notExpandAll">合并所有</el-dropdown-item>
+                  <el-dropdown-item command="batchDelete">批量删除</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </el-row>
+            <template v-if="this.currentNodeData">
+              <el-tag  style=" width: 335px; ">
+                当前操作对象： {{ this.currentNodeData.name}}  <i class="el-icon-info" style="margin-left: 30px;" @click="cancelChooseNode">  取消</i>
+                </el-tag>
+            </template>
+            <template v-else>
+              <el-tag  style=" width: 335px; ">当前操作对象： 请选择 </el-tag>
+            </template>
+            <el-input  placeholder="搜索节点"  prefix-icon="el-icon-search"   v-model="searchText"  size="medium"  style=" width: 335px; margin-top: 5px;"/>
 
-              <!-- 权限树结构  自定义参数配置 1. node-key指定自定义的树结构ID的主键  2.:props="defaultProps 配置其他数据对象绑定 -->
-              <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="permissionId"  ref="treeObject"
-                       :show-checkbox="useCheck" :default-expanded-keys="initCheckNode"
-                       :filter-node-method="filterNode"  @node-contextmenu='rightClick'   @node-click="nodeClick"  >
+            <!-- 权限树结构  自定义参数配置 1. node-key指定自定义的树结构ID的主键  2.:props="defaultProps 配置其他数据对象绑定 -->
+            <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="companyId"  ref="treeObject"
+                     :show-checkbox="useCheck" :default-expanded-keys="initCheckNode"
+                     :filter-node-method="filterNode"  @node-contextmenu='rightClick'   @node-click="nodeClick"  >
           <span class="slot-t-node" slot-scope="{ node, data }">
              <span >
               <i :class="data.icon"></i>
@@ -56,27 +58,27 @@
             <!--                      @keyup.enter.native="NodeBlur(node, data)"></el-input>-->
             <!--          </span>-->
         </span>
-              </el-tree>
-            </div>
-
-          </el-card>
-            <!--树结构鼠标右键点击出现页面-->
-          <div v-show="menuVisible" >
-            <el-menu  id = "rightClickMenu"  class="el-menu-vertical"   @select="handleRightSelect"   active-text-color="#fff"  text-color="#fff" >
-              <el-menu-item index="1" class="menuItem">
-                <span slot="title">添加同级菜单</span>
-              </el-menu-item>
-              <el-menu-item index="2" class="menuItem">
-                <span slot="title">添加子级菜单</span>
-              </el-menu-item>
-              <el-menu-item index="3" class="menuItem">
-                <span slot="title">删除当前菜单</span>
-              </el-menu-item>
-            </el-menu>
+            </el-tree>
           </div>
+
+        </el-card>
+        <!--树结构鼠标右键点击出现页面-->
+        <div v-show="menuVisible" >
+          <el-menu  id = "rightClickMenu"  class="el-menu-vertical"   @select="handleRightSelect"   active-text-color="#fff"  text-color="#fff" >
+            <el-menu-item index="1" class="menuItem">
+              <span slot="title">添加同级节点</span>
+            </el-menu-item>
+            <el-menu-item index="2" class="menuItem">
+              <span slot="title">添加子级节点</span>
+            </el-menu-item>
+            <el-menu-item index="3" class="menuItem">
+              <span slot="title">删除当前节点</span>
+            </el-menu-item>
+          </el-menu>
+        </div>
       </el-col>
 
-      <el-col :xs="8" :sm="14" :md="16" :lg="18" :xl="20" style=" padding-left: 240px;">
+      <el-col :xs="8" :sm="14" :md="16" :lg="18" :xl="20" style=" padding-left: 240px;margin-top: 30px;">
         <el-card class="box-card">
           <div>
             <!-- 表单编辑按钮 -->
@@ -87,56 +89,34 @@
 
             <div style="">
               <!-- 表单 -->
-              <el-form ref="permForm" :model="permForm" label-width="80px" size="mini" >
+              <el-form ref="companyForm" :model="companyForm" label-width="80px" size="mini" >
                 <el-form-item label="父节点">
-                  <el-input v-model="permForm.parentId" :disabled="true"></el-input>
+                  <el-input v-model="companyForm.parentId" :disabled="true"></el-input>
                 </el-form-item>
                 <el-form-item label="标题">
-                  <el-input v-model="permForm.title" :readonly="readForm"></el-input>
+                  <el-input v-model="companyForm.name" :readonly="readForm"></el-input>
                 </el-form-item>
-                <el-form-item label="类型"   >
-                  <el-radio-group v-model="permForm.type" @change="formTypeChange" >
-                    <el-radio :label=1  :disabled="disabledForm" >菜单</el-radio>
-                    <el-radio :label=0 :disabled="disabledForm" >权限</el-radio>
+                <el-form-item label="类型" >
+                  <el-radio-group v-model="companyForm.type" @change="formTypeChange" >
+                    <el-radio label="1"  :disabled="disabledForm" >部门</el-radio>
+                    <el-radio label="2"  :disabled="disabledForm" >组织</el-radio>
+                    <el-radio label="0" :disabled="disabledForm" >公司</el-radio>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="排序号">
-                  <el-input-number size="mini" min="0" v-model="permForm.sortNumber" :readonly="readForm"></el-input-number>
+                <el-form-item label="邮箱">
+                  <el-input v-model="companyForm.email" :readonly="readForm"></el-input>
                 </el-form-item>
-                <el-form-item label="请求方法">
-                  <el-select v-model="permForm.hrefMethod" placeholder="请求方法" :disabled="disabledForm">
-                    <el-option label="GET" value="GET"></el-option>
-                    <el-option label="POST" value="POST"></el-option>
-                    <el-option label="PUT" value="PUT"></el-option>
-                    <el-option label="DELETE" value="DELETE"></el-option>
-                  </el-select>
+                <el-form-item label="联系电话">
+                  <el-input v-model="companyForm.telephone" :readonly="readForm"></el-input>
                 </el-form-item>
-                <el-form-item label="菜单图标">
-                  <div style="width: 300px">
-                    <e-icon-picker v-model="permForm.icon" :readonly="readForm"   :width="800"/>
-                  </div>
+                <el-form-item label="信息描述">
+                  <el-input type="textarea" v-model="companyForm.info" :readonly="readForm"></el-input>
                 </el-form-item>
-                <div v-show="menuShow">
-                  <el-form-item label="url地址">
-                    <el-input v-model="permForm.href" :readonly="readForm"></el-input>
-                  </el-form-item>
-
-                  <el-form-item label="是否展开">
-                    <el-switch v-model="permForm.spread"  :active-value= 1 :inactive-value= 0 :disabled="disabledForm" ></el-switch>
-                  </el-form-item>
-                  <el-form-item label="是否可见">
-                    <el-switch v-model="permForm.enable"  :active-value= 1 :inactive-value= 0  :disabled="disabledForm"   ></el-switch>
-                  </el-form-item>
-                </div>
-                <div  v-show="!menuShow">
-                  <el-form-item label="权限代码">
-                    <el-input v-model="permForm.code" :readonly="readForm"></el-input>
-                  </el-form-item>
-                </div>
-
                 <el-form-item>
-                  <el-button type="primary" @click="onSubmit">提交</el-button>
-                  <el-button @click="restForm">重置</el-button>
+                  <div v-show="showSubmitButton" >
+                    <el-button type="primary" @click="onSubmit">提交</el-button>
+                    <el-button @click="restForm">重置</el-button>
+                  </div>
                 </el-form-item>
               </el-form>
             </div>
@@ -148,7 +128,7 @@
 </template>
 <script>
   import ElCol from "element-ui/packages/col/src/col";
-  import {getMenuList,add,update,remove,batchRemove} from "@/api/base/permission";
+  import {getTreeList,add,update,remove,batchRemove} from "@/api/base/company";
   export default {
     // 公司管理
     components: { ElCol },
@@ -164,17 +144,19 @@
         readForm: true, //控制表单只读
         disabledForm: true, //控制表单禁用状态
         menuShow: true, //控制表单展示权限还是菜单
+        showSubmitButton:false, //右侧提交 重置按钮显示隐藏
         currentNodeObject: null,
         currentNodeData: null,
         currentNodeParentObject: null,
         currentNodeParentData: null,
         dialogFormVisible: false,
         dialogClassifyVisible: false,
+        numberNum: 1,
         initCheckNode: [],// 默认展开节点
         setTree: [],  //全部后台树结构数据绑定对象
         useCheck:false,
         defaultProps: {//绑定树结构映射基础参数
-          label: 'title',
+          label: 'name',
           children: 'children'
         },
         searchText: '',
@@ -183,18 +165,16 @@
         editObj: {},
         menuVisible: false, //树结构右键 显示框 v-show
         objectID: null,
-        permForm: {
+        companyForm: {
           parentId: "",
-          permissionId: "",
-          title: "",
-          type: 1,
+          companyId: "",
+          name: "",
+          type: "0",
           icon: "",
-          href: "",
-          hrefMethod: "GET",
+          telephone:"",
+          email:"",
+          info:"",
           code: "",
-          sortNumber: "",
-          spread: 1,
-          enable: 1,
         },
       };
     },
@@ -203,7 +183,7 @@
       * 查询菜单树结构
       */
       doQuery(chooseId) {
-        getMenuList()
+        getTreeList()
           .then(res => {
             let resp = res.data;
             this.setTree = resp.data;
@@ -217,16 +197,16 @@
       *  提交表单修改树几点
       */
       onSubmit() {
-        if (this.permForm.permissionId){
-          update(this.permForm).then(res => {
+        if (this.companyForm.companyId){
+          update(this.companyForm).then(res => {
             let resp  = res.data;
             this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
             if(resp.code===200) {
-              this.doQuery(this.permForm.permissionId);
+              this.doQuery(this.companyForm.companyId);
             }
           })
         }else {
-          add(this.permForm).then(res => {
+          add(this.companyForm).then(res => {
             let resp  = res.data;
             this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
             if(resp.code===200) {
@@ -241,7 +221,7 @@
       */
       filterNode(value, data) {
         if (!value) return true;
-        return data.title.indexOf(value) !== -1;
+        return data.name.indexOf(value) !== -1;
       },
 
       NodeBlur(n, d){//输入框失焦
@@ -259,7 +239,6 @@
           this.$set(n, 'isEdit', true)
         }
       },
-
       NodeDel(n, d){//删除节点
 
         // deleteNewChild 方法删除还没有入库 没有id的节点
@@ -276,18 +255,18 @@
         }else{
           let tempDeleteNode =  this.currentNodeData; // 弹出框莫名其妙数据丢失
           this.$confirm(
-            `本次操作将删除${this.currentNodeData.title}菜单权限对象，您确认删除吗？`, {
+            `本次操作将删除[ ${this.currentNodeData.name} ]菜单权限对象，您确认删除吗？`, {
               type: 'warning'
             }
           ).then(() => {
-            if (tempDeleteNode.permissionId){
-              remove({id: tempDeleteNode.permissionId})
+            if (tempDeleteNode.companyId){
+              remove({id: tempDeleteNode.companyId})
                 .then(res => {
                   let resp = res.data;
                   if (resp.code === 200) {
                     this.$message.success('删除成功!');
                     this.doQuery();
-                  } else {
+                  } else {getTreeList
                     this.$message.success(resp.msg);
                   }
                 })
@@ -295,7 +274,8 @@
               deleteNewChildNotInDataDB()
             }
 
-          })
+          }).catch(() => {
+          });
         }
       },
 
@@ -306,8 +286,8 @@
       */
       rightClick(event, object, value, element) {
 
-        if (this.objectID !== object.permissionId) {
-          this.objectID = object.permissionId;
+        if (this.objectID !== object.companyId) {
+          this.objectID = object.companyId;
           this.menuVisible = true;
           this.currentNodeObject =  value ;
           this.currentNodeData = object;
@@ -331,42 +311,33 @@
 
       },
 
-
       /*
       *  添加子节点
       *  n 当前操作节点包含html对象
       *  d 当前操作节点纯对象
       */
-       addChildNode(){
-         if (this.currentNodeObject==null){
-           this.$message.error("请选择一个操作节点！");
-         }
-        //判断层级
-        if(this.currentNodeObject.level >= 3){
-          this.$message.error("最多只支持三级！");
-          return false;
+      addChildNode(){
+        if (this.currentNodeObject==null){
+          this.$message.error("请选择一个操作节点！");
         }
+
         //新增数据
-         let childData = {
-           title: '新增子节点',
-           parentId: this.currentNodeData.permissionId,
-           hrefMethod: "GET",
-           icon: 'el-icon-document',
-           spread: 0,
-           enable: 1,
-           type: 1,
-           sortNumber:99,
-           children: []
-         };
-         this.currentNodeData.children.push(childData);
-         this.disabledForm = false;
-         this.readForm = false;
-         this.permForm = childData;
-         //同时展开节点
-         this.onSubmit();
-         if(!this.currentNodeObject.expanded){
-           this.currentNodeObject.expanded = true
-         }
+        let childData = {
+          name: '新增子节点',
+          parentId: this.currentNodeData.companyId,
+          // icon: 'el-icon-document',
+          type: "1",
+          children: []
+        };
+        this.currentNodeData.children.push(childData);
+        this.disabledForm = false;
+        this.readForm = false;
+        this.companyForm = childData;
+        //同时展开节点
+        this.onSubmit();
+        if(!this.currentNodeObject.expanded){
+          this.currentNodeObject.expanded = true
+        }
       },
 
       /*
@@ -374,27 +345,23 @@
       *  object 当前操作节点包含html对象
       *  nodeData 当前操作节点纯对象
       */
-       addSameNode(){
-         let childData = {
-           parentId: this.currentNodeData.parentId,
-           title: '新增节点',
-           hrefMethod: "GET",
-           icon: 'el-icon-document',
-           spread: 0,
-           enable: 1,
-           type: 1,
-           sortNumber:99,
-           children: []
-         };
-         this.$refs.treeObject.insertAfter( childData,this.currentNodeData.permissionId);
-         this.permForm = childData;
-         this.disabledForm = false;
-         this.readForm = false;
-         this.onSubmit();
-         //同时展开节点
-         if(!this.currentNodeData.expanded){
-           this.currentNodeData.expanded = true
-         }
+      addSameNode(){
+        let childData = {
+          parentId: this.currentNodeData.parentId,
+          name: '新增节点',
+          // icon: 'el-icon-document',
+          type: '1',
+          children: []
+        };
+        this.$refs.treeObject.insertAfter( childData,this.currentNodeData.companyId);
+        this.companyForm = childData;
+        this.disabledForm = false;
+        this.readForm = false;
+        this.onSubmit();
+        //同时展开节点
+        if(!this.currentNodeData.expanded){
+          this.currentNodeData.expanded = true
+        }
       },
 
       /*
@@ -425,12 +392,12 @@
         // }
       },
 
-
       handleEdit(index, row) {
         this.editObj = row;
         this.dialogFormVisible = true;
         console.log(index, row);
       },
+
       handleClassifyEdit(index, row) {
         console.log(index);
         console.log(row);
@@ -448,31 +415,32 @@
         this.currentNodeData = object;
         this.currentNodeParentObject =  value.parent;
         this.currentNodeParentData = value.parent.data;
-
         this.disabledForm = true;
         this.readForm = true;
-        this.permForm = this.$refs.treeObject.getCurrentNode();
-        this.tempForm =  JSON.parse(JSON.stringify(this.permForm));
-        if ( this.permForm.type===1){
-          // 1为菜单权限
-          this.menuShow = true;
-        }else {
-          // 0为菜单权限
-          this.menuShow = false;
-        }
+        this.companyForm = this.$refs.treeObject.getCurrentNode();
+        this.tempForm =  JSON.parse(JSON.stringify(this.companyForm));
+        this.showSubmitButton= false;
+        // if ( this.companyForm.type===1){
+        //   // 1为菜单权限
+        //   this.menuShow = true;
+        // }else {
+        //   // 0为菜单权限
+        //   this.menuShow = false;
+        // }
       },
+
       /*
       *  单击表单的类型单选按钮
       *  动态改变表单显示类型
       */
       formTypeChange(val){
-        if( val===1){
-          // 1为菜单权限
-          this.menuShow = true;
-        }else {
-          // 0为菜单权限
-          this.menuShow = false;
-        }
+        // if( val===1){
+        //   // 1为菜单权限
+        //   this.menuShow = true;
+        // }else {
+        //   // 0为菜单权限
+        //   this.menuShow = false;
+        // }
       },
 
       batchDelete() {
@@ -485,11 +453,11 @@
         let submitData = new FormData();
         for (let i = 0; i < list.length; i++) {
           if (i===0){
-            deleteNames = list[i].title;
-            deleteIds = list[i].permissionId;
+            deleteNames = list[i].name;
+            deleteIds = list[i].companyId;
           }else {
-            deleteNames += ","+list[i].title;
-            deleteIds +=  ","+list[i].permissionId;
+            deleteNames += ","+list[i].name;
+            deleteIds +=  ","+list[i].companyId;
           }
         }
         this.$confirm(  `本次操作将删除[${ deleteNames }],删除后菜单将不可恢复，您确认删除吗？`, {
@@ -515,14 +483,22 @@
       */
       restForm(){
         if (this.tempForm){
-          this.permForm =  this.tempForm;
-          this.tempForm =  JSON.parse(JSON.stringify( this.permForm));
+          this.companyForm =  this.tempForm;
+          this.tempForm =  JSON.parse(JSON.stringify( this.companyForm));
         }
       },
 
+      /*
+      *  点击右侧表单上方编辑按钮 解除编辑表单的禁用
+      */
       handleRemoveFormDisable(){
-         this.readForm = false;
-         this.disabledForm = false;
+        if (!this.companyForm['companyId']){
+          this.$message.error("请选择一个节点！");
+          return
+        }
+        this.readForm = false;
+        this.disabledForm = false;
+        this.showSubmitButton = true;
       },
 
       initChooseNode(lastNodeId){
@@ -530,6 +506,9 @@
         this.initCheckNode = [ lastNodeId ]
       },
 
+      /*
+      *  左侧树结构 多功能菜单功能
+      */
       handleCommand(command) {
         if (command==="changCheckStatus"){
           this.useCheck = !this.useCheck
@@ -555,13 +534,24 @@
             this.$refs.treeObject.store._getAllNodes()[i].expanded=false;
           }
         }else if (command==="batchDelete"){
-            if (this.useCheck){
-              this.batchDelete();
-            }else {
-              this.$message({message: "请先开启复选框！",type:  "error"});
-            }
+          if (this.useCheck){
+            this.batchDelete();
+          }else {
+            this.$message({message: "请先开启复选框！",type:  "error"});
+          }
         }
-      }
+      },
+
+      /*
+      *  取消选中的树节点
+      */
+      cancelChooseNode(){
+        this.companyForm = {};
+        this.currentNodeData = [];
+        this.currentNodeData['name'] = "请选择";
+        this.showSubmitButton = false;
+      },
+
     },
     // 创建完毕状态
     created: function () {
