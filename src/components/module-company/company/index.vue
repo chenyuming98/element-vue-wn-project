@@ -5,8 +5,8 @@
         <el-card class="box-card" style="   width: 430px;  height: 552px;">
           <div style=" width: 335px; ">
             <el-row style=" padding-bottom: 7px;">
-              <el-button type="primary" size="small" @click="addChildNode">添加子级</el-button>
-              <el-button type="primary" size="small"  @click="addSameNode">添加同级</el-button>
+              <el-button type="primary" size="small" @click="addChildNode">添加子级节点</el-button>
+              <el-button type="primary" size="small"  @click="addSameNode">添加同级节点</el-button>
 
               <el-dropdown @command="handleCommand" style="  margin-left: 10px;   border-left-width: 1px; ">
                 <el-button   size="small">
@@ -103,6 +103,9 @@
                     <el-radio label="0" :disabled="disabledForm" >公司</el-radio>
                   </el-radio-group>
                 </el-form-item>
+                <el-form-item label="排序号">
+                  <el-input-number size="mini" :min="numberNum" v-model="companyForm.sortNumber" :readonly="readForm"></el-input-number>
+                </el-form-item>
                 <el-form-item label="邮箱">
                   <el-input v-model="companyForm.email" :readonly="readForm"></el-input>
                 </el-form-item>
@@ -110,7 +113,7 @@
                   <el-input v-model="companyForm.telephone" :readonly="readForm"></el-input>
                 </el-form-item>
                 <el-form-item label="信息描述">
-                  <el-input type="textarea" v-model="companyForm.info" :readonly="readForm"></el-input>
+                  <el-input type="textarea" v-model="companyForm.info" :readonly="readForm" style=" width: 300px;" ></el-input>
                 </el-form-item>
                 <el-form-item>
                   <div v-show="showSubmitButton" >
@@ -130,6 +133,7 @@
   import ElCol from "element-ui/packages/col/src/col";
   import {getTreeList,add,update,remove,batchRemove} from "@/api/base/company";
   export default {
+
     // 公司管理
     components: { ElCol },
 
@@ -140,6 +144,11 @@
     },
     data() {
       return {
+        staticType:{
+          company : "0",
+          department:"1",
+          group:"2",
+        },
         tempForm: null, //修改前重置按钮用的数据
         readForm: true, //控制表单只读
         disabledForm: true, //控制表单禁用状态
@@ -172,6 +181,7 @@
           type: "0",
           icon: "",
           telephone:"",
+          sortNumber: 99,
           email:"",
           info:"",
           code: "",
@@ -255,7 +265,7 @@
         }else{
           let tempDeleteNode =  this.currentNodeData; // 弹出框莫名其妙数据丢失
           this.$confirm(
-            `本次操作将删除[ ${this.currentNodeData.name} ]菜单权限对象，您确认删除吗？`, {
+            `本次操作将删除[ ${this.currentNodeData.name} ]节点对象，您确认删除吗？`, {
               type: 'warning'
             }
           ).then(() => {
@@ -320,13 +330,24 @@
         if (this.currentNodeObject==null){
           this.$message.error("请选择一个操作节点！");
         }
-
+        let nowIcon = "";
+        let thisType = "";
+        //获取父级的层级
+        let level = this.currentNodeObject.parent.level;
+        if (level===0){
+          thisType = this.staticType.department;
+          nowIcon = 'fa fa-sitemap'
+        }else {
+          thisType = this.staticType.group;
+          nowIcon = 'fa fa-user-md'
+        }
         //新增数据
         let childData = {
           name: '新增子节点',
           parentId: this.currentNodeData.companyId,
-          // icon: 'el-icon-document',
-          type: "1",
+          icon: nowIcon,
+          type: thisType,
+          sortNumber: 99,
           children: []
         };
         this.currentNodeData.children.push(childData);
@@ -346,11 +367,21 @@
       *  nodeData 当前操作节点纯对象
       */
       addSameNode(){
+        let nowIcon = '';
+        let thisType =this.currentNodeData.type;
+        if (thisType==="0"){
+          nowIcon = 'fa fa-building'
+        }else if (thisType==="1"){
+          nowIcon = 'fa fa-sitemap'
+        }else if (thisType==="2"){
+          nowIcon = 'fa fa-user-md'
+        }
         let childData = {
           parentId: this.currentNodeData.parentId,
           name: '新增节点',
-          // icon: 'el-icon-document',
-          type: '1',
+          icon: nowIcon,
+          type: thisType,
+          sortNumber: 99,
           children: []
         };
         this.$refs.treeObject.insertAfter( childData,this.currentNodeData.companyId);
@@ -434,13 +465,13 @@
       *  动态改变表单显示类型
       */
       formTypeChange(val){
-        // if( val===1){
-        //   // 1为菜单权限
-        //   this.menuShow = true;
-        // }else {
-        //   // 0为菜单权限
-        //   this.menuShow = false;
-        // }
+        if (val==="0"){
+          this.companyForm.icon = 'fa fa-building';
+        }else if (val==="1"){
+          this.companyForm.icon = 'fa fa-sitemap';
+        }else if (val==="2"){
+          this.companyForm.icon = 'fa fa-user-md';
+        }
       },
 
       batchDelete() {
@@ -460,7 +491,7 @@
             deleteIds +=  ","+list[i].companyId;
           }
         }
-        this.$confirm(  `本次操作将删除[${ deleteNames }],删除后菜单将不可恢复，您确认删除吗？`, {
+        this.$confirm(  `本次操作将删除[${ deleteNames }]节点,删除将不可恢复，您确认删除吗？`, {
           type: 'warning'
         }  ).then(() => {
           submitData.append("ids",deleteIds);
@@ -570,6 +601,7 @@
   .asideButton .el-input{
     width: 220px;
   }
+
   .asideButton .el-input input{
     border-radius: 35px;
   }

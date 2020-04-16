@@ -104,8 +104,8 @@
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item label="排序号">
-                  <el-input-number size="mini" :min="numberNum" v-model="permForm.sortNumber" :readonly="readForm"></el-input-number>
-                </el-form-item>
+                <el-input-number size="mini" :min="numberNum" v-model="permForm.sortNumber" :readonly="readForm"></el-input-number>
+              </el-form-item>
                 <el-form-item label="请求方法">
                   <el-select v-model="permForm.hrefMethod" placeholder="请求方法" :disabled="disabledForm">
                     <el-option label="GET" value="GET"></el-option>
