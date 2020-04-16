@@ -20,6 +20,7 @@
         <el-table-column  prop="dictionaryName"  label="字典名称"  width="180"/>
         <el-table-column  prop="dictionaryCode"  label="字典编码"  width="180"/>
         <el-table-column  prop="dictionaryValue"  label="字典参数"  width="180"/>
+        <el-table-column  prop="systemCode"  label="系统内置"     :formatter="formatterSystemCode" width="80"/>
         <el-table-column  prop="dictionaryInfo"  label="描述"  width="250"/>
         <el-table-column  fixed="right"  label="操作"  width="180">
           <template slot-scope="scope">
@@ -358,6 +359,19 @@
           })
       },
 
+      /**
+       * 表格格式化内容
+       */
+      formatterSystemCode(row, column) {
+        let systemCode = row['systemCode'];
+        if (systemCode===1){
+          return "是";
+        }else {
+          return "否";
+        }
+
+      },
+
       // resetForm(formName) {
       //   this.$nextTick(() => {
       //     this.$refs[formName].resetFields();
@@ -377,4 +391,5 @@
   .el-select{
     width: 300px;
   }
+
 </style>

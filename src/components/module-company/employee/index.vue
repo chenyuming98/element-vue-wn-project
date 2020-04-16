@@ -3,8 +3,8 @@
   <div>
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>系统管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>关系管理</el-breadcrumb-item>
+      <el-breadcrumb-item>员工管理</el-breadcrumb-item>
     </el-breadcrumb>
     <el-card class="box-card">
       <!--表头菜单-->
@@ -15,16 +15,19 @@
     </el-card>
     <el-card class="tableCard" >
       <!--表格内容  ref绑定选中内容-->
-      <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable" >
-        <el-table-column type="selection" width="40" prop="userId"> </el-table-column>
-        <el-table-column  prop="username"  label="用户名"  width="180"> </el-table-column>
-        <el-table-column  prop="sex_dictText"  label="性别"  width="50"> </el-table-column>
-        <el-table-column
-          prop="role"
-          label="角色"
-          :formatter="formatterRoles"
-          width="250">
+      <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable"  >
+        <el-table-column type="selection" width="40" prop="employeeId"> </el-table-column>
+        <el-table-column  prop="name"  label="员工姓名"  width="100"> </el-table-column>
+        <el-table-column  prop="number"  label="工号"  width="100"> </el-table-column>
+        <!--    //TODO等待使用FASTDFS    -->
+        <el-table-column  prop="images"  label="头像"  width="100">
+          <template   slot-scope="scope">
+            <div class="block"><el-avatar size="small" :src="scope.row.images"></el-avatar></div>
+          </template>
         </el-table-column>
+        <el-table-column  prop="sex_dictText"  label="性别"  sortable width="60"> </el-table-column>
+        <el-table-column  prop="birthdayFormat"  label="生日"  width="100"> </el-table-column>
+        <el-table-column  prop="phone"  label="手机号"  width="180"> </el-table-column>
         <el-table-column
           prop="userStatus"
           label="状态">
@@ -40,7 +43,8 @@
         </el-table-column>
         <el-table-column  fixed="right"  label="操作"  width="180">
           <template slot-scope="scope">
-            <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
+<!--            <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>-->
+            <el-button @click="handleRowEdit(scope.row)"  type="text" style="margin-left: 16px;">详情</el-button>
             <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -62,44 +66,64 @@
 
     </el-card>
 
+
+      <el-drawer  :visible.sync="drawer" :direction="direction"  :with-header="false"  :before-close="handleClose"   size="42%">
+        <!-- :model绑定表单对象  status-icon控制每一行表单校验通过后图标显示正确和错误   :rules绑定校验规则
+          autocomplete="off" 关闭表单默认以及功能-->
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>详情</span>
+          </div>
+            <div id="drawerForm">
+              <el-form :model="formBase" status-icon :rules="rules" ref="refForm" label-width="120px" size="mini">
+                <el-form-item label="员工姓名" prop="name" >
+                  <el-input v-model="formBase.name" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="工号" prop="number" >
+                  <el-input v-model="formBase.number" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="生日" prop="birthdayFormat" >
+                  <el-date-picker v-model="formBase.birthdayFormat" type="date"  placeholder="选择日期"  editable=false> </el-date-picker>
+                </el-form-item>
+                <el-form-item label="性别" >
+                  <el-radio-group v-model="formBase.sex"  >
+                    <el-radio label="1" >男</el-radio>
+                    <el-radio label="2" >女</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="邮箱" prop="mailbox" >
+                  <el-input v-model="formBase.mailbox" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号码" prop="email" >
+                  <el-input v-model="formBase.phone" autocomplete="off"></el-input>
+                </el-form-item>
+              </el-form>
+                      <div slot="footer" class="dialog-footer">
+                        <el-button @click="cancel">取 消</el-button>
+                        <el-button type="primary" @click="submitForm">确 定</el-button>
+                        <!--        <el-button @click="resetForm('refForm')">重置</el-button>-->
+                      </div>
+            </div>
+        </el-card>
+      </el-drawer>
     <!--2. 添加编辑表单  -->
     <el-dialog :title="formTitle"  :visible.sync="dialogFormVisible" :before-close="cancel" :close-on-click-modal="false" :width="'40%'">
-      <!-- :model绑定表单对象  status-icon控制每一行表单校验通过后图标显示正确和错误   :rules绑定校验规则
-              autocomplete="off" 关闭表单默认以及功能-->
-      <el-form :model="formBase" status-icon :rules="rules" ref="refForm" label-width="120px">
-        <el-form-item label="用户名" prop="formUsername" >
-          <el-input v-model="formBase.username" autocomplete="off"></el-input>
-        </el-form-item>
 
-        <el-form-item label="密码" prop="formUserPassword" >
-          <el-input v-model="formBase.userPassword" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="角色分配" prop="" >
-          <el-select v-model="userHaveRoles" multiple placeholder="请选择" >
-            <el-option  v-for="item in rolesData" :key="item.roleId"   :label="item.roleName"   :value="item.roleId">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <!--        <el-button @click="resetForm('refForm')">重置</el-button>-->
-      </div>
     </el-dialog>
   </div>
 
 </template>
 <!--主页面板-->
 <script>
-  import {list,add,update,remove,batchRemove} from "@/api/base/users"
+  import {list,add,update,remove,batchRemove} from "@/api/base/employee"
   import {findRoleAll} from "@/api/base/role";
 
   const  multipleSelectionList =  new Set([]);
     export default {
-
       data() {
         return {
+          drawer: false,
+          direction: 'rtl',
           userAdd: 'UserAdd',
           dataList: [],
           multipleSelection: multipleSelectionList,
@@ -115,19 +139,21 @@
           formTitle : '添加',
           //定义表单初始化参数
           formBase: {
-            userId: '',
-            username: '',
-            userPassword: '',
-            roleIds:[],
+            name: '',
+            number: '',
+            sex: '',
+            birthdayFormat:'',
+            mailbox:'',
+            phone:'',
           },
           //v-model 绑定校验规则
           rules: {
-            username: [
-              {required: true, message: '请输入用户名', trigger: 'blur'},
-              {min: 6, max: 11, message: '用户名长度在 6 到 11 个字符', trigger: 'blur'}
-            ],
-            userPassword: [{required: true, message: '请输入密码', trigger: 'blur'},
-              {min: 6, max: 16, message: '密码长度在 6 到 16个字符', trigger: 'blur'}]
+            // name: [
+            //   {required: true, message: '请输入员工姓名', trigger: 'blur'},
+            //   {min: 6, max: 11, message: '员工姓名长度在 6 到 11 个字符', trigger: 'blur'}
+            // ],
+            // userPassword: [{required: true, message: '请输入密码', trigger: 'blur'},
+            //   {min: 6, max: 16, message: '密码长度在 6 到 16个字符', trigger: 'blur'}]
           },
         }
       },
@@ -135,7 +161,7 @@
       methods: {
 
         /*
-        * 查询用户表格
+        * 查询员工表格
         */
         doQuery(params) {
           list(this.requestParameters)
@@ -196,36 +222,16 @@
          * 添加新员工
          */
         handleAdd() {
-          this.doQueryRoles();
-          this.formBase = {
-            userId: '',
-            username: '',
-            userPassword: '',
-          };
-          this.formTitle = "添加";
-          this.dialogFormVisible = true
+          this.drawer = true;
+          this.formBase = {};
         },
 
         /**
          * 表格行编辑
          */
         handleRowEdit(rowData){
-          this.doQueryRoles();
-          let roles = rowData['roles'];
-          if (roles) {
-            let roleIds = [];
-            $.each(roles, function (index, val) { //index是数组对象索引，val是对象
-              roleIds.push(val.roleId)
-            });
-            this.userHaveRoles = roleIds
-          }
-          this.formTitle = "编辑";
-          this.formBase = {
-            userId: rowData.userId,
-            username: rowData.username,
-            userPassword: rowData.userPassword,
-          };
-          this.dialogFormVisible = true;
+          this.drawer = true;
+          this.formBase = rowData;
         },
 
         /**
@@ -233,11 +239,11 @@
          */
         handleRowDelete(rowData) {
           this.$confirm(
-            `本次操作将删除[ ${rowData.username} ]删除后账号将不可恢复，您确认删除吗？`, {
+            `本次操作将删除[ ${rowData.name} ]删除后员工将不可恢复，您确认删除吗？`, {
               type: 'warning'
             }
           ).then(() => {
-            remove({id: rowData.userId})
+            remove({id: rowData.employeeId})
               .then(res => {
                 let resp = res.data;
                 if (resp.code === 200) {
@@ -264,14 +270,14 @@
           let submitData = new FormData();
           for (let i = 0; i < list.length; i++) {
             if (i===0){
-              deleteNames = list[i].username;
-              deleteIds = list[i].userId;
+              deleteNames = list[i].name;
+              deleteIds = list[i].employeeId;
             }else {
-              deleteNames += ","+list[i].username;
-              deleteIds +=  ","+list[i].userId;
+              deleteNames += ","+list[i].name;
+              deleteIds +=  ","+list[i].employeeId;
             }
           }
-          this.$confirm(  `本次操作将删除[ ${ deleteNames } ],删除后账号将不可恢复，您确认删除吗？`, {
+          this.$confirm(  `本次操作将删除[ ${ deleteNames } ],删除后员工将不可恢复，您确认删除吗？`, {
               type: 'warning'
             }  ).then(() => {
             submitData.append("ids",deleteIds);
@@ -306,8 +312,7 @@
         submitForm(){
           this.$refs['refForm'].validate((valid) => {
             if (valid) {
-              this.formBase.roleIds =  this.userHaveRoles;
-              if (this.formBase.userId){
+              if (this.formBase.employeeId){
                 update(this.formBase).then(res => {
                   let resp  = res.data;
                   this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
@@ -335,6 +340,15 @@
           this.userHaveRoles = [];
         },
 
+        handleClose(done) {
+          done();
+          // this.$confirm('确认关闭？')
+          //   .then(_ => {
+          //     done();
+          //   })
+          //   .catch(_ => {});
+        }
+
         // resetForm(formName) {
         //   this.$nextTick(() => {
         //     this.$refs[formName].resetFields();
@@ -354,6 +368,15 @@
   }
   .el-select{
     width: 300px;
+  }
+  #drawerForm {
+    margin-top: 10px;
+  }
+  /deep/.el-table th > .cell {
+    text-align: center;
+  }
+  /deep/.el-table .cell {
+    text-align: center;
   }
 
 </style>

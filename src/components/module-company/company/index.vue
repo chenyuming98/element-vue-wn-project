@@ -96,15 +96,18 @@
                 <el-form-item label="标题">
                   <el-input v-model="companyForm.name" :readonly="readForm"></el-input>
                 </el-form-item>
+                <el-form-item label="编号">
+                  <el-input v-model="companyForm.code" :readonly="readForm"></el-input>
+                </el-form-item>
                 <el-form-item label="类型" >
                   <el-radio-group v-model="companyForm.type" @change="formTypeChange" >
                     <el-radio label="1"  :disabled="disabledForm" >部门</el-radio>
                     <el-radio label="2"  :disabled="disabledForm" >组织</el-radio>
-                    <el-radio label="0" :disabled="disabledForm" >公司</el-radio>
+                    <el-radio label="0"  :disabled="disabledForm" >公司</el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item label="排序号">
-                  <el-input-number size="mini" :min="numberNum" v-model="companyForm.sortNumber" :readonly="readForm"></el-input-number>
+                  <el-input-number size="mini" :min="numberNum" v-model="companyForm.sortNumber" :disabled="readForm"></el-input-number>
                 </el-form-item>
                 <el-form-item label="邮箱">
                   <el-input v-model="companyForm.email" :readonly="readForm"></el-input>
