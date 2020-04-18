@@ -95,7 +95,7 @@
 <script>
   import {list,add,update,remove,batchRemove} from "@/api/base/users"
   import {findRoleAll} from "@/api/base/role";
-
+  import {showLoading,hideLoading} from '@/utils/loadingUtils';
   const  multipleSelectionList =  new Set([]);
     export default {
 
@@ -216,7 +216,9 @@
           if (roles) {
             let roleIds = [];
             $.each(roles, function (index, val) { //index是数组对象索引，val是对象
-              roleIds.push(val.roleId)
+              if (val.roleId!=undefined){
+                roleIds.push()
+              }
             });
             this.userHaveRoles = roleIds
           }
@@ -224,7 +226,6 @@
           this.formBase = {
             userId: rowData.userId,
             username: rowData.username,
-            userPassword: rowData.userPassword,
           };
           this.dialogFormVisible = true;
         },
@@ -238,10 +239,12 @@
               type: 'warning'
             }
           ).then(() => {
+            showLoading();
             remove({id: rowData.userId})
               .then(res => {
                 let resp = res.data;
                 if (resp.code === 200) {
+                  hideLoading();
                   this.$message.success('删除成功!');
                   this.doQuery();
                 } else {
@@ -307,12 +310,14 @@
         submitForm(){
           this.$refs['refForm'].validate((valid) => {
             if (valid) {
+              showLoading();
               this.formBase.roleIds =  this.userHaveRoles;
               if (this.formBase.userId){
                 update(this.formBase).then(res => {
                   let resp  = res.data;
                   this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
                   if(resp.code===200) {
+                    hideLoading();
                     this.dialogFormVisible = false;
                     this.$refs['refForm'].resetFields();
                     this.doQuery();
@@ -323,6 +328,7 @@
                   let resp  = res.data;
                   this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
                   if(resp.code===200) {
+                    hideLoading();
                     this.dialogFormVisible = false;
                     this.$refs['refForm'].resetFields();
                     this.doQuery();

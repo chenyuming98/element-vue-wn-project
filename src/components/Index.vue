@@ -49,7 +49,7 @@
       </el-header>
 
       <!--右侧主要内容区域-->
-      <el-main>
+      <el-main >
 <!--        <el-tabs v-model="editableTabsValue" type="card" editable @edit="handleTabsEdit">-->
 <!--          <el-tab-pane-->
 <!--            :key="item.name"-->

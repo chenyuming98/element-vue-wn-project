@@ -1,4 +1,4 @@
-<template>
+<template >
   <el-container style="border: 1px solid #eee">
     <el-row style="width: 100%">
       <el-col :xs="6" :sm="10" :md="8" :lg="6" :xl="4" class="aside">
@@ -154,10 +154,10 @@
 <script>
   import ElCol from "element-ui/packages/col/src/col";
   import {getMenuList,add,update,remove,batchRemove} from "@/api/base/permission";
+  import {showLoading,hideLoading} from '@/utils/loadingUtils';
 
   export default {
     components: { ElCol },
-
     watch: {
       searchText(val) {
         this.$refs.treeObject.filter(val);
@@ -226,11 +226,13 @@
       onSubmit() {
         this.permForm['createTime']= '';
         this.permForm['updateTime']= '';
+        showLoading();
         if (this.permForm.permissionId){
           update(this.permForm).then(res => {
             let resp  = res.data;
             this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
             if(resp.code===200) {
+              hideLoading();
               this.doQuery(this.permForm.permissionId);
               this.showSubmitButton =false;
             }
@@ -242,6 +244,7 @@
             if(resp.code===200) {
               this.doQuery(resp.data);
               this.showSubmitButton =false;
+              hideLoading();
             }
           })
         }
@@ -510,10 +513,12 @@
           type: 'warning'
         }  ).then(() => {
           submitData.append("ids",deleteIds);
+          showLoading();
           batchRemove(submitData)
             .then(res => {
               let resp = res.data;
               if (resp.code === 200) {
+                hideLoading();
                 this.$message.success('删除成功!');
                 this.doQuery();
               } else {

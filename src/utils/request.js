@@ -1,6 +1,7 @@
 import axios from 'axios'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import {showLoading,hideLoading} from '@/utils/loadingUtils';
 
 // create an axios instance
 const instance = axios.create({
@@ -29,6 +30,7 @@ export const createAPI = (url, method, data) => {
   }).catch( (err) => {
     ElementUI.Message({message: "服务器错误！" ,type: "error"});
     console.log(err);
+    hideLoading();
   })
 };
 
