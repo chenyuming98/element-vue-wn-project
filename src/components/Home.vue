@@ -1,49 +1,51 @@
 <template>
   <!-- <el-container>：外层容器。-->
   <el-container class="home-container" >
-    <!-- 头部容器  <el-header>：顶栏容器-->
-    <el-header style="text-align: right; font-size: 12px">
-      <span>你好！王小虎</span>
-      <el-dropdown>
-        <i class="el-icon-setting" style="margin-right: 15px"></i>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>个人信息</el-dropdown-item>
-          <el-dropdown-item>退出登录</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
 
-    </el-header>
 
-    <el-container>
-      <!--左侧菜单  <el-aside>：侧边栏容器。-->
-      <el-aside   :width="isCollapse?'64px':'200px'" style="background-color: rgb(238, 241, 246)">
-        <!--开启路由跳转 -->
-
-        <el-menu  style="min-height: 100%" :router="true" :unique-opened="true" :collapse="isCollapse" :default-active = "activePath">
-          <div class="toggle-button" @click="toggleCollapse" style="text-align: center">|||</div>
-            <template v-for="item in menuDataList">
-              <el-submenu :index="item.permissionId" v-if="item.children">
-                <template slot="title" >
-                  <i :class="item.icon"/>
-                  <span>{{item.title}}</span>
-                </template>
-                <el-menu-item-group>
-                  <template v-for="item2 in item.children">
-                    <el-menu-item :index="item2.href">
-                      <i :class="item2.icon"/>
-                      <span>{{item2.title}}</span>
-                    </el-menu-item>
-                  </template>
-                </el-menu-item-group>
-              </el-submenu>
+    <!--左侧菜单  <el-aside>：侧边栏容器。  ：width根据是否是折叠菜单 动态显示宽度-->
+    <el-aside   :width="isCollapse?'68px':'200px'" style="background-color: rgb(238, 241, 246)">
+      <!-- 开:router启路由跳转会以index为跳转连接路径 index使用不能重复不然会引起BUG
+          collapse为true开启折叠菜单   min-height设置菜单的高度 -->
+      <el-menu  style="min-height: 100%" :router="true" :unique-opened="true" :collapse="isCollapse" :default-active = "activePath">
+        <div class="toggle-button" @click="toggleCollapse" style="text-align: center">|||</div>
+        <template v-for="item in menuDataList">
+          <el-submenu :index="item.permissionId" v-if="item.children">
+            <template slot="title" >
+              <i :class="item.icon"/>
+              <span>{{item.title}}</span>
             </template>
-         </el-menu>
-      </el-aside>
+            <el-menu-item-group>
+              <template v-for="item2 in item.children">
+                <el-menu-item :index="item2.href">
+                  <i :class="item2.icon"/>
+                  <span>{{item2.title}}</span>
+                </el-menu-item>
+              </template>
+            </el-menu-item-group>
+          </el-submenu>
+        </template>
+      </el-menu>
+    </el-aside>
+    <el-container>
+      <!-- 头部容器  <el-header>：顶栏容器-->
+      <el-header style="text-align: right; font-size: 12px" >
+        <span>你好！王小虎</span>
+        <el-dropdown>
+          <i class="el-icon-setting" style="margin-right: 15px"></i>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>个人信息</el-dropdown-item>
+            <el-dropdown-item>退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+
+      </el-header>
 
       <!--右侧主要内容区域-->
       <el-main>
         <router-view/>
       </el-main>
+
     </el-container>
   </el-container>
 </template>

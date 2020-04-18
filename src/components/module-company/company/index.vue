@@ -216,6 +216,7 @@
             this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
             if(resp.code===200) {
               this.doQuery(this.companyForm.companyId);
+              this.showSubmitButton =false;
             }
           })
         }else {
@@ -224,6 +225,7 @@
             this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
             if(resp.code===200) {
               this.doQuery(resp.data);
+              this.showSubmitButton =false;
             }
           })
         }
@@ -584,6 +586,8 @@
         this.currentNodeData = [];
         this.currentNodeData['name'] = "请选择";
         this.showSubmitButton = false;
+        //清空复选框的值
+        this.$refs.treeObject.setCheckedKeys([]);
       },
 
     },

@@ -18,3 +18,11 @@ html,body,#app,.el-container,.el-card{
 .tableCard{
   margin: 10px 0 0;
 }
+
+/*
+* 侧边栏菜单一级和二级之间有个碍事的占用空间
+*/
+.el-menu-item-group__title{
+  padding-bottom: 0px;
+  padding-top: 0px;
+}

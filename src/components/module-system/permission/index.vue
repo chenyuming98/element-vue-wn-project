@@ -35,7 +35,7 @@
 
               <!-- 权限树结构  自定义参数配置 1. node-key指定自定义的树结构ID的主键  2.:props="defaultProps 配置其他数据对象绑定 -->
               <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="permissionId"  ref="treeObject"
-                       :show-checkbox="useCheck" :default-expanded-keys="initCheckNode"
+                       :show-checkbox="useCheck" :default-expanded-keys="initCheckNode" :check-strictly="true"
                        :filter-node-method="filterNode"  @node-contextmenu='rightClick'   @node-click="nodeClick"  >
           <span class="slot-t-node" slot-scope="{ node, data }">
              <span >
@@ -224,12 +224,15 @@
       *  提交表单修改树几点
       */
       onSubmit() {
+        this.permForm['createTime']= '';
+        this.permForm['updateTime']= '';
         if (this.permForm.permissionId){
           update(this.permForm).then(res => {
             let resp  = res.data;
             this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
             if(resp.code===200) {
               this.doQuery(this.permForm.permissionId);
+              this.showSubmitButton =false;
             }
           })
         }else {
@@ -238,6 +241,7 @@
             this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
             if(resp.code===200) {
               this.doQuery(resp.data);
+              this.showSubmitButton =false;
             }
           })
         }
@@ -592,6 +596,8 @@
         this.currentNodeData = [];
         this.currentNodeData['title'] = "请选择";
         this.showSubmitButton = false;
+        //清空复选框的值
+        this.$refs.treeObject.setCheckedKeys([]);
       },
     },
     // 创建完毕状态

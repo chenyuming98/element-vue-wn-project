@@ -1,5 +1,6 @@
 import axios from 'axios'
-import {Message} from 'element-ui'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
 
 // create an axios instance
 const instance = axios.create({
@@ -25,8 +26,11 @@ export const createAPI = (url, method, data) => {
     url,
     method,
     ...config
+  }).catch( (err) => {
+    ElementUI.Message({message: "服务器错误！" ,type: "error"});
+    console.log(err);
   })
-}
+};
 
 
 export const createFormAPI = (url, method, data) => {
