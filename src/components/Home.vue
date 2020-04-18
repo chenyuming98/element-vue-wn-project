@@ -1,13 +1,12 @@
 <template>
   <!-- <el-container>：外层容器。-->
   <el-container class="home-container" >
-
-
     <!--左侧菜单  <el-aside>：侧边栏容器。  ：width根据是否是折叠菜单 动态显示宽度-->
     <el-aside   :width="isCollapse?'68px':'200px'" style="background-color: rgb(238, 241, 246)">
       <!-- 开:router启路由跳转会以index为跳转连接路径 index使用不能重复不然会引起BUG
           collapse为true开启折叠菜单   min-height设置菜单的高度 -->
-      <el-menu  style="min-height: 100%" :router="true" :unique-opened="true" :collapse="isCollapse" :default-active = "activePath">
+      <el-menu  style="min-height: 100%" :router="true" :unique-opened="true"
+                :collapse="isCollapse" :default-active = "activePath"   :default-openeds = "firstOpenMenuItem">
         <div class="toggle-button" @click="toggleCollapse" style="text-align: center">|||</div>
         <template v-for="item in menuDataList">
           <el-submenu :index="item.permissionId" v-if="item.children">
@@ -27,6 +26,7 @@
         </template>
       </el-menu>
     </el-aside>
+
     <el-container>
       <!-- 头部容器  <el-header>：顶栏容器-->
       <el-header style="text-align: right; font-size: 12px" >
@@ -57,7 +57,8 @@
       return {
         isCollapse: false,
         menuDataList: null,
-        activePath: "",
+        activePath: "notActivePath",
+        firstOpenMenuItem: [], //初次打开展开菜单栏
       }
     },
     methods: {
@@ -69,6 +70,11 @@
           .then(res => {
             let resp = res.data;
             this.menuDataList = resp.data;
+            for (let i = 0; i < this.menuDataList.length; i++) {
+                if (this.menuDataList[i]['spread']==1){
+                  this.firstOpenMenuItem.push(this.menuDataList[i]['permissionId']);
+                }
+            }
           })
       },
 
@@ -76,6 +82,8 @@
       toggleCollapse () {
         this.isCollapse = !this.isCollapse
       },
+
+
     },
 
     // 创建完毕状态
