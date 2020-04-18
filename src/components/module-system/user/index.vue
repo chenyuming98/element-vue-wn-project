@@ -40,6 +40,7 @@
         </el-table-column>
         <el-table-column  fixed="right"  label="操作"  width="180">
           <template slot-scope="scope">
+            <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">+分配员工</el-button>
             <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
             <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
           </template>
