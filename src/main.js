@@ -5,9 +5,15 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import VueBus from 'vue-bus';
 //配置axios
 import axios from 'axios'
+//引入JQ
 import $ from 'jquery'
+//引入echart
+import echarts from 'echarts'
+//将echarts引入到vue的原型中
+Vue.prototype.$echarts = echarts
 //导入字体图标
 import './assets/fonts/iconfont.css'
 //导入全局样式

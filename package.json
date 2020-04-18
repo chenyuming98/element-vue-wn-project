@@ -12,10 +12,12 @@
   "dependencies": {
     "axios": "^0.19.2",
     "e-icon-picker": "^1.0.4",
+    "echarts": "^4.7.0",
     "element-ui": "^2.13.0",
     "jquery": "^3.4.1",
     "qs": "^6.9.3",
     "vue": "^2.5.2",
+    "vue-bus": "^1.2.1",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
