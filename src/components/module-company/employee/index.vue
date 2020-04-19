@@ -6,8 +6,8 @@
       <el-breadcrumb-item>公司管理</el-breadcrumb-item>
       <el-breadcrumb-item>员工管理</el-breadcrumb-item>
     </el-breadcrumb>
+    <!--表格头菜单-->
     <el-card class="box-card">
-      <!--表格头菜单-->
       <div class="tableHeaderToolButtonGroup">
         <!--搜索表单 + 表单搜索按钮   prop在表单重置时候有用！ -->
         <div id="searchForm">
@@ -59,22 +59,45 @@
       </div>
     </el-card>
 
+    <!--表格内容  ref绑定选中内容-->
     <el-card class="tableCard" >
-      <!--表格内容  ref绑定选中内容-->
-      <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable"  >
-        <el-table-column type="selection" width="40" prop="employeeId"> </el-table-column>
-        <el-table-column  prop="name"  label="员工姓名"  width="100"> </el-table-column>
-        <el-table-column  prop="number"  label="工号"  width="100"> </el-table-column>
-        <el-table-column  prop="sex_dictText"  label="性别"  sortable width="60"> </el-table-column>
-        <el-table-column  prop="phone"  label="手机号"  width="180"> </el-table-column>
-        <el-table-column  fixed="right"  label="操作"  width="180">
-          <template slot-scope="scope">
-<!--            <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>-->
-            <el-button @click="handleRowEdit(scope.row)"  type="text" style="margin-left: 16px;">详情</el-button>
-            <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable"  >
+          <el-table-column type="selection" width="40" prop="employeeId"> </el-table-column>
+          <el-table-column  prop="name"  label="员工姓名"  width="100"> </el-table-column>
+          <el-table-column  prop="number"  label="工号"  width="100"> </el-table-column>
+          <!--    //TODO等待使用FASTDFS    -->
+          <el-table-column  prop="images"  label="头像"  width="100">
+            <template   slot-scope="scope">
+              <div class="block"><el-avatar size="small" :src="scope.row.images"></el-avatar></div>
+            </template>
+          </el-table-column>
+          <el-table-column  prop="sex_dictText"  label="性别"  sortable width="60"> </el-table-column>
+          <el-table-column  prop="phone"  label="手机号"  width="180"> </el-table-column>
+          <el-table-column  prop="identityCard"  label="身份证"  sortable width="165"> </el-table-column>
+          <el-table-column
+            prop="userStatus"
+            label="状态">
+            <template slot-scope="scope">
+              <el-switch
+                v-model="scope.row.userStatus"
+                active-color="#13ce66"
+                :active-value= 0
+                :inactive-value=  1
+                @change="handleStatus(scope.row)">
+              </el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column  prop="birthdayFormat"  label="生日"  width="100"> </el-table-column>
+                  <el-table-column  fixed="right"  label="操作"  width="180">
+                    <template slot-scope="scope">
+                      <el-button @click="handleRowEdit(scope.row)"  type="text" style="margin-left: 16px;">详情</el-button>
+                      <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
+                    </template>
+                  </el-table-column>
+
+        </el-table>
+
+
       <!--表格分页-->
       <div class="block">
         <!-- current-page 当前页数  每页显示数-->
@@ -89,10 +112,7 @@
           </el-pagination>
         </div>
       </div>
-
     </el-card>
-
-      <!--      -->
       <el-drawer  :visible.sync="drawer" :direction="direction"
                   title="详情" size="38%"    :before-close="handleClose"    >
         <!-- :model绑定表单对象  status-icon控制每一行表单校验通过后图标显示正确和错误   :rules绑定校验规则
