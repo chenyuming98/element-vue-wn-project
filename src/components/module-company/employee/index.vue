@@ -9,57 +9,56 @@
     <el-card class="box-card">
       <!--表格头菜单-->
       <div class="tableHeaderToolButtonGroup">
-        <el-col :span="20">
-          <div class="grid-content bg-purple">
-            <div id="searchForm">
-              <el-form :model="searchForm" :inline="true" status-icon :rules="rules" ref="searchRefForm" label-width="40px"
-                       size="mini" style=" height: 45px;">
-                <el-form-item label="搜索" prop="name">
-                </el-form-item>
-                <el-form-item label="" prop="name">
-                  <el-input v-model="searchForm.name" placeholder="员工姓名" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="">
-                  <el-select v-model="searchForm.sex" placeholder="请选择性别">
-                    <el-option label="男" value="1"></el-option>
-                    <el-option label="女" value="2"></el-option>
-                  </el-select>
-                <el-form-item label="" prop="number">
-                  <el-input v-model="searchForm.number" placeholder="工号" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="" prop="email">
-                  <el-input v-model="searchForm.phone" maxlength="11" placeholder="手机号码" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="" prop="email">
-                  <el-input v-model="searchForm.identityCard" maxlength="18" placeholder="身份证"
-                            autocomplete="off"></el-input>
-                </el-form-item>
-                </el-form-item>
-              </el-form>
-            </div>
-            <div id="handButton" style="border-bottom-width: 10px;margin-bottom: 10px;">
-              <el-button icon="el-icon-plus" size="mini" @click="handleAdd"></el-button>
-              <el-button icon="el-icon-delete" size="mini" @click="batchDelete"></el-button>
+        <!--搜索表单 + 表单搜索按钮   prop在表单重置时候有用！ -->
+        <div id="searchForm">
+          <el-form :model="requestParameters" :inline="true" status-icon :rules="rules" ref="searchRefForm" label-width="40px"
+                   size="mini" style=" height: 45px;">
+            <el-form-item label="搜索" prop="name">
+            </el-form-item>
+            <el-form-item label="" prop="sex">
+              <el-input v-model="requestParameters.name" placeholder="员工姓名" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="" prop="sex">
+              <el-select v-model="requestParameters.sex" placeholder="请选择性别">
+                <el-option label="男" value="1"></el-option>
+                <el-option label="女" value="2"></el-option>
+              </el-select>
+              <el-form-item label="" v-show="showMoreSearchInput" prop="number">
+                <el-input v-model="requestParameters.number" placeholder="工号" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="" v-show="showMoreSearchInput" prop="phone">
+                <el-input v-model="requestParameters.phone" maxlength="11" placeholder="手机号码" autocomplete="off"></el-input>
+              </el-form-item>
+<!--              <el-form-item label=""  v-show="showMoreSearchInput">-->
+<!--                <el-input v-model="requestParameters.identityCard" maxlength="18" placeholder="身份证"-->
+<!--                          autocomplete="off"></el-input>-->
+<!--              </el-form-item>-->
+              <el-form-item>
+                <el-button size="mini" type="primary" icon="el-icon-refresh-left" @click="resetForm('searchRefForm')">重置</el-button>
+                <el-button size="mini" type="primary" icon="el-icon-search" @click="doQuery">搜索</el-button>
+<!--                <i class="el-icon-arrow-down el-icon&#45;&#45;right" @click="showMoreSearch"></i>-->
+                <el-dropdown>
+                <span class="el-dropdown-link">
+                <i class="el-icon-arrow-down el-icon--right"  @click="showMoreSearch">  更多条件</i>
+                  <el-dropdown-menu slot="dropdown">
+                  </el-dropdown-menu>
+                </span>
+                </el-dropdown>
+              </el-form-item>
+            </el-form-item>
+          </el-form>
+        </div>
+        <!--表格头菜单 功能按钮-->
+        <div id="handButton" style="border-bottom-width: 10px;margin-bottom: 10px;">
+          <el-button icon="el-icon-plus" size="mini" @click="handleAdd">新增员工</el-button>
+          <el-button icon="el-icon-delete" size="mini" @click="batchDelete">批量删除</el-button>
 
-              <el-button icon="el-icon-plus" size="mini" @click="">导入</el-button>
-              <el-button icon="el-icon-delete" size="mini" @click="">导出</el-button>
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="4">
-          <div class="grid-content bg-purple">
-            <div slot="footer" class="dialog-footer">
-              <el-button size="mini" type="primary" @click="resetForm('searchRefForm')">重置</el-button>
-              <el-button size="mini" type="primary" icon="el-icon-search" @click="submitForm">搜索</el-button>
-            </div>
-          </div>
-        </el-col>
-
-
-
-
+          <el-button icon="el-icon-download" size="mini" @click="">导入</el-button>
+          <el-button icon="el-icon-upload2" size="mini" @click="">导出</el-button>
+        </div>
       </div>
     </el-card>
+
     <el-card class="tableCard" >
       <!--表格内容  ref绑定选中内容-->
       <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable"  >
@@ -156,6 +155,7 @@
     export default {
       data() {
         return {
+          showMoreSearchInput: false,
           drawer: false,
           direction: 'rtl',
           userAdd: 'UserAdd',
@@ -165,6 +165,11 @@
           requestParameters: {
             page: 1,
             size: 10,
+            number: undefined,
+            name: undefined,
+            sex: undefined,
+            phone:undefined,
+            identityCard: undefined,
           },
           userHaveRoles: [],
           rolesData: [],
@@ -403,6 +408,11 @@
             this.$refs[formName].resetFields();
           })
         },
+
+        showMoreSearch(){
+          this.showMoreSearchInput = !this.showMoreSearchInput;
+        },
+
       },
       // 创建完毕状态
       created: function () {
@@ -434,4 +444,11 @@
     text-align: center;
   }
 
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #409EFF;
+  }
+  .el-icon-arrow-down {
+    font-size: 12px;
+  }
 </style>

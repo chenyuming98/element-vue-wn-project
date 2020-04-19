@@ -37,7 +37,7 @@
               <el-tree style="margin-top: 10px"   :data="setTree"   :props="defaultProps"  node-key="permissionId"  ref="treeObject"
                        :show-checkbox="useCheck" :default-expanded-keys="initCheckNode" :check-strictly="true"
                        :filter-node-method="filterNode"  @node-contextmenu='rightClick'   @node-click="nodeClick"  >
-          <span class="slot-t-node" slot-scope="{ node, data }">
+             <span class="slot-t-node" slot-scope="{ node, data }">
              <span >
               <i :class="data.icon"></i>
               <span :class="[data.id ? 'slot-t-node--label' : '']">{{node.label}}</span>
