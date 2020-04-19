@@ -48,7 +48,7 @@
           </el-form>
         </div>
         <!--表格头菜单 功能按钮-->
-        <div id="handButton" style="border-bottom-width: 10px;margin-bottom: 10px;">
+        <div id="handButton" >
           <el-button icon="el-icon-plus" size="mini" @click="handleAdd">新增员工</el-button>
           <el-button icon="el-icon-delete" size="mini" @click="batchDelete">批量删除</el-button>
 
@@ -86,7 +86,7 @@
               </el-switch>
             </template>
           </el-table-column>
-          <el-table-column  prop="birthdayFormat"  label="生日"  width="100"> </el-table-column>
+          <el-table-column  prop="birthday"  label="生日"  width="100"> </el-table-column>
                   <el-table-column  fixed="right"  label="操作"  width="180">
                     <template slot-scope="scope">
                       <el-button @click="handleRowEdit(scope.row)"  type="text" style="margin-left: 16px;">详情</el-button>
@@ -125,13 +125,13 @@
                 <el-form-item label="工号" prop="number" >
                   <el-input v-model="formBase.number" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="手机号码" prop="email" >
+                <el-form-item label="手机号码" prop="phone" >
                   <el-input v-model="formBase.phone" maxlength="11" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="身份证" prop="email" >
+                <el-form-item label="身份证" prop="identityCard" >
                   <el-input v-model="formBase.identityCard" maxlength="18" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="性别" >
+                <el-form-item label="性别" prop="sex" >
                   <el-radio-group v-model="formBase.sex"  >
                     <el-radio label="1" >男</el-radio>
                     <el-radio label="2" >女</el-radio>
@@ -140,14 +140,14 @@
                 <el-form-item label="邮箱" prop="mailbox" >
                   <el-input v-model="formBase.mailbox" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="生日" prop="birthdayFormat" >
-                  <el-date-picker v-model="formBase.birthday" type="date"  placeholder="选择日期"  editable=false> </el-date-picker>
+                <el-form-item label="生日" prop="birthday" >
+                  <el-date-picker v-model="formBase.birthday" type="date"  placeholder="选择日期" > </el-date-picker>
                 </el-form-item>
-                <el-form-item label="地址" prop="mailbox" >
+                <el-form-item label="地址" prop="address" >
                   <el-input v-model="formBase.address" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="更新时间" prop="mailbox" >
-                  <el-input v-model="formBase.updateTime" autocomplete="off" readonly="true"></el-input>
+                <el-form-item label="更新时间" prop="updateTime" >
+                  <el-input v-model="formBase.updateTime" autocomplete="off" readonly></el-input>
                 </el-form-item>
               </el-form>
             <!--    表单按钮   -->
@@ -362,6 +362,7 @@
                 if (resp.code === 200) {
                   this.$message.success('删除成功!');
                   this.doQuery();
+                  hideLoading();
                 } else {
                   hideLoading();
                   this.$message.error(resp.msg);
@@ -399,6 +400,7 @@
                     this.drawer =false;
                     this.$refs['refForm'].resetFields();
                     this.doQuery();
+                    hideLoading();
                   }
                 })
               }else {
@@ -409,6 +411,7 @@
                     this.drawer =false;
                     this.$refs['refForm'].resetFields();
                     this.doQuery();
+                    hideLoading();
                   }
                 })
               }
