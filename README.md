@@ -1,7 +1,7 @@
 ## 前端项目介绍
 
 #### 示例GIF
-![image](https://www.github.com/chenyuming98/element-vue-wn-project/blob/master/show.gif)
+![image](https://github.com/chenyuming98/element-vue-wn-project/blob/master/show.gif)
 
 #### 技术介绍：elementUI+vue
 
