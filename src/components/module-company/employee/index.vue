@@ -3,14 +3,61 @@
   <div>
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>关系管理</el-breadcrumb-item>
+      <el-breadcrumb-item>公司管理</el-breadcrumb-item>
       <el-breadcrumb-item>员工管理</el-breadcrumb-item>
     </el-breadcrumb>
     <el-card class="box-card">
-      <!--表头菜单-->
+      <!--表格头菜单-->
       <div class="tableHeaderToolButtonGroup">
-        <el-button icon="el-icon-plus" size="mini"  @click="handleAdd" ></el-button>
-        <el-button  icon="el-icon-delete" size="mini"   @click="batchDelete" ></el-button>
+        <el-col :span="20">
+          <div class="grid-content bg-purple">
+            <div id="searchForm">
+              <el-form :model="searchForm" :inline="true" status-icon :rules="rules" ref="searchRefForm" label-width="40px"
+                       size="mini" style=" height: 45px;">
+                <el-form-item label="搜索" prop="name">
+                </el-form-item>
+                <el-form-item label="" prop="name">
+                  <el-input v-model="searchForm.name" placeholder="员工姓名" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="">
+                  <el-select v-model="searchForm.sex" placeholder="请选择性别">
+                    <el-option label="男" value="1"></el-option>
+                    <el-option label="女" value="2"></el-option>
+                  </el-select>
+                <el-form-item label="" prop="number">
+                  <el-input v-model="searchForm.number" placeholder="工号" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="" prop="email">
+                  <el-input v-model="searchForm.phone" maxlength="11" placeholder="手机号码" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="" prop="email">
+                  <el-input v-model="searchForm.identityCard" maxlength="18" placeholder="身份证"
+                            autocomplete="off"></el-input>
+                </el-form-item>
+                </el-form-item>
+              </el-form>
+            </div>
+            <div id="handButton" style="border-bottom-width: 10px;margin-bottom: 10px;">
+              <el-button icon="el-icon-plus" size="mini" @click="handleAdd"></el-button>
+              <el-button icon="el-icon-delete" size="mini" @click="batchDelete"></el-button>
+
+              <el-button icon="el-icon-plus" size="mini" @click="">导入</el-button>
+              <el-button icon="el-icon-delete" size="mini" @click="">导出</el-button>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="4">
+          <div class="grid-content bg-purple">
+            <div slot="footer" class="dialog-footer">
+              <el-button size="mini" type="primary" @click="resetForm('searchRefForm')">重置</el-button>
+              <el-button size="mini" type="primary" icon="el-icon-search" @click="submitForm">搜索</el-button>
+            </div>
+          </div>
+        </el-col>
+
+
+
+
       </div>
     </el-card>
     <el-card class="tableCard" >
@@ -19,28 +66,8 @@
         <el-table-column type="selection" width="40" prop="employeeId"> </el-table-column>
         <el-table-column  prop="name"  label="员工姓名"  width="100"> </el-table-column>
         <el-table-column  prop="number"  label="工号"  width="100"> </el-table-column>
-        <!--    //TODO等待使用FASTDFS    -->
-        <el-table-column  prop="images"  label="头像"  width="100">
-          <template   slot-scope="scope">
-            <div class="block"><el-avatar size="small" :src="scope.row.images"></el-avatar></div>
-          </template>
-        </el-table-column>
         <el-table-column  prop="sex_dictText"  label="性别"  sortable width="60"> </el-table-column>
-        <el-table-column  prop="birthdayFormat"  label="生日"  width="100"> </el-table-column>
         <el-table-column  prop="phone"  label="手机号"  width="180"> </el-table-column>
-        <el-table-column
-          prop="userStatus"
-          label="状态">
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.userStatus"
-              active-color="#13ce66"
-              :active-value= 0
-              :inactive-value=  1
-              @change="handleStatus(scope.row)">
-            </el-switch>
-          </template>
-        </el-table-column>
         <el-table-column  fixed="right"  label="操作"  width="180">
           <template slot-scope="scope">
 <!--            <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>-->
@@ -66,14 +93,12 @@
 
     </el-card>
 
-
-      <el-drawer  :visible.sync="drawer" :direction="direction"  :with-header="false"  :before-close="handleClose"   size="42%">
+      <!--      -->
+      <el-drawer  :visible.sync="drawer" :direction="direction"
+                  title="详情" size="38%"    :before-close="handleClose"    >
         <!-- :model绑定表单对象  status-icon控制每一行表单校验通过后图标显示正确和错误   :rules绑定校验规则
           autocomplete="off" 关闭表单默认以及功能-->
         <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>详情</span>
-          </div>
             <div id="drawerForm">
               <el-form :model="formBase" status-icon :rules="rules" ref="refForm" label-width="120px" size="mini">
                 <el-form-item label="员工姓名" prop="name" >
@@ -82,8 +107,11 @@
                 <el-form-item label="工号" prop="number" >
                   <el-input v-model="formBase.number" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="生日" prop="birthdayFormat" >
-                  <el-date-picker v-model="formBase.birthdayFormat" type="date"  placeholder="选择日期"  editable=false> </el-date-picker>
+                <el-form-item label="手机号码" prop="email" >
+                  <el-input v-model="formBase.phone" maxlength="11" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="身份证" prop="email" >
+                  <el-input v-model="formBase.identityCard" maxlength="18" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="性别" >
                   <el-radio-group v-model="formBase.sex"  >
@@ -94,14 +122,20 @@
                 <el-form-item label="邮箱" prop="mailbox" >
                   <el-input v-model="formBase.mailbox" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="手机号码" prop="email" >
-                  <el-input v-model="formBase.phone" autocomplete="off"></el-input>
+                <el-form-item label="生日" prop="birthdayFormat" >
+                  <el-date-picker v-model="formBase.birthdayFormat" type="date"  placeholder="选择日期"  editable=false> </el-date-picker>
+                </el-form-item>
+                <el-form-item label="地址" prop="mailbox" >
+                  <el-input v-model="formBase.address" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="更新时间" prop="mailbox" >
+                  <el-input v-model="formBase.updateTime" autocomplete="off" readonly="true"></el-input>
                 </el-form-item>
               </el-form>
-                      <div slot="footer" class="dialog-footer">
-                        <el-button @click="cancel">取 消</el-button>
-                        <el-button type="primary" @click="submitForm">确 定</el-button>
-                        <!--        <el-button @click="resetForm('refForm')">重置</el-button>-->
+            <!--    表单按钮   -->
+             <div slot="footer" class="dialog-footer" style="position:absolute;right:5px;bottom:5px;">
+                        <el-button  size="mini" @click="cancel">取 消</el-button>
+                        <el-button  size="mini" type="primary" @click="submitForm">确 定</el-button>
                       </div>
             </div>
         </el-card>
@@ -139,12 +173,25 @@
           formTitle : '添加',
           //定义表单初始化参数
           formBase: {
-            name: '',
+            employeeId:"",
             number: '',
+            name: '',
             sex: '',
-            birthdayFormat:'',
-            mailbox:'',
             phone:'',
+            mailbox:'',
+            birthdayFormat:'',
+            identityCard: '',
+            address: '',
+            createTime: '',
+            updateTime: '',
+          },
+          //条件搜索
+          searchForm:{
+            number: '',
+            name: '',
+            sex: '',
+            phone:'',
+            identityCard: '',
           },
           //v-model 绑定校验规则
           rules: {
@@ -223,7 +270,7 @@
          */
         handleAdd() {
           this.drawer = true;
-          this.formBase = {};
+          this.formBase = { "sex": "1"};
         },
 
         /**
@@ -303,6 +350,7 @@
           this.dialogFormVisible = false;
           this.userHaveRoles = [];
           this.$refs['refForm'].resetFields();
+          this.drawer =false
         },
 
 
@@ -312,12 +360,14 @@
         submitForm(){
           this.$refs['refForm'].validate((valid) => {
             if (valid) {
+              this.formBase.createTime =undefined;
+              this.formBase.updateTime =undefined;
               if (this.formBase.employeeId){
                 update(this.formBase).then(res => {
                   let resp  = res.data;
                   this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
                   if(resp.code===200) {
-                    this.dialogFormVisible = false;
+                    this.drawer =false;
                     this.$refs['refForm'].resetFields();
                     this.doQuery();
                   }
@@ -327,7 +377,7 @@
                   let resp  = res.data;
                   this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
                   if(resp.code===200) {
-                    this.dialogFormVisible = false;
+                    this.drawer =false;
                     this.$refs['refForm'].resetFields();
                     this.doQuery();
                   }
@@ -347,13 +397,12 @@
           //     done();
           //   })
           //   .catch(_ => {});
-        }
-
-        // resetForm(formName) {
-        //   this.$nextTick(() => {
-        //     this.$refs[formName].resetFields();
-        //   })
-        // },
+        },
+        resetForm(formName) {
+          this.$nextTick(() => {
+            this.$refs[formName].resetFields();
+          })
+        },
       },
       // 创建完毕状态
       created: function () {
@@ -365,6 +414,12 @@
 <style scoped>
   .el-input{
     width: 300px;
+  }
+  #searchForm .el-input{
+    width: 150px;
+  }
+  #searchForm .el-select{
+    width: 150px;
   }
   .el-select{
     width: 300px;

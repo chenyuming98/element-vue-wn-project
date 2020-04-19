@@ -2,7 +2,7 @@
   <!-- <el-container>：外层容器。-->
   <el-container class="home-container" >
     <!--左侧菜单  <el-aside>：侧边栏容器。  ：width根据是否是折叠菜单 动态显示宽度-->
-    <el-aside   :width="isCollapse?'68px':'200px'" style="background-color: rgb(238, 241, 246)">
+    <el-aside   :width="isCollapse?'68px':'200px'" style="background-color: rgb(238, 241, 246)" >
       <!-- 开:router启路由跳转会以index为跳转连接路径 index使用不能重复不然会引起BUG
           collapse为true开启折叠菜单   min-height设置菜单的高度 -->
       <el-menu  style="min-height: 100%" :router="true" :unique-opened="true"   @select="handleSelect"

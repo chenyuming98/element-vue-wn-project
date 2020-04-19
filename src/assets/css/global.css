@@ -27,4 +27,10 @@ html,body,#app,.el-container,.el-card{
   padding-top: 0px;
 }
 
+/*
+* 去除抽屉标题的蓝色框线
+*/
+:focus{
+  outline:0;
+}
 
