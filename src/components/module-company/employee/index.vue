@@ -34,9 +34,8 @@
 <!--                          autocomplete="off"></el-input>-->
 <!--              </el-form-item>-->
               <el-form-item>
-                <el-button size="mini" type="primary" icon="el-icon-refresh-left" @click="resetForm('searchRefForm')">重置</el-button>
+                <el-button style="margin-left: 15px;" size="mini" type="primary" icon="el-icon-refresh-left" @click="resetForm('searchRefForm')">重置</el-button>
                 <el-button size="mini" type="primary" icon="el-icon-search" @click="doQuery">搜索</el-button>
-<!--                <i class="el-icon-arrow-down el-icon&#45;&#45;right" @click="showMoreSearch"></i>-->
                 <el-dropdown>
                 <span class="el-dropdown-link">
                 <i class="el-icon-arrow-down el-icon--right"  @click="showMoreSearch">  更多条件</i>
@@ -71,7 +70,7 @@
               <div class="block"><el-avatar size="small" :src="scope.row.images"></el-avatar></div>
             </template>
           </el-table-column>
-          <el-table-column  prop="sex_dictText"  label="性别"  sortable width="60"> </el-table-column>
+          <el-table-column  prop="sex_dictText"  label="性别"  width="60"> </el-table-column>
           <el-table-column  prop="phone"  label="手机号"  width="180"> </el-table-column>
           <el-table-column  prop="identityCard"  label="身份证"  sortable width="165"> </el-table-column>
           <el-table-column
@@ -142,7 +141,7 @@
                   <el-input v-model="formBase.mailbox" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="生日" prop="birthdayFormat" >
-                  <el-date-picker v-model="formBase.birthdayFormat" type="date"  placeholder="选择日期"  editable=false> </el-date-picker>
+                  <el-date-picker v-model="formBase.birthday" type="date"  placeholder="选择日期"  editable=false> </el-date-picker>
                 </el-form-item>
                 <el-form-item label="地址" prop="mailbox" >
                   <el-input v-model="formBase.address" autocomplete="off"></el-input>
@@ -170,6 +169,7 @@
 <script>
   import {list,add,update,remove,batchRemove} from "@/api/base/employee"
   import {findRoleAll} from "@/api/base/role";
+  import {showLoading,hideLoading} from '@/utils/loadingUtils';
 
   const  multipleSelectionList =  new Set([]);
     export default {
@@ -209,6 +209,7 @@
             address: '',
             createTime: '',
             updateTime: '',
+            birthday:''
           },
           //条件搜索
           searchForm:{
@@ -236,12 +237,13 @@
         * 查询员工表格
         */
         doQuery(params) {
+          showLoading();
           list(this.requestParameters)
             .then(res => {
               let resp = res.data;
               this.dataList = resp.data;
               this.total = resp.total;
-
+              hideLoading();
             })
         },
 
@@ -353,6 +355,7 @@
               type: 'warning'
             }  ).then(() => {
             submitData.append("ids",deleteIds);
+            showLoading();
             batchRemove(submitData)
               .then(res => {
                 let resp = res.data;
@@ -360,6 +363,7 @@
                   this.$message.success('删除成功!');
                   this.doQuery();
                 } else {
+                  hideLoading();
                   this.$message.error(resp.msg);
                 }
               })
@@ -378,13 +382,13 @@
           this.drawer =false
         },
 
-
         /**
          * 提交表单
          */
         submitForm(){
           this.$refs['refForm'].validate((valid) => {
             if (valid) {
+              showLoading();
               this.formBase.createTime =undefined;
               this.formBase.updateTime =undefined;
               if (this.formBase.employeeId){
@@ -415,6 +419,9 @@
           this.userHaveRoles = [];
         },
 
+        /**
+         * 员工详情打开右侧抽屉，处理抽屉关闭
+         */
         handleClose(done) {
           done();
           // this.$confirm('确认关闭？')
@@ -423,12 +430,19 @@
           //   })
           //   .catch(_ => {});
         },
+
+        /**
+         * 表单内容重置 -这里用在重置搜索表单
+         */
         resetForm(formName) {
           this.$nextTick(() => {
             this.$refs[formName].resetFields();
           })
         },
 
+        /**
+         * 控制表格头 菜单搜索条件显示
+         */
         showMoreSearch(){
           this.showMoreSearchInput = !this.showMoreSearchInput;
         },
