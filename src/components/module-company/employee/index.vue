@@ -72,7 +72,7 @@
           </el-table-column>
           <el-table-column  prop="sex_dictText"  label="性别"  width="60"> </el-table-column>
           <el-table-column  prop="phone"  label="手机号"  width="180"> </el-table-column>
-          <el-table-column  prop="identityCard"  label="身份证"  sortable width="165"> </el-table-column>
+          <el-table-column  prop="identityCard"  label="身份证"  sortable width="180"> </el-table-column>
           <el-table-column
             prop="userStatus"
             label="状态">
