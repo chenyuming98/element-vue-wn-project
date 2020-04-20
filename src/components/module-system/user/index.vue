@@ -216,7 +216,7 @@
             let roleIds = [];
             $.each(roles, function (index, val) { //index是数组对象索引，val是对象
               if (val.roleId!=undefined){
-                roleIds.push()
+                roleIds.push(val.roleId);
               }
             });
             this.userHaveRoles = roleIds
