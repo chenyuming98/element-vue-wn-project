@@ -5,7 +5,7 @@
       <div class="avatar_box">
         <img src="../assets/logo.png" alt />
       </div>
-      <!--登录表单区域-->
+      <!--登录表单区域 1 -->
       <el-form  ref="loginFormRef" label-width="0px" :model="loginForm"  :rules="loginFormRules"  class="login_form">
         <!--用户名-->
         <el-form-item prop="username">
