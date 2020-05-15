@@ -48,12 +48,57 @@
           </el-form>
         </div>
         <!--表格头菜单 功能按钮-->
-        <div id="handButton" >
-          <el-button icon="el-icon-plus" size="mini" @click="handleAdd">新增员工</el-button>
-          <el-button icon="el-icon-delete" size="mini" @click="batchDelete">批量删除</el-button>
+<!--        <div id="handButton" >-->
+<!--          <el-button icon="el-icon-plus" size="mini" @click="handleAdd">新增员工</el-button>-->
+<!--          <el-button icon="el-icon-delete" size="mini" @click="batchDelete">批量删除</el-button>-->
 
-          <el-button icon="el-icon-download" size="mini" @click="">导入</el-button>
-          <el-button icon="el-icon-upload2" size="mini" @click="">导出</el-button>
+<!--          <el-button icon="el-icon-download" size="mini" @click="">导入</el-button>-->
+<!--          <el-button icon="el-icon-upload2" size="mini" @click="">导出</el-button>-->
+<!--        </div>-->
+        <div id="handButton" >
+          <el-row type="flex" class="row-bg">
+
+            <el-col :span="2">
+              <el-button icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
+            </el-col>
+
+            <el-col :span="2">
+              <el-button icon="el-icon-delete" size="mini" @click="batchDelete">删除</el-button>
+            </el-col>
+
+            <el-col :span="2">
+              <!--     :auto-upload =true 立即上传   action上传地址 limit限制文件数量 headers携带请求头 &ndash;&gt;-->
+              <el-upload
+                class="upload-demo"
+                ref="upload"
+                action="http://www.tianyu.com/organization/employee/fileUpLoad"
+                :limit="1"
+                :on-success="handleAvatarSuccess"
+                :headers="token"
+                :auto-upload="true">
+                <el-button icon="el-icon-download" size="mini" @click="">导入</el-button>
+              </el-upload>
+            </el-col>
+
+            <el-col :span="2">
+              <el-button icon="el-icon-upload2" size="mini" @click="download">导出</el-button>
+            </el-col>
+
+          </el-row>
+
+
+          <!--          &lt;!&ndash; :auto-upload =true 立即上传   action上传地址 limit限制文件数量 headers携带请求头 &ndash;&gt;-->
+          <!--          <el-upload-->
+          <!--            class="upload-demo"-->
+          <!--            ref="upload"-->
+          <!--            action="http://www.tianyu.com/person/worklog/fileUpLoad"-->
+          <!--            :limit="1"-->
+          <!--            :headers="token"-->
+          <!--            :auto-upload="true">-->
+          <!--            <el-button icon="el-icon-download" size="mini" @click="">导入</el-button>-->
+          <!--          </el-upload>-->
+
+          <!--          <el-button icon="el-icon-upload2" size="mini" @click="">导出</el-button>-->
         </div>
       </div>
     </el-card>
@@ -167,14 +212,16 @@
 </template>
 <!--主页面板-->
 <script>
-  import {list,add,update,remove,batchRemove} from "@/api/base/employee"
+  import {list,add,update,remove,batchRemove,exportFile} from "@/api/base/employee"
   import {findRoleAll} from "@/api/base/role";
   import {showLoading,hideLoading} from '@/utils/loadingUtils';
 
   const  multipleSelectionList =  new Set([]);
+  const mytoken =  localStorage.getItem('accessToken');
     export default {
       data() {
         return {
+          token: {'Authorization': mytoken},
           showMoreSearchInput: false,
           drawer: false,
           direction: 'rtl',
@@ -448,6 +495,40 @@
          */
         showMoreSearch(){
           this.showMoreSearchInput = !this.showMoreSearchInput;
+        },
+        // 下载Excel
+        download() {
+          exportFile().then(response => {
+            this.downloadFile(response.data);
+          })
+        },
+
+        downloadFile(data) {
+          // 文件导出
+          if (!data) {
+            return
+          }
+          let url = window.URL.createObjectURL(new Blob([data]));
+          let link = document.createElement('a');
+          link.style.display = 'none';
+          link.href = url;
+          link.setAttribute('download', '员工信息表.xls');
+          document.body.appendChild(link);
+          link.click()
+        },
+
+        /**
+         *  处理文件上传 接口消息回调
+         */
+        handleAvatarSuccess(res, file){
+          let code = res['code'];
+          if (code===200){
+            this.$message.success('上传成功!');
+            this.doQuery();
+          }else {
+            this.$message.error(res['msg']);
+          }
+
         },
 
       },
