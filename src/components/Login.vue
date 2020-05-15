@@ -70,7 +70,7 @@
         //   this.rememberpwd = true
         // }
       },
-      //获取info列表1
+      //获取info列表12
       submitForm(formName) {
         this.$refs[formName].validate(valid => {
           if (valid) {
