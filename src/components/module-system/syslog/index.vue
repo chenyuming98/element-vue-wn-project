@@ -49,15 +49,15 @@
       <!--表格内容  ref绑定选中内容-->
       <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable" >
         <el-table-column type="selection" width="40" prop="logId"> </el-table-column>
-        <el-table-column  prop="username"  label="操作用户"  width="180"> </el-table-column>
+        <el-table-column  prop="username"  label="操作用户"  width="120"> </el-table-column>
         <el-table-column  prop="operate"  label="操作记录"  width="180"> </el-table-column>
-        <el-table-column  prop="result"  label="操作结果"  width="180"> </el-table-column>
-        <el-table-column  prop="ipAddr"  label="用户地址"  width="180"> </el-table-column>
+        <el-table-column  prop="result"  label="操作结果"  width="100"> </el-table-column>
+        <el-table-column  prop="ipAddr"  label="用户地址"  width="135"> </el-table-column>
+        <el-table-column  prop="createTime"  label="开始时间"  width="190"> </el-table-column>
         <el-table-column  prop="url"  label="请求路径"  width="180"> </el-table-column>
         <el-table-column  prop="args"  label="请求参数"  width="180"> </el-table-column>
         <el-table-column  prop="method"  label="请求方法"  width="180"> </el-table-column>
-        <el-table-column  prop="createTime"  label="开始时间"  width="220"> </el-table-column>
-        <el-table-column  prop="endTime"  label="结束时间"  width="220"> </el-table-column>
+        <el-table-column  prop="endTime"  label="结束时间"  width="190"> </el-table-column>
         <el-table-column  prop="error"  label="错误提示"  width="180"> </el-table-column>
         <el-table-column  fixed="right"  label="操作"  width="100">
           <template slot-scope="scope">
