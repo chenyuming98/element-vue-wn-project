@@ -29,7 +29,6 @@
 <script>
   import { login } from '../api/base/users'
 
-
   export default {
     name: 'login',
     data() {
@@ -77,7 +76,7 @@
             this.logining = true;
             login(this.ruleForm).then(res => {
               let resp  = res.data;
-              this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+              // this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
               if(resp.code===200) {
                 this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
                 window.localStorage.setItem("accessToken",resp.data['jwtStr']);

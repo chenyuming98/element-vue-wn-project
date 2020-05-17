@@ -16,7 +16,7 @@ instance.interceptors.request.use(
     let token = window.localStorage.getItem('accessToken');
     if (token) {
       // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-      config.headers['Authorization'] = token
+      config.headers['Authorization'] = "Bearer "+token
     }
     return config
   },
@@ -52,23 +52,6 @@ export const createAPI = (url, method, data) => {
 };
 
 
-export const createFormAPI = (url, method, data) => {
-  let config = {}
-  config.data = data
-  config.headers = {
-    'Cache-Control': 'no-cache',
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  config.responseType = 'json'
-
-  return instance({
-    url,
-    method,
-    ...config
-  })
-};
-
-
 // 文件导出
 export const exportFileRequest = (url, params) => {
   let token = window.localStorage.getItem('accessToken');
@@ -83,4 +66,27 @@ export const exportFileRequest = (url, params) => {
   });
 };
 
+export const createFormAPI = (url, method, data) => {
+  let config = {}
+  config.data = data
+  config.headers = {
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+  config.responseType = 'json'
+  config.transformRequest = [
+    function(data) {
+      let ret = ''
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }
+  ]
+  return instance({
+    url,
+    method,
+    ...config
+  })
+}
 

@@ -1,11 +1,6 @@
 <template>
 
   <div>
-    <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>公司管理</el-breadcrumb-item>
-      <el-breadcrumb-item>员工管理</el-breadcrumb-item>
-    </el-breadcrumb>
     <!--表格头菜单-->
     <el-card class="box-card">
       <div class="tableHeaderToolButtonGroup">
