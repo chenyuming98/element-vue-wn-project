@@ -195,8 +195,8 @@
               </el-tab-pane>
               <el-tab-pane label="部门职位" name="second">
 
-                <el-form :model="formJob" status-icon  ref="refForm" label-width="120px" size="mini">
-                  <el-form-item label="所属公司" prop="name" >
+                <el-form :model="formJob" status-icon  ref="refJobForm" label-width="120px" size="mini">
+                  <el-form-item label="所属公司" prop="dept" >
                     <el-select :value="valueTitle" :clearable="clearable" @clear="clearHandle">
                       <el-option :value="valueTitle" :label="valueTitle">
                         <el-tree  id="tree-option"
@@ -213,7 +213,7 @@
 
                   </el-form-item>
                   <el-form-item label="工作-等级" prop="job" >
-                    <div>
+
                       <el-select v-model="formJob.jobId" placeholder="请选择工作职位" style="width: 150px">
                         <el-option
                           v-for="item in jobList"
@@ -230,7 +230,7 @@
                           :value="item.dictionaryId">
                         </el-option>
                       </el-select>
-                    </div>
+
                   </el-form-item>
                   <el-form-item label="入职-离职" prop="time" >
                     <el-date-picker v-model="formJob.joinTime" type="date"  placeholder="选择入职日期"   style="width: 150px"> </el-date-picker>
@@ -254,8 +254,7 @@
 </template>
 <!--主页面板-->
 <script>
-  import {list,add,update,remove,batchRemove,exportFile} from "@/api/base/employee"
-  import {findRoleAll} from "@/api/base/role";
+  import {list,add,update,remove,batchRemove,exportFile,code} from "@/api/base/employee"
   import {showLoading,hideLoading} from '@/utils/loadingUtils';
   import {getTreeList} from "@/api/base/company";
 
@@ -367,21 +366,8 @@
             joinTime:'',
             endTime:'',
           },
-          jobList: [
-            {
-            'dictionaryName':'软件工程师',
-            'dictionaryId':'1'
-            },{
-            'dictionaryName':'销售专员',
-            'dictionaryId':'2'
-            }],
-          gradeList: [ {
-            'dictionaryName':'A',
-            'dictionaryId':'11'
-          },{
-            'dictionaryName':'B',
-            'dictionaryId':'12'
-          }],
+          jobList: [],
+          gradeList: [ ],
         }
       },
 
@@ -402,6 +388,31 @@
         },
 
         /*
+        * 查询职称列表
+        */
+        doGradeListQuery(params) {
+          let search = { "code":"grade"};
+          code(search)
+            .then(res => {
+              let resp = res.data;
+              this.gradeList = resp.data;
+            })
+        },
+
+        /*
+        * 查询工作列表
+        */
+        doJobListQuery(params) {
+          let search = { "code":"job"};
+          code(search)
+            .then(res => {
+              let resp = res.data;
+              this.jobList = resp.data;
+            })
+        },
+
+
+        /*
         * 查询部门菜单树结构
         */
         doDeptQuery(chooseId) {
@@ -411,16 +422,7 @@
               this.setTree = resp.data;
             })
         },
-        /*
-        * 查询所有角色
-        */
-        doQueryRoles() {
-          findRoleAll()
-            .then(res => {
-              let resp = res.data;
-              this.rolesData = resp.data;
-            })
-        },
+
 
         /*
         *改变每页显示数
@@ -462,6 +464,8 @@
         handleAdd() {
           this.drawer = true;
           this.formBase = { "sex": "1"};
+          this.doGradeListQuery();
+          this.doJobListQuery();
           this.doDeptQuery();
         },
 
@@ -471,6 +475,8 @@
         handleRowEdit(rowData){
           this.drawer = true;
           this.formBase = rowData;
+          this.doGradeListQuery();
+          this.doJobListQuery();
           this.doDeptQuery();
         },
 
@@ -544,8 +550,8 @@
          */
         cancel() {
           this.dialogFormVisible = false;
-          this.userHaveRoles = [];
           this.$refs['refForm'].resetFields();
+          this.$refs['refJobForm'].resetFields();
           this.drawer =false
         },
 
@@ -569,6 +575,7 @@
                   if(resp.code===200) {
                     this.drawer =false;
                     this.$refs['refForm'].resetFields();
+                    this.$refs['refJobForm'].resetFields();
                     this.doQuery();
                     hideLoading();
                   }
@@ -580,6 +587,7 @@
                   if(resp.code===200) {
                     this.drawer =false;
                     this.$refs['refForm'].resetFields();
+                    this.$refs['refJobForm'].resetFields();
                     this.doQuery();
                     hideLoading();
                   }
@@ -589,7 +597,6 @@
               return false;
             }
           });
-          this.userHaveRoles = [];
         },
 
         /**
@@ -608,9 +615,14 @@
          * 表单内容重置 -这里用在重置搜索表单
          */
         resetForm(formName) {
+          this[formName] = {};
           this.$nextTick(() => {
             this.$refs[formName].resetFields();
           })
+        },
+
+        clearJobForm(){
+          this.clearHandle();
         },
 
         /**
@@ -655,7 +667,7 @@
         },
 
 
-// 初始化值
+        // 初始化值
         initHandle(){
           if(this.valueId){
             this.valueTitle = this.$refs.selectTree.getNode(this.valueId).data[this.props.label]     // 初始化显示
