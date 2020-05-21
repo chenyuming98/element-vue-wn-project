@@ -158,50 +158,97 @@
           autocomplete="off" 关闭表单默认以及功能-->
         <el-card class="box-card">
             <div id="drawerForm">
-              <el-form :model="formBase" status-icon :rules="rules" ref="refForm" label-width="120px" size="mini">
-                <el-form-item label="员工姓名" prop="name" >
-                  <el-input v-model="formBase.name" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="工号" prop="number" >
-                  <el-input v-model="formBase.number" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="手机号码" prop="phone" >
-                  <el-input v-model="formBase.phone" maxlength="11" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="身份证" prop="identityCard" >
-                  <el-input v-model="formBase.identityCard" maxlength="18" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="性别" prop="sex" >
-                  <el-radio-group v-model="formBase.sex"  >
-                    <el-radio label="1" >男</el-radio>
-                    <el-radio label="2" >女</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-                <el-form-item label="邮箱" prop="mailbox" >
-                  <el-input v-model="formBase.mailbox" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="生日" prop="birthday" >
-                  <el-date-picker v-model="formBase.birthday" type="date"  placeholder="选择日期" > </el-date-picker>
-                </el-form-item>
-                <el-form-item label="地址" prop="address" >
-                  <el-input v-model="formBase.address" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="更新时间" prop="updateTime" >
-                  <el-input v-model="formBase.updateTime" autocomplete="off" readonly></el-input>
-                </el-form-item>
-              </el-form>
-            <!--    表单按钮   -->
-             <div slot="footer" class="dialog-footer" style="position:absolute;right:5px;bottom:5px;">
-                        <el-button  size="mini" @click="cancel">取 消</el-button>
-                        <el-button  size="mini" type="primary" @click="submitForm">确 定</el-button>
-                      </div>
+              <el-tabs v-model="activeName" type="card" >
+              <el-tab-pane label="基本信息" name="first">
+                <el-form :model="formBase" status-icon :rules="rules" ref="refForm" label-width="120px" size="mini">
+                  <el-form-item label="员工姓名" prop="name" >
+                    <el-input v-model="formBase.name" autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="工号" prop="number" >
+                    <el-input v-model="formBase.number" autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="手机号码" prop="phone" >
+                    <el-input v-model="formBase.phone" maxlength="11" autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="身份证" prop="identityCard" >
+                    <el-input v-model="formBase.identityCard" maxlength="18" autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="性别" prop="sex" >
+                    <el-radio-group v-model="formBase.sex"  >
+                      <el-radio label="1" >男</el-radio>
+                      <el-radio label="2" >女</el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                  <el-form-item label="邮箱" prop="mailbox" >
+                    <el-input v-model="formBase.mailbox" autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="生日" prop="birthday" >
+                    <el-date-picker v-model="formBase.birthday" type="date"  placeholder="选择日期" > </el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="地址" prop="address" >
+                    <el-input v-model="formBase.address" autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="更新时间" prop="updateTime" >
+                    <el-input v-model="formBase.updateTime" autocomplete="off" readonly></el-input>
+                  </el-form-item>
+                </el-form>
+              </el-tab-pane>
+              <el-tab-pane label="部门职位" name="second">
+
+                <el-form :model="formJob" status-icon  ref="refForm" label-width="120px" size="mini">
+                  <el-form-item label="所属公司" prop="name" >
+                    <el-select :value="valueTitle" :clearable="clearable" @clear="clearHandle">
+                      <el-option :value="valueTitle" :label="valueTitle">
+                        <el-tree  id="tree-option"
+                                  ref="selectTree"
+                                  :accordion="accordion"
+                                  :data="setTree"
+                                  :props="props"
+                                  :node-key="props.value"
+                                  :default-expanded-keys="defaultExpandedKey"
+                                  @node-click="handleNodeClick">
+                        </el-tree>
+                      </el-option>
+                    </el-select>
+
+                  </el-form-item>
+                  <el-form-item label="工作-等级" prop="job" >
+                    <div>
+                      <el-select v-model="formJob.jobId" placeholder="请选择工作职位" style="width: 150px">
+                        <el-option
+                          v-for="item in jobList"
+                          :key="item.dictionaryId"
+                          :label="item.dictionaryName"
+                          :value="item.dictionaryId">
+                        </el-option>
+                      </el-select>
+                      <el-select v-model="formJob.gradeId" placeholder="请选择工作等级" style="width: 150px">
+                        <el-option
+                          v-for="item in gradeList"
+                          :key="item.dictionaryId"
+                          :label="item.dictionaryName"
+                          :value="item.dictionaryId">
+                        </el-option>
+                      </el-select>
+                    </div>
+                  </el-form-item>
+                  <el-form-item label="入职-离职" prop="time" >
+                    <el-date-picker v-model="formJob.joinTime" type="date"  placeholder="选择入职日期"   style="width: 150px"> </el-date-picker>
+                    <el-date-picker v-model="formJob.endTime" type="date"  placeholder="选择离职日期"   style="width: 150px"> </el-date-picker>
+                  </el-form-item>
+                </el-form>
+              </el-tab-pane>
+              </el-tabs>
+              <!--    表单按钮   -->
+              <div slot="footer" class="dialog-footer" style="position:absolute;right:5px;bottom:5px;">
+                <el-button  size="mini" @click="cancel">取 消</el-button>
+                <el-button  size="mini" type="primary" @click="submitForm">确 定</el-button>
+              </div>
             </div>
         </el-card>
       </el-drawer>
-    <!--2. 添加编辑表单  -->
-    <el-dialog :title="formTitle"  :visible.sync="dialogFormVisible" :before-close="cancel" :close-on-click-modal="false" :width="'40%'">
 
-    </el-dialog>
+
   </div>
 
 </template>
@@ -210,13 +257,49 @@
   import {list,add,update,remove,batchRemove,exportFile} from "@/api/base/employee"
   import {findRoleAll} from "@/api/base/role";
   import {showLoading,hideLoading} from '@/utils/loadingUtils';
+  import {getTreeList} from "@/api/base/company";
 
   const  multipleSelectionList =  new Set([]);
-  const mytoken =  localStorage.getItem('accessToken');
+  const myToken =  localStorage.getItem('accessToken');
     export default {
+
+      props:{
+        /* 配置项 */
+        props:{
+          type: Object,
+          default:()=>{
+            return {
+              value:'id',             // ID字段名
+              label: 'name',       // 显示名称
+              children: 'children'    // 子级字段名
+            }
+          }
+        },
+
+        /* 初始值 */
+        value:{
+          type: Number,
+          default: ()=>{ return null }
+        },
+        /* 可清空选项 */
+        clearable:{
+          type:Boolean,
+          default:()=>{ return true }
+        },
+        /* 自动收起 */
+        accordion:{
+          type:Boolean,
+          default:()=>{ return false }
+        },
+      },
       data() {
         return {
-          token: {'Authorization': mytoken},
+          valueId:this.value,    // 初始值
+          valueTitle:'',
+          defaultExpandedKey:[],
+          deptModule:'deptModule',
+          showDept:false,
+          token: {'Authorization': myToken},
           showMoreSearchInput: false,
           drawer: false,
           direction: 'rtl',
@@ -224,6 +307,7 @@
           dataList: [],
           multipleSelection: multipleSelectionList,
           total: 0,
+          employeeJobs: [],
           requestParameters: {
             page: 1,
             size: 10,
@@ -233,8 +317,11 @@
             phone:undefined,
             identityCard: undefined,
           },
-          userHaveRoles: [],
-          rolesData: [],
+          defaultProps: {//绑定树结构映射基础参数
+            label: 'name',
+            children: 'children'
+          },
+          setTree: [],  //全部后台树结构数据绑定对象
           //定义弹框绑定显示状态
           dialogFormVisible: false,
           formTitle : '添加',
@@ -251,7 +338,8 @@
             address: '',
             createTime: '',
             updateTime: '',
-            birthday:''
+            birthday:'',
+            employeeJobList:[]
           },
           //条件搜索
           searchForm:{
@@ -261,6 +349,7 @@
             phone:'',
             identityCard: '',
           },
+          activeName: 'first',
           //v-model 绑定校验规则
           rules: {
             // name: [
@@ -270,6 +359,29 @@
             // userPassword: [{required: true, message: '请输入密码', trigger: 'blur'},
             //   {min: 6, max: 16, message: '密码长度在 6 到 16个字符', trigger: 'blur'}]
           },
+          formJob:{
+            employeeId:'',
+            deptId:'',
+            jobId:'',
+            gradeId:'',
+            joinTime:'',
+            endTime:'',
+          },
+          jobList: [
+            {
+            'dictionaryName':'软件工程师',
+            'dictionaryId':'1'
+            },{
+            'dictionaryName':'销售专员',
+            'dictionaryId':'2'
+            }],
+          gradeList: [ {
+            'dictionaryName':'A',
+            'dictionaryId':'11'
+          },{
+            'dictionaryName':'B',
+            'dictionaryId':'12'
+          }],
         }
       },
 
@@ -289,6 +401,16 @@
             })
         },
 
+        /*
+        * 查询部门菜单树结构
+        */
+        doDeptQuery(chooseId) {
+          getTreeList()
+            .then(res => {
+              let resp = res.data;
+              this.setTree = resp.data;
+            })
+        },
         /*
         * 查询所有角色
         */
@@ -340,6 +462,7 @@
         handleAdd() {
           this.drawer = true;
           this.formBase = { "sex": "1"};
+          this.doDeptQuery();
         },
 
         /**
@@ -348,6 +471,7 @@
         handleRowEdit(rowData){
           this.drawer = true;
           this.formBase = rowData;
+          this.doDeptQuery();
         },
 
         /**
@@ -432,6 +556,10 @@
           this.$refs['refForm'].validate((valid) => {
             if (valid) {
               showLoading();
+              this.formBase.employeeJobList = [];
+              this.formJob.employeeId =   this.formBase.employeeId;
+              this.formBase.employeeJobList.push(this.formJob);
+              console.log( this.formBase);
               this.formBase.createTime =undefined;
               this.formBase.updateTime =undefined;
               if (this.formBase.employeeId){
@@ -526,6 +654,48 @@
 
         },
 
+
+// 初始化值
+        initHandle(){
+          if(this.valueId){
+            this.valueTitle = this.$refs.selectTree.getNode(this.valueId).data[this.props.label]     // 初始化显示
+            this.$refs.selectTree.setCurrentKey(this.valueId)       // 设置默认选中
+            this.defaultExpandedKey = [this.valueId]      // 设置默认展开
+          }
+          this.$nextTick(()=>{
+            let scrollWrap = document.querySelectorAll('.el-scrollbar .el-select-dropdown__wrap')[0]
+            let scrollBar = document.querySelectorAll('.el-scrollbar .el-scrollbar__bar')
+            scrollWrap.style.cssText = 'margin: 0px; max-height: none; overflow: hidden;'
+            scrollBar.forEach(ele => ele.style.width = 0)
+          })
+
+        },
+
+        // 选中所属公司
+        handleNodeClick(node){
+          this.formJob.deptId = node.companyId;
+          console.log(node.companyId);
+          this.valueTitle = node[this.props.label]
+          this.valueId = node[this.props.value]
+          this.$emit('getValue',this.valueId)
+          this.defaultExpandedKey = []
+        },
+        // 清除选中
+        clearHandle(){
+          this.valueTitle = ''
+          this.valueId = null
+          this.defaultExpandedKey = []
+          this.clearSelected()
+          this.$emit('getValue',null)
+        },
+        /* 清空选中样式 */
+        clearSelected(){
+          let allNode = document.querySelectorAll('#tree-option .el-tree-node')
+          allNode.forEach((element)=>element.classList.remove('is-current'))
+        }
+      },
+      mounted(){
+        this.initHandle()
       },
       // 创建完毕状态
       created: function () {
@@ -564,4 +734,31 @@
   .el-icon-arrow-down {
     font-size: 12px;
   }
+
+  .el-scrollbar .el-scrollbar__view .el-select-dropdown__item{
+    height: auto;
+    max-height: 274px;
+    padding: 0;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+  .el-select-dropdown__item.selected{
+    font-weight: normal;
+  }
+  ul li >>>.el-tree .el-tree-node__content{
+    height:auto;
+    padding: 0 20px;
+  }
+  .el-tree-node__label{
+    font-weight: normal;
+  }
+  .el-tree >>>.is-current .el-tree-node__label{
+    color: #409EFF;
+    font-weight: 700;
+  }
+  .el-tree >>>.is-current .el-tree-node__children .el-tree-node__label{
+    color:#606266;
+    font-weight: normal;
+  }
+
 </style>
