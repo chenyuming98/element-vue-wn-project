@@ -268,7 +268,7 @@
           type: Object,
           default:()=>{
             return {
-              value:'id',             // ID字段名
+              value:'deptId',             // ID字段名
               label: 'name',       // 显示名称
               children: 'children'    // 子级字段名
             }
@@ -277,7 +277,7 @@
 
         /* 初始值 */
         value:{
-          type: Number,
+          type: String,
           default: ()=>{ return null }
         },
         /* 可清空选项 */
@@ -462,6 +462,7 @@
          * 添加新员工
          */
         handleAdd() {
+          this.clearJobForm();
           this.drawer = true;
           this.formBase = { "sex": "1"};
           this.doGradeListQuery();
@@ -473,11 +474,16 @@
          * 表格行编辑
          */
         handleRowEdit(rowData){
+          this.clearJobForm();
           this.drawer = true;
           this.formBase = rowData;
           this.doGradeListQuery();
           this.doJobListQuery();
           this.doDeptQuery();
+          this.formJob = rowData['employeeJobList'][0]
+          this.$nextTick(() => {
+            this.$refs.selectTree.setCheckedKeys(["1250709677677924352"]);
+          });
         },
 
         /**
@@ -551,7 +557,7 @@
         cancel() {
           this.dialogFormVisible = false;
           this.$refs['refForm'].resetFields();
-          this.$refs['refJobForm'].resetFields();
+          this.clearJobForm();
           this.drawer =false
         },
 
@@ -565,9 +571,8 @@
               this.formBase.employeeJobList = [];
               this.formJob.employeeId =   this.formBase.employeeId;
               this.formBase.employeeJobList.push(this.formJob);
-              console.log( this.formBase);
-              this.formBase.createTime =undefined;
-              this.formBase.updateTime =undefined;
+              // this.formBase.createTime =undefined;
+              // this.formBase.updateTime =undefined;
               if (this.formBase.employeeId){
                 update(this.formBase).then(res => {
                   let resp  = res.data;
@@ -577,6 +582,7 @@
                     this.$refs['refForm'].resetFields();
                     this.$refs['refJobForm'].resetFields();
                     this.doQuery();
+                    this.clearJobForm();
                     hideLoading();
                   }
                 })
@@ -587,7 +593,7 @@
                   if(resp.code===200) {
                     this.drawer =false;
                     this.$refs['refForm'].resetFields();
-                    this.$refs['refJobForm'].resetFields();
+                    this.clearJobForm();
                     this.doQuery();
                     hideLoading();
                   }
@@ -623,6 +629,13 @@
 
         clearJobForm(){
           this.clearHandle();
+          this.formBase.employeeId = '';
+          this.formBase.deptId = '';
+          this.formJob.jobId = '';
+          this.formJob.gradeId = '';
+          this.formJob.joinTime = '';
+          this.formJob.endTime = '';
+
         },
 
         /**
@@ -686,7 +699,6 @@
         // 选中所属公司
         handleNodeClick(node){
           this.formJob.deptId = node.companyId;
-          console.log(node.companyId);
           this.valueTitle = node[this.props.label]
           this.valueId = node[this.props.value]
           this.$emit('getValue',this.valueId)
