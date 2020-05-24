@@ -6,7 +6,7 @@ import {showLoading,hideLoading} from '@/utils/loadingUtils';
 // create an axios instance
 const instance = axios.create({
   baseURL:  'http://www.tianyu.com', // api的base_url
-  timeout: 5000 // request timeout
+  timeout: 15000 // request timeout
 });
 
 // request interceptor

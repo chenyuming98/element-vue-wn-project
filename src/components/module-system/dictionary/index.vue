@@ -56,25 +56,27 @@
       <!-- :model绑定表单对象  status-icon控制每一行表单校验通过后图标显示正确和错误   :rules绑定校验规则
               autocomplete="off" 关闭表单默认以及功能-->
       <el-form :model="formBase" status-icon  ref="refForm" label-width="120px">
-        <el-form-item label="字典名称" prop="formUsername" >
+        <el-form-item label="字典名称" prop="dictionaryName" >
           <el-input v-model="formBase.dictionaryName" autocomplete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="父级" prop="formUsername" >
+        <el-form-item label="父级" prop="selectFormChooseId" >
             <el-select v-model="selectFormChooseId" filterable placeholder="请选择"  allow-create :disabled="selectFormParentNameUse">
               <el-option   v-for="item in allParentDataList"   :key="item.dictionaryId"    :label="item.dictionaryName"   :value="item.dictionaryId">
               </el-option>
             </el-select>
           </el-form-item>
 
-        <el-form-item label="字典编码" prop="formUsername" >
-          <el-input v-model="formBase.dictionaryCode" autocomplete="off"></el-input>
+        <el-form-item label="字典编码" prop="dictionaryCode" >
+          <el-input v-model="formBase.dictionaryCode" autocomplete="off" :disabled="disabledCode"></el-input>
         </el-form-item>
 
-        <el-form-item label="字典参数" prop="formUsername" >
+        <el-form-item label="字典参数" prop="dictionaryValue" >
           <el-input v-model="formBase.dictionaryValue" autocomplete="off"></el-input>
         </el-form-item>
-
+        <el-form-item label="描述" prop="dictionaryInfo" >
+          <el-input type="textarea" v-model="formBase.dictionaryInfo" autocomplete="off" style="width: 300px"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
@@ -106,6 +108,7 @@
         //定义弹框绑定显示状态
         dialogFormVisible: false,
         selectFormParentNameUse: false,
+        disabledCode: false,
         formTitle : '添加',
         //定义表单初始化参数
         formBase: {
@@ -114,6 +117,7 @@
           dictionaryParentId: '',
           dictionaryCode: '',
           dictionaryValue: '',
+          dictionaryInfo: '',
         },
         allParentDataList: [],
         selectFormChooseId: '',
@@ -176,13 +180,25 @@
         if (rowData && rowData.dictionaryParentId){
           this.selectFormChooseId = rowData.dictionaryId;
           this.selectFormParentNameUse = true;
+          this.disabledCode =false;
         }else {
           this.selectFormChooseId = "0";
           this.selectFormParentNameUse = false;
+          this.disabledCode =false;
+          this.formBase ={
+              dictionaryId: '',
+              dictionaryName: '',
+              dictionaryParentId: '',
+              dictionaryCode: '',
+              dictionaryValue: '',
+              dictionaryInfo: '',
+          }
         }
-
-        this.formBase = {
-        };
+        if (rowData){
+          this.formBase = {
+            dictionaryCode: rowData['dictionaryCode'],
+          };
+        }
         this.formTitle = "添加";
         this.dialogFormVisible = true
       },
@@ -195,9 +211,11 @@
         if (rowData.dictionaryParentId ==="0"){
           this.selectFormChooseId = rowData.dictionaryParentId;
           this.selectFormParentNameUse = true;
+          this.disabledCode = false;
         }else {
           this.selectFormChooseId = rowData.dictionaryId;
-          this.selectFormParentNameUse = false;
+          this.selectFormParentNameUse = true;
+          this.disabledCode = true;
         }
         this.formTitle = "编辑";
         if (rowData.dictionaryParentId !=="0"){
@@ -209,6 +227,7 @@
           dictionaryParentId: rowData.dictionaryParentId,
           dictionaryCode: rowData.dictionaryCode,
           dictionaryValue: rowData.dictionaryValue,
+          dictionaryInfo: rowData.dictionaryInfo,
         };
         this.dialogFormVisible = true;
       },
