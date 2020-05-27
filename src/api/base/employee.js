@@ -9,3 +9,4 @@ export const remove = data => createAPI(`/organization/employee/${data.id}`, 'de
 export const batchRemove = data => createAPI(`/organization/employee/deletes`, 'post', data);
 export const detail = data => createAPI(`/organization/employee/${data.id}`, 'get', data);
 export const exportFile = data => exportFileRequest(`/organization/employee/export`, 'get', data);
+export const clearEmployeeJobs = data => createAPI(`/organization/employee/clearEmployeeJobs`, 'post', data);

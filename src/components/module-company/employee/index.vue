@@ -42,14 +42,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <!--表格头菜单 功能按钮-->
-<!--        <div id="handButton" >-->
-<!--          <el-button icon="el-icon-plus" size="mini" @click="handleAdd">新增员工</el-button>-->
-<!--          <el-button icon="el-icon-delete" size="mini" @click="batchDelete">批量删除</el-button>-->
 
-<!--          <el-button icon="el-icon-download" size="mini" @click="">导入</el-button>-->
-<!--          <el-button icon="el-icon-upload2" size="mini" @click="">导出</el-button>-->
-<!--        </div>-->
         <div id="handButton" >
           <el-row type="flex" class="row-bg">
 
@@ -81,19 +74,6 @@
 
           </el-row>
 
-
-          <!--          &lt;!&ndash; :auto-upload =true 立即上传   action上传地址 limit限制文件数量 headers携带请求头 &ndash;&gt;-->
-          <!--          <el-upload-->
-          <!--            class="upload-demo"-->
-          <!--            ref="upload"-->
-          <!--            action="http://www.tianyu.com/person/worklog/fileUpLoad"-->
-          <!--            :limit="1"-->
-          <!--            :headers="token"-->
-          <!--            :auto-upload="true">-->
-          <!--            <el-button icon="el-icon-download" size="mini" @click="">导入</el-button>-->
-          <!--          </el-upload>-->
-
-          <!--          <el-button icon="el-icon-upload2" size="mini" @click="">导出</el-button>-->
         </div>
       </div>
     </el-card>
@@ -195,24 +175,26 @@
               </el-tab-pane>
               <el-tab-pane label="部门职位" name="second">
 
-                <el-form :model="formJob" status-icon  ref="refJobForm" label-width="120px" size="mini">
-                  <el-form-item label="所属公司" prop="dept" >
-                    <el-select :value="valueTitle" :clearable="clearable" @clear="clearHandle">
-                      <el-option :value="valueTitle" :label="valueTitle">
-                        <el-tree  id="tree-option"
-                                  ref="selectTree"
-                                  :accordion="accordion"
-                                  :data="setTree"
-                                  :props="props"
-                                  :node-key="props.value"
-                                  :default-expanded-keys="defaultExpandedKey"
-                                  @node-click="handleNodeClick">
-                        </el-tree>
-                      </el-option>
-                    </el-select>
+                <div>
+                  <el-button icon="el-icon-delete" size="mini" @click="handleClearJob" style="margin-left: 430px;"></el-button>
+                  <el-form :model="formJob" status-icon  ref="refJobForm" label-width="120px" style="" size="mini">
+                    <el-form-item label="所属公司" prop="dept" >
+                      <el-select :value="valueTitle" :clearable="clearable" @clear="clearHandle">
+                        <el-option :value="valueTitle" :label="valueTitle">
+                          <el-tree  id="tree-option"
+                                    ref="selectTree"
+                                    :accordion="accordion"
+                                    :data="setTree"
+                                    :props="props"
+                                    :node-key="props.value"
+                                    :default-expanded-keys="defaultExpandedKey"
+                                    @node-click="handleNodeClick">
+                          </el-tree>
+                        </el-option>
+                      </el-select>
 
-                  </el-form-item>
-                  <el-form-item label="工作-等级" prop="job" >
+                    </el-form-item>
+                    <el-form-item label="工作-等级" prop="job" >
 
                       <el-select v-model="formJob.jobId" placeholder="请选择工作职位" style="width: 150px">
                         <el-option
@@ -231,12 +213,15 @@
                         </el-option>
                       </el-select>
 
-                  </el-form-item>
-                  <el-form-item label="入职-离职" prop="time" >
-                    <el-date-picker v-model="formJob.joinTime" type="date"  placeholder="选择入职日期"   style="width: 150px"> </el-date-picker>
-                    <el-date-picker v-model="formJob.endTime" type="date"  placeholder="选择离职日期"   style="width: 150px"> </el-date-picker>
-                  </el-form-item>
-                </el-form>
+                    </el-form-item>
+                    <el-form-item label="入职-离职" prop="time" >
+                      <el-date-picker v-model="formJob.joinTime" type="date"  placeholder="选择入职日期"   style="width: 150px"> </el-date-picker>
+                      <el-date-picker v-model="formJob.endTime" type="date"  placeholder="选择离职日期"   style="width: 150px"> </el-date-picker>
+                    </el-form-item>
+                  </el-form>
+                </div>
+<!--                <el-divider></el-divider>-->
+
               </el-tab-pane>
               </el-tabs>
               <!--    表单按钮   -->
@@ -254,7 +239,7 @@
 </template>
 <!--主页面板-->
 <script>
-  import {list,add,update,remove,batchRemove,exportFile,code} from "@/api/base/employee"
+  import {list,add,update,remove,batchRemove,clearEmployeeJobs,exportFile,code} from "@/api/base/employee"
   import {showLoading,hideLoading} from '@/utils/loadingUtils';
   import {getTreeList} from "@/api/base/company";
 
@@ -359,6 +344,7 @@
             //   {min: 6, max: 16, message: '密码长度在 6 到 16个字符', trigger: 'blur'}]
           },
           formJob:{
+            dbKey:'',
             employeeId:'',
             deptId:'',
             jobId:'',
@@ -440,23 +426,6 @@
           this.doQuery()
         },
 
-        /**
-         * 表格格式化内容
-         */
-        formatterRoles(row, column) {
-          let roles = row['roles'];
-          let rolesNames = '';
-          if (roles) {
-            $.each(roles, function (index, val) { //index是数组对象索引，val是对象
-              if (index === 0) {
-                rolesNames = val.roleName;
-              } else {
-                rolesNames = rolesNames + ',' + val.roleName;
-              }
-            });
-          }
-          return rolesNames;
-        },
 
         /**
          * 添加新员工
@@ -464,6 +433,7 @@
         handleAdd() {
           this.clearJobForm();
           this.drawer = true;
+          this.activeName = 'first';
           this.formBase = { "sex": "1"};
           this.doGradeListQuery();
           this.doJobListQuery();
@@ -474,16 +444,18 @@
          * 表格行编辑
          */
         handleRowEdit(rowData){
-          this.clearJobForm();
-          this.drawer = true;
-          this.formBase = rowData;
+          // this.clearJobForm();
           this.doGradeListQuery();
           this.doJobListQuery();
           this.doDeptQuery();
-          this.formJob = rowData['employeeJobList'][0]
-          this.$nextTick(() => {
-            this.$refs.selectTree.setCheckedKeys(["1250709677677924352"]);
-          });
+          this.drawer = true;
+          this.activeName = 'first';
+          this.formBase = rowData;
+          let eDeptId = rowData['employeeJobList'][0]['deptId'];
+          let eDeptName = rowData['employeeJobList'][0]['deptName'];
+          this.valueTitle =  eDeptName;
+          this.valueId =  eDeptId;
+          this.formJob = rowData['employeeJobList'][0];
         },
 
         /**
@@ -569,7 +541,7 @@
             if (valid) {
               showLoading();
               this.formBase.employeeJobList = [];
-              this.formJob.employeeId =   this.formBase.employeeId;
+              this.formJob.employeeId =  this.formBase.employeeId;
               this.formBase.employeeJobList.push(this.formJob);
               // this.formBase.createTime =undefined;
               // this.formBase.updateTime =undefined;
@@ -631,11 +603,14 @@
           this.clearHandle();
           this.formBase.employeeId = '';
           this.formBase.deptId = '';
-          this.formJob.jobId = '';
-          this.formJob.gradeId = '';
-          this.formJob.joinTime = '';
-          this.formJob.endTime = '';
-
+          this.formJob ={
+            employeeId:'',
+            deptId:'',
+            jobId:'',
+            gradeId:'',
+            joinTime:'',
+            endTime:'',
+          }
         },
 
         /**
@@ -706,16 +681,49 @@
         },
         // 清除选中
         clearHandle(){
-          this.valueTitle = ''
-          this.valueId = null
-          this.defaultExpandedKey = []
-          this.clearSelected()
+          this.valueTitle = '';
+          this.valueId = null;
+          this.defaultExpandedKey = [];
+          this.clearSelected();
           this.$emit('getValue',null)
         },
         /* 清空选中样式 */
         clearSelected(){
           let allNode = document.querySelectorAll('#tree-option .el-tree-node')
           allNode.forEach((element)=>element.classList.remove('is-current'))
+        },
+
+        // 清除工作
+        handleClearJob(){
+          console.log("coming")
+          let dbKey =  this.formJob.dbKey;
+          let submitData = [ {'dbKey':dbKey }]
+          this.$confirm(  `本次操作将清除员工的职位？`, {
+            type: 'warning'
+          }  ).then(() => {
+            showLoading();
+            clearEmployeeJobs(submitData)
+              .then(res => {
+                let resp = res.data;
+                if (resp.code === 200) {
+                  this.$message.success('清除成功!');
+                  this.formJob ={
+                    employeeId:'',
+                    deptId:'',
+                    jobId:'',
+                    gradeId:'',
+                    joinTime:'',
+                    endTime:'',
+                  }
+                  this.valueTitle = "";
+                  hideLoading();
+                } else {
+                  hideLoading();
+                  this.$message.error(resp.msg);
+                }
+              })
+          }).catch(() => {
+          });
         }
       },
       mounted(){
