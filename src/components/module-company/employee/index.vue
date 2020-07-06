@@ -2,8 +2,8 @@
 
   <div>
     <!--表格头菜单-->
-    <el-card class="box-card">
-      <div class="tableHeaderToolButtonGroup">
+    <el-col class="tableHeaderToolButtonGroup" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+      <el-card class="box-card">
         <!--搜索表单 + 表单搜索按钮   prop在表单重置时候有用！ -->
         <div id="searchForm">
           <el-form :model="requestParameters" :inline="true" status-icon :rules="rules" ref="searchRefForm" label-width="40px"
@@ -46,15 +46,15 @@
         <div id="handButton" >
           <el-row type="flex" class="row-bg">
 
-            <el-col :span="2">
+            <el-col :span="1">
               <el-button icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
             </el-col>
 
-            <el-col :span="2">
+            <el-col :span="1">
               <el-button icon="el-icon-delete" size="mini" @click="batchDelete">删除</el-button>
             </el-col>
 
-            <el-col :span="2">
+            <el-col :span="1">
               <!--     :auto-upload =true 立即上传   action上传地址 limit限制文件数量 headers携带请求头 &ndash;&gt;-->
               <el-upload
                 class="upload-demo"
@@ -68,31 +68,33 @@
               </el-upload>
             </el-col>
 
-            <el-col :span="2">
+            <el-col :span="1">
               <el-button icon="el-icon-upload2" size="mini" @click="download">导出</el-button>
             </el-col>
 
           </el-row>
 
         </div>
-      </div>
-    </el-card>
+      </el-card>
+    </el-col>
+
 
     <!--表格内容  ref绑定选中内容-->
-    <el-card class="tableCard" >
+    <el-col class="followInfo" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+      <el-card class="tableCard" >
     <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable"  >
           <el-table-column type="selection" width="40" prop="employeeId"> </el-table-column>
-          <el-table-column  prop="name"  label="员工姓名"  width="100"> </el-table-column>
-          <el-table-column  prop="number"  label="工号"  width="100"> </el-table-column>
+          <el-table-column  prop="name"  label="员工姓名"  > </el-table-column>
+          <el-table-column  prop="number"  label="工号"  > </el-table-column>
           <!--    //TODO等待使用FASTDFS    -->
-          <el-table-column  prop="images"  label="头像"  width="100">
+          <el-table-column  prop="images"  label="头像"  >
             <template   slot-scope="scope">
               <div class="block"><el-avatar size="small" :src="scope.row.images"></el-avatar></div>
             </template>
           </el-table-column>
-          <el-table-column  prop="sex_dictText"  label="性别"  width="60"> </el-table-column>
-          <el-table-column  prop="phone"  label="手机号"  width="180"> </el-table-column>
-          <el-table-column  prop="identityCard"  label="身份证"  sortable width="180"> </el-table-column>
+          <el-table-column  prop="sex_dictText"  label="性别"  > </el-table-column>
+          <el-table-column  prop="phone"  label="手机号"> </el-table-column>
+          <el-table-column  prop="identityCard"  label="身份证"  sortable > </el-table-column>
 <!--          <el-table-column-->
 <!--            prop="userStatus"-->
 <!--            label="状态">-->
@@ -106,32 +108,31 @@
 <!--              </el-switch>-->
 <!--            </template>-->
 <!--          </el-table-column>-->
-          <el-table-column  prop="birthday"  label="生日"  width="100"> </el-table-column>
-                  <el-table-column  fixed="right"  label="操作"  width="180">
-                    <template slot-scope="scope">
-                      <el-button @click="handleRowEdit(scope.row)"  type="text" style="margin-left: 16px;">详情</el-button>
-                      <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
-                    </template>
-                  </el-table-column>
+          <el-table-column  prop="birthday"  label="生日"  > </el-table-column>
 
+          <el-table-column  fixed="right"  label="操作"  >
+            <template slot-scope="scope">
+              <el-button @click="handleRowEdit(scope.row)"  type="text" style="margin-left: 16px;">详情</el-button>
+              <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
+            </template>
+          </el-table-column>
         </el-table>
-
-
-      <!--表格分页-->
-      <div class="block">
-        <!-- current-page 当前页数  每页显示数-->
-        <div class="tablePagination">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="requestParameters.page"
-            :page-size="requestParameters.size"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total">
-          </el-pagination>
-        </div>
+    <!--表格分页-->
+    <div class="block">
+      <!-- current-page 当前页数  每页显示数-->
+      <div class="tablePagination">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="requestParameters.page"
+          :page-size="requestParameters.size"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
       </div>
+    </div>
     </el-card>
+    </el-col>
       <el-drawer  :visible.sync="drawer" :direction="direction"
                   title="详情" size="38%"    :before-close="handleClose"    >
         <!-- :model绑定表单对象  status-icon控制每一行表单校验通过后图标显示正确和错误   :rules绑定校验规则
@@ -231,8 +232,6 @@
             </div>
         </el-card>
       </el-drawer>
-
-
   </div>
 
 </template>

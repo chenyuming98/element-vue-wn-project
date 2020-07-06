@@ -12,12 +12,12 @@
       <!--表格内容  ref绑定选中内容-->
       <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable" >
         <el-table-column type="selection" width="40" prop="userId"> </el-table-column>
-        <el-table-column  prop="username"  label="用户名"  width="180"> </el-table-column>
+        <el-table-column  prop="username"  label="用户名" > </el-table-column>
         <el-table-column
           prop="role"
           label="角色"
           :formatter="formatterRoles"
-          width="250">
+          >
         </el-table-column>
         <el-table-column
           prop="userStatus"
@@ -32,7 +32,7 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column  fixed="right"  label="操作"  width="180">
+        <el-table-column  fixed="right"  label="操作" >
           <template slot-scope="scope">
             <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">+分配员工</el-button>
             <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
@@ -356,5 +356,6 @@
   .el-select{
     width: 300px;
   }
+
 
 </style>

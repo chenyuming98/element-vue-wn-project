@@ -12,12 +12,12 @@
       <!--表格内容  ref绑定选中内容-->
       <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable"  row-key="dictionaryId">
         <el-table-column type="selection" width="40" prop="dictionaryId"> </el-table-column>
-        <el-table-column  prop="dictionaryName"  label="字典名称"  width="180"/>
-        <el-table-column  prop="dictionaryCode"  label="字典编码"  width="180"/>
-        <el-table-column  prop="dictionaryValue"  label="字典参数"  width="180"/>
-        <el-table-column  prop="systemCode"  label="系统内置"     :formatter="formatterSystemCode" width="80"/>
-        <el-table-column  prop="dictionaryInfo"  label="描述"  width="250"/>
-        <el-table-column  fixed="right"  label="操作"  width="180">
+        <el-table-column  prop="dictionaryName"  label="字典名称"  />
+        <el-table-column  prop="dictionaryCode"  label="字典编码"  />
+        <el-table-column  prop="dictionaryValue"  label="字典参数"  />
+        <el-table-column  prop="systemCode"  label="系统内置"     :formatter="formatterSystemCode" />
+        <el-table-column  prop="dictionaryInfo"  label="描述"  />
+        <el-table-column  fixed="right"  label="操作"  >
           <template slot-scope="scope">
             <template v-if="scope.row.isOneMenuInfo">
               <el-button @click="handleAdd(scope.row)"   type="text" size="small">添加</el-button>

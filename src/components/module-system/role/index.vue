@@ -12,11 +12,11 @@
       <!--表格内容  ref绑定选中内容-->
       <el-table :data="dataList"  style="width: 100%" border  ref="multipleTable" >
         <el-table-column type="selection" width="40" prop="roleId"> </el-table-column>
-        <el-table-column  prop="roleName"  label="角色名称"  width="180"> </el-table-column>
-        <el-table-column  prop="roleCode"  label="角色编码"  width="180"> </el-table-column>
+        <el-table-column  prop="roleName"  label="角色名称" > </el-table-column>
+        <el-table-column  prop="roleCode"  label="角色编码" > </el-table-column>
         <el-table-column  prop="description"  label="描述"  > </el-table-column>
 
-        <el-table-column  fixed="right"  label="操作"  width="180">
+        <el-table-column  fixed="right"  label="操作"  >
           <template slot-scope="scope">
             <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
             <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>

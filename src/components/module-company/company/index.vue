@@ -1,8 +1,8 @@
 <template>
   <el-container style="border: 1px solid #eee">
     <el-row style="width: 100%">
-      <el-col :xs="6" :sm="10" :md="8" :lg="6" :xl="4" class="aside">
-        <el-card class="box-card" style="   width: 430px;  height: 552px;">
+      <el-col :xs="6" :sm="10" :md="8" :lg="8" :xl="6" class="aside">
+        <el-card class="box-card"  >
           <div style=" width: 335px; ">
             <el-row style=" padding-bottom: 7px;">
               <el-button type="primary" size="small" @click="addChildNode">添加子级节点</el-button>
@@ -78,8 +78,8 @@
         </div>
       </el-col>
 
-      <el-col :xs="8" :sm="14" :md="16" :lg="18" :xl="20" style=" padding-left: 240px;margin-top: 30px;">
-        <el-card class="box-card">
+      <el-col :offset="2" :xs="8" :sm="14" :md="16" :lg="18" :xl="15" >
+        <el-card class="box-card" >
           <div>
             <!-- 表单编辑按钮 -->
             <el-button  icon="el-icon-edit" size="mini" @click="handleRemoveFormDisable()" style="

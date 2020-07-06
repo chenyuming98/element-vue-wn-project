@@ -1,7 +1,7 @@
 <template >
   <el-container style="border: 1px solid #eee">
     <el-row style="width: 100%">
-      <el-col :xs="6" :sm="10" :md="8" :lg="6" :xl="4" class="aside">
+      <el-col :xs="6" :sm="10" :md="8" :lg="8" :xl="6" class="aside">
           <el-card class="box-card" style="   width: 430px;  height: 552px;">
             <div style=" width: 335px; ">
               <el-row style=" padding-bottom: 7px;">
@@ -79,7 +79,7 @@
           </div>
       </el-col>
 
-      <el-col :xs="8" :sm="14" :md="16" :lg="18" :xl="20" style=" padding-left: 240px;">
+      <el-col :offset="2" :xs="8" :sm="14" :md="16" :lg="18" :xl="15">
         <el-card class="box-card">
           <div>
             <!-- 表单编辑按钮 -->
