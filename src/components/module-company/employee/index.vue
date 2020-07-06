@@ -192,7 +192,6 @@
                           </el-tree>
                         </el-option>
                       </el-select>
-
                     </el-form-item>
                     <el-form-item label="工作-等级" prop="job" >
 
@@ -766,13 +765,16 @@
   .el-icon-arrow-down {
     font-size: 12px;
   }
-
+  /*.el-scrollbar .el-scrollbar__view .el-select-dropdown__item{*/
+  /*  height: auto;*/
+  /*  max-height: 274px;*/
+  /*  padding: 0;*/
+  /*  overflow: hidden;*/
+  /*  overflow-y: auto;*/
+  /*}*/
   .el-scrollbar .el-scrollbar__view .el-select-dropdown__item{
     height: auto;
     max-height: 274px;
-    padding: 0;
-    overflow: hidden;
-    overflow-y: auto;
   }
   .el-select-dropdown__item.selected{
     font-weight: normal;
