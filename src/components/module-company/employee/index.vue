@@ -93,19 +93,19 @@
           <el-table-column  prop="sex_dictText"  label="性别"  width="60"> </el-table-column>
           <el-table-column  prop="phone"  label="手机号"  width="180"> </el-table-column>
           <el-table-column  prop="identityCard"  label="身份证"  sortable width="180"> </el-table-column>
-          <el-table-column
-            prop="userStatus"
-            label="状态">
-            <template slot-scope="scope">
-              <el-switch
-                v-model="scope.row.userStatus"
-                active-color="#13ce66"
-                :active-value= 0
-                :inactive-value=  1
-                @change="handleStatus(scope.row)">
-              </el-switch>
-            </template>
-          </el-table-column>
+<!--          <el-table-column-->
+<!--            prop="userStatus"-->
+<!--            label="状态">-->
+<!--            <template slot-scope="scope">-->
+<!--              <el-switch-->
+<!--                v-model="scope.row.userStatus"-->
+<!--                active-color="#13ce66"-->
+<!--                :active-value= 0-->
+<!--                :inactive-value=  1-->
+<!--                @change="handleStatus(scope.row)">-->
+<!--              </el-switch>-->
+<!--            </template>-->
+<!--          </el-table-column>-->
           <el-table-column  prop="birthday"  label="生日"  width="100"> </el-table-column>
                   <el-table-column  fixed="right"  label="操作"  width="180">
                     <template slot-scope="scope">
@@ -282,7 +282,7 @@
           defaultExpandedKey:[],
           deptModule:'deptModule',
           showDept:false,
-          token: {'Authorization': myToken},
+          token: {'Authorization': "Bearer "+ myToken},
           showMoreSearchInput: false,
           drawer: false,
           direction: 'rtl',
