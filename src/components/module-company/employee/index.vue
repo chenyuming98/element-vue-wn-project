@@ -44,21 +44,16 @@
         </div>
 
         <div id="handButton" >
-          <el-row type="flex" class="row-bg">
 
-            <el-col :span="1">
               <el-button icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
-            </el-col>
 
-            <el-col :span="1">
               <el-button icon="el-icon-delete" size="mini" @click="batchDelete">删除</el-button>
-            </el-col>
 
-            <el-col :span="1">
               <!--     :auto-upload =true 立即上传   action上传地址 limit限制文件数量 headers携带请求头 &ndash;&gt;-->
               <el-upload
-                class="upload-demo"
+                class="upload-demo inline-block margin-right-10"
                 ref="upload"
+                accept=".xls,.xlsx"
                 action="http://www.tianyu.com/organization/employee/fileUpLoad"
                 :limit="1"
                 :on-success="handleAvatarSuccess"
@@ -66,13 +61,8 @@
                 :auto-upload="true">
                 <el-button icon="el-icon-download" size="mini" @click="">导入</el-button>
               </el-upload>
-            </el-col>
-
-            <el-col :span="1">
               <el-button icon="el-icon-upload2" size="mini" @click="download">导出</el-button>
-            </el-col>
 
-          </el-row>
 
         </div>
       </el-card>
@@ -793,5 +783,7 @@
     color:#606266;
     font-weight: normal;
   }
-
+  .inline-block {
+    display: inline-block;
+  }
 </style>

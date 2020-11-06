@@ -79,7 +79,7 @@
           </div>
       </el-col>
 
-      <el-col :offset="2" :xs="8" :sm="14" :md="16" :lg="18" :xl="15">
+      <el-col :offset="2" :xs="8" :sm="14" :md="16" :lg="11" :xl="15">
         <el-card class="box-card">
           <div>
             <!-- 表单编辑按钮 -->
