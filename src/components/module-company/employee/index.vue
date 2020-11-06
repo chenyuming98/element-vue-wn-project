@@ -44,9 +44,7 @@
         </div>
 
         <div id="handButton" >
-
               <el-button icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
-
               <el-button icon="el-icon-delete" size="mini" @click="batchDelete">删除</el-button>
 
               <!--     :auto-upload =true 立即上传   action上传地址 limit限制文件数量 headers携带请求头 &ndash;&gt;-->
@@ -271,7 +269,7 @@
           defaultExpandedKey:[],
           deptModule:'deptModule',
           showDept:false,
-          token: {'Authorization': "Bearer "+ myToken},
+          token: {'Authorization':  myToken},
           showMoreSearchInput: false,
           drawer: false,
           direction: 'rtl',

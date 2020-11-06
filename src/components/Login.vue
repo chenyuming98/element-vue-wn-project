@@ -79,7 +79,7 @@
               // this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
               if(resp.code===200) {
                 this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
-                window.localStorage.setItem("accessToken",resp.data['jwtStr']);
+                window.localStorage.setItem("accessToken",resp.data['jwtStrSwagger']);
                 window.localStorage.setItem("username",resp.data['username']);
                 console.log(  "token：" + window.localStorage.getItem("accessToken"));
                 this.$router.push({ path: '/index' })
