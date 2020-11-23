@@ -1,21 +1,84 @@
 <!--后台首页-->
 <template>
-  <el-card class="box-card">
 
-    <el-row :gutter="20">
-      <el-col :span="10"><div class="grid-content bg-purple">
-        <div id="main" style="width: 600px;height: 400px;"></div>
+    <el-col class="tableHeaderToolButtonGroup" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+      <!--   第一行4卡片内容   -->
+      <el-row :gutter="12">
+        <el-col :span="6">
+          <el-card shadow="always">
+            <p style="font-size:13px;font-family:'Microsoft YaHei';color: #999999">
+              今日访问人数
+            </p>
+            <p style="font-size:28px;font-family:'Microsoft YaHei'">
+              <i class="el-icon-thumb"></i> 1,800
+            </p>
+            <p style="font-size:13px;font-family:'Microsoft YaHei'">
+              周同比12%  <i class="el-icon-arrow-up"></i> 日同比11% <i class="el-icon-arrow-down"></i>
+            </p>
+            <el-divider></el-divider>
+            <p style="font-size:13px;font-family:'Microsoft YaHei';float:left;">
+              总访问人数
+            </p>
+            <p style="font-size:13px;font-family:'Microsoft YaHei';float:left;">
+              <i class="el-icon-thumb"></i> 2,795,852
+            </p>
+          </el-card>
+        </el-col>
 
-        </div></el-col>
-      <el-col :span="2"><div class="grid-content bg-purple"> </div></el-col>
-      <el-col :span="2"><div class="grid-content bg-purple"></div></el-col>
-      <el-col :span="10"><div class="grid-content bg-purple">
-        <el-calendar v-model="value">
-        </el-calendar>
-      </div></el-col>
-    </el-row>
+        <el-col :span="6">
+          <el-card shadow="always">
+            <p style="font-size:13px;font-family:'Microsoft YaHei';color: #999999">
+              今日注册数
+            </p>
+            <p style="font-size:28px;font-family:'Microsoft YaHei'">
+              <i class="el-icon-s-check"></i> 80
+            </p>
+            <p style="font-size:13px;font-family:'Microsoft YaHei'">
+              周同比12%  <i class="el-icon-arrow-up"></i> 日同比11% <i class="el-icon-arrow-down"></i>
+            </p>
+            <el-divider></el-divider>
+            <p style="font-size:13px;font-family:'Microsoft YaHei';float:left;">
+              总用户数
+            </p>
+            <p style="font-size:13px;font-family:'Microsoft YaHei';float:left;">
+              <i class="el-icon-s-check"></i> 452,625
+            </p>
+          </el-card>
+        </el-col>
+        <el-col :span="6">
+          <el-card shadow="always">
+            <p style="font-size:12px;font-family:'Microsoft YaHei'">
+              用户活跃数
+            </p>
+            <p style="font-size:20px;font-family:'Microsoft YaHei'">
+              总用户数
+            </p>
+          </el-card>
+        </el-col>
+        <el-col :span="6">
+          <el-card shadow="always">
+            <p style="font-size:12px;font-family:'Microsoft YaHei'">
+              待办事项
+            </p>
+          </el-card>
+        </el-col>
+      </el-row>
 
-  </el-card>
+      <!--   第一行 日期内容   -->
+      <el-card  shadow="always" style="margin-top: 14px">
+        <el-row :gutter="10">
+          <el-col :span="12"><div class="grid-content bg-purple">
+            <div id="main" style="width: 600px;height: 400px;"></div>
+          </div></el-col>
+          <el-col :span="12"><div class="grid-content bg-purple">
+            <el-calendar v-model="value">
+            </el-calendar>
+          </div></el-col>
+        </el-row>
+      </el-card>
+
+    </el-col>
+
 
 </template>
 
