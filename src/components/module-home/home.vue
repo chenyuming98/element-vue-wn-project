@@ -3,6 +3,8 @@
 
     <el-col class="homepage" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
       <!--   第一行4卡片内容   -->
+
+      <!--   今日访问人数  -->
       <el-row :gutter="12">
         <el-col :span="6">
           <el-card shadow="always">
@@ -13,7 +15,7 @@
               <i class="el-icon-thumb"></i> 1,800
             </p>
             <p style="font-size:13px;font-family:'Microsoft YaHei'">
-              周同比12%  <i class="el-icon-arrow-up"></i> 日同比11% <i class="el-icon-arrow-down"></i>
+              周同比30%  <i class="el-icon-arrow-up"></i> 日同比56% <i class="el-icon-arrow-down"></i>
             </p>
             <el-divider></el-divider>
             <p style="font-size:13px;font-family:'Microsoft YaHei';float:left;">
@@ -25,6 +27,7 @@
           </el-card>
         </el-col>
 
+        <!-- 今日注册数  -->
         <el-col :span="6">
           <el-card shadow="always">
             <p style="font-size:13px;font-family:'Microsoft YaHei';color: #999999">
@@ -45,26 +48,29 @@
             </p>
           </el-card>
         </el-col>
+
+        <!--  系统故障统计  -->
         <el-col :span="6">
           <el-card shadow="always">
             <p style="font-size:13px;font-family:'Microsoft YaHei';color: #999999">
-              今日访问人数
+              今日系统故障数
             </p>
             <p style="font-size:28px;font-family:'Microsoft YaHei'">
-              <i class="el-icon-thumb"></i> 1,800
+              <i class="el-icon-bell"></i> 8
             </p>
             <p style="font-size:13px;font-family:'Microsoft YaHei'">
-              周同比12%  <i class="el-icon-arrow-up"></i> 日同比11% <i class="el-icon-arrow-down"></i>
+              周同比1.2%  <i class="el-icon-arrow-up"></i> 日同比2.7% <i class="el-icon-arrow-down"></i>
             </p>
             <el-divider></el-divider>
             <p style="font-size:13px;font-family:'Microsoft YaHei';float:left;">
-              总访问人数
+              总异常数
             </p>
             <p style="font-size:13px;font-family:'Microsoft YaHei';float:left;">
-              <i class="el-icon-thumb"></i> 2,795,852
+              <i class="el-icon-data-line "></i> 5,206
             </p>
           </el-card>
         </el-col>
+        <!-- 待办事项 -->
         <el-col :span="6">
           <el-card shadow="always">
             <p style="font-size:13px;font-family:'Microsoft YaHei';color: #999999">
