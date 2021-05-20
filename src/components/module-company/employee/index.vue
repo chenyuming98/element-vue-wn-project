@@ -745,7 +745,7 @@
       },
       // 创建完毕状态
       created: function () {
-        console.log( '父子组件状态消息 '+ this.componentMessage);
+        // console.log( '父子组件状态消息 '+ this.componentMessage);
         if (this.componentMessage){
           this.showAllPeople = false
         }

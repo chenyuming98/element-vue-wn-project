@@ -10,7 +10,6 @@ import dictionaryPage from '../components/module-system/dictionary/index.vue'
 import companyPage from '../components/module-company/company/index.vue'
 import employeePage from '../components/module-company/employee/index.vue'
 import sysLogPage from '../components/module-system/syslog/index.vue'
-
 Vue.use(VueRouter);
 
 const routes = [

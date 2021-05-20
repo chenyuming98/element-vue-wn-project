@@ -90,10 +90,17 @@
         //   name: '2',
         //   content: 'Tab 2 content'
         // }],
-        tabIndex: 2
-
+        tabIndex: 2,
+        path:"ws://127.0.0.1:9001/websocket/",
+        socket:""
       }
     },
+
+    mounted () {
+      // 初始化
+      this.websocketInit()
+    },
+
     methods: {
       /*
       * 查询菜单树结构
@@ -151,6 +158,31 @@
         this.$router.push({ path: '/login' })
       },
 
+      //websocket 初始化
+      websocketInit: function () {
+        if(typeof(WebSocket) === "undefined"){
+          alert("您的浏览器不支持socket")
+        }else{
+          // 实例化socket
+          this.accessToken = window.localStorage.getItem("accessToken");
+          this.accessToken = this.accessToken.substring(7);
+          let wsUrl = this.path + this.accessToken;
+          this.socket = new WebSocket(wsUrl);
+          // 监听socket连接
+          this.socket.onopen = this.open;
+          // 监听socket错误信息
+          this.socket.onerror = this.error;
+          // 监听socket消息
+          this.socket.onmessage = this.getMessage;
+
+        }
+      },
+
+      // 前端收到服务器消息
+      getMessage(e){ //数据接收
+        console.log(e.data);
+      },
+
     },
 
     // 创建完毕状态
@@ -158,6 +190,12 @@
       this.username = window.localStorage.getItem("username");
       this.doQuery()
     },
+
+    destroyed () {
+      // 销毁监听
+      this.socket.onclose = this.close
+    },
+
     addTab(targetName) {
       let newTabName = ++this.tabIndex + '';
       this.editableTabs.push({
