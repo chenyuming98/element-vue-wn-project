@@ -44,6 +44,7 @@
         </div>
 
         <div id="handButton" >
+          <template v-if="this.showAllPeople">
               <el-button icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
               <el-button icon="el-icon-delete" size="mini" @click="batchDelete">删除</el-button>
 
@@ -60,8 +61,7 @@
                 <el-button icon="el-icon-download" size="mini" @click="">导入</el-button>
               </el-upload>
               <el-button icon="el-icon-upload2" size="mini" @click="download">导出</el-button>
-
-
+          </template>
         </div>
       </el-card>
     </el-col>
@@ -98,12 +98,23 @@
 <!--          </el-table-column>-->
           <el-table-column  prop="birthday"  label="生日"  > </el-table-column>
 
-          <el-table-column  fixed="right"  label="操作"  >
-            <template slot-scope="scope">
-              <el-button @click="handleRowEdit(scope.row)"  type="text" style="margin-left: 16px;">详情</el-button>
-              <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
-            </template>
-          </el-table-column>
+
+          <template v-if="this.showAllPeople"  >
+            <el-table-column  fixed="right"  label="操作"  width="180">
+              <template slot-scope="scope">
+                <el-button @click="handleRowEdit(scope.row)"  type="text" style="margin-left: 16px;">详情</el-button>
+                <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
+              </template>
+            </el-table-column>
+          </template>
+          <template v-else>
+            <el-table-column  fixed="right"  label="操作"  width="180">
+              <template slot-scope="scope">
+                <el-button @click="handleChoose(scope.row)"  type="text" style="margin-left: 16px;">选择该员工</el-button>
+              </template>
+            </el-table-column>
+          </template>
+
         </el-table>
     <!--表格分页-->
     <div class="block">
@@ -261,11 +272,14 @@
           type:Boolean,
           default:()=>{ return false }
         },
+        /* 父子组件 - 用户绑定员工 */
+        'componentMessage' : String
       },
       data() {
         return {
           valueId:this.value,    // 初始值
           valueTitle:'',
+          showAllPeople:true, //父子主键调用情况下 false
           defaultExpandedKey:[],
           deptModule:'deptModule',
           showDept:false,
@@ -710,6 +724,20 @@
               })
           }).catch(() => {
           });
+        },
+
+        /**
+         * 给父组件传递信息
+         */
+        handleChoose(rowData){
+          console.log('children choose peopleID is ' +rowData['employeeId']);
+          this.$confirm(  `是否确认分配该员工？`, {
+            type: 'warning'
+          }  ).then(() => {
+            this.$emit('choosePeople', rowData);
+          }).catch(() => {
+          });
+
         }
       },
       mounted(){
@@ -717,6 +745,10 @@
       },
       // 创建完毕状态
       created: function () {
+        console.log( '父子组件状态消息 '+ this.componentMessage);
+        if (this.componentMessage){
+          this.showAllPeople = false
+        }
         this.doQuery()
       }
     }

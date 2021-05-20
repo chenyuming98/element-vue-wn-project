@@ -19,6 +19,7 @@
           :formatter="formatterRoles"
           >
         </el-table-column>
+        <el-table-column  prop="employee"    :formatter="formatterEmployee"  label="员工" > </el-table-column>
         <el-table-column
           prop="userStatus"
           label="状态">
@@ -32,9 +33,16 @@
             </el-switch>
           </template>
         </el-table-column>
+        <el-table-column  prop="createTime"  label="创建时间"   > </el-table-column>
+        <el-table-column  prop="updateTime"  label="更新时间"  > </el-table-column>
         <el-table-column  fixed="right"  label="操作" >
           <template slot-scope="scope">
-            <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">+分配员工</el-button>
+            <template v-if="scope.row.employeeId"  >
+              <el-button @click="handleDeletePeople(scope.row)"   type="text" size="small">-清除分配</el-button>
+            </template>
+            <template v-else>
+              <el-button @click="handlePeople(scope.row)"   type="text" size="small">+分配员工</el-button>
+            </template>
             <el-button @click="handleRowEdit(scope.row)"   type="text" size="small">编辑</el-button>
             <el-button @click="handleRowDelete(scope.row)" type="text" size="small">删除</el-button>
           </template>
@@ -82,6 +90,11 @@
         <!--        <el-button @click="resetForm('refForm')">重置</el-button>-->
       </div>
     </el-dialog>
+
+
+    <el-dialog class="abow_dialog"  ref="elDialog"  :width="'80%'"    :visible.sync="employeeDialog"  :before-close="cancelPeople">
+        <component v-bind:is="peopleModule" ref=""  :componentMessage="componentMessage" v-on:choosePeople="choosePeople"></component>
+    </el-dialog>
   </div>
 
 </template>
@@ -90,9 +103,12 @@
   import {list,add,update,remove,batchRemove,updateStatus} from "@/api/base/users"
   import {findRoleAll} from "@/api/base/role";
   import {showLoading,hideLoading} from '@/utils/loadingUtils';
+  import peopleModule from '@/components/module-company/employee/index';
   const  multipleSelectionList =  new Set([]);
     export default {
-
+      components: {
+        peopleModule
+      },
       data() {
         return {
           userAdd: 'UserAdd',
@@ -114,6 +130,7 @@
             username: '',
             userPassword: '',
             roleIds:[],
+            isEditRole: "false"
           },
           //v-model 绑定校验规则
           rules: {
@@ -124,6 +141,11 @@
             userPassword: [{required: true, message: '请输入密码', trigger: 'blur'},
               {min: 6, max: 16, message: '密码长度在 6 到 16个字符', trigger: 'blur'}]
           },
+
+          // 父子组件参数
+          peopleModule: 'peopleModule', //绑定模型
+          employeeDialog:false, // 展示的窗口是否打开
+          componentMessage: 'false', //传递参数给子组件
         }
       },
 
@@ -187,6 +209,15 @@
           return rolesNames;
         },
 
+        formatterEmployee(row, column) {
+          let employee = row['employee'];
+          if (employee) {
+            return employee.number + " - " +employee.name
+          }
+          return '';
+        },
+
+
         /**
          * 添加新员工
          */
@@ -230,15 +261,16 @@
         handleStatus(rowData){
           this.formBase = {
             userId: rowData.userId,
+            username: rowData.username,
             userStatus: rowData.userStatus
           };
           if (this.formBase.userId){
-            updateStatus(this.formBase).then(res => {
+            update(this.formBase).then(res => {
               let resp  = res.data;
               this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
               if(resp.code===200) {
+                this.doQuery();
                 hideLoading();
-                this.dialogFormVisible = false;
               }
             })
           }
@@ -326,6 +358,7 @@
             if (valid) {
               showLoading();
               this.formBase.roleIds =  this.userHaveRoles;
+              this.formBase.isEditRole = "true";
               if (this.formBase.userId){
                 update(this.formBase).then(res => {
                   let resp  = res.data;
@@ -361,6 +394,74 @@
         //     this.$refs[formName].resetFields();
         //   })
         // },
+
+        handlePeople(rowData){
+          this.employeeDialog = true;
+          this.doQueryRoles();
+          let roles = rowData['roles'];
+          if (roles) {
+            let roleIds = [];
+            $.each(roles, function (index, val) { //index是数组对象索引，val是对象
+              if (val.roleId!=undefined){
+                roleIds.push(val.roleId);
+              }
+            });
+            this.userHaveRoles = roleIds
+          }
+          this.formBase = {
+            userId: rowData.userId,
+            username: rowData.username,
+          };
+          this.formBase.roleIds =  this.userHaveRoles;
+        },
+
+        /**
+         *  清空用户和员工绑定关系
+         */
+        handleDeletePeople(rowData){
+          this.formBase = {
+            userId: rowData.userId,
+            username: rowData.username,
+            employeeId:  ''
+          };
+          if (this.formBase.userId){
+            update(this.formBase).then(res => {
+              let resp  = res.data;
+              this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+              if(resp.code===200) {
+                this.doQuery();
+                hideLoading();
+              }
+            })
+          }
+        },
+
+        /**
+         * 处理接收到子组件选择的人员，处理发送请求
+         */
+        choosePeople(val){
+          this.employeeId = val['employeeId'];
+          this.formBase.employeeId = this.employeeId;
+          if (this.formBase.userId){
+            update(this.formBase).then(res => {
+              let resp  = res.data;
+              this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+              if(resp.code===200) {
+                hideLoading();
+                this.employeeDialog = false;
+                this.doQuery();
+              }
+            })
+          }
+          this.doQuery()
+        },
+
+        /**
+         * 父子组件 - 窗口关闭
+         */
+        cancelPeople() {
+          this.employeeDialog = false;
+        },
       },
       // 创建完毕状态
       created: function () {
@@ -376,6 +477,28 @@
   .el-select{
     width: 300px;
   }
-
+  /*针对弹出的员工选项框dig样式调整*/
+  .abow_dialog {
+    display: flex;
+    justify-content: center;
+    align-items: Center;
+    overflow: hidden;
+    .el-dialog {
+      margin: 0 auto !important;
+      height: 90%;
+      overflow: hidden;
+    .el-dialog__body {
+        position: absolute;
+        left: 0;
+        top: 54px;
+        bottom: 0;
+        right: 0;
+        padding: 0;
+        z-index: 1;
+        overflow: hidden;
+        overflow-y: auto;
+      }
+    }
+  }
 
 </style>
