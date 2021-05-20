@@ -87,7 +87,7 @@
 </template>
 <!--主页面板-->
 <script>
-  import {list,add,update,remove,batchRemove} from "@/api/base/users"
+  import {list,add,update,remove,batchRemove,updateStatus} from "@/api/base/users"
   import {findRoleAll} from "@/api/base/role";
   import {showLoading,hideLoading} from '@/utils/loadingUtils';
   const  multipleSelectionList =  new Set([]);
@@ -222,6 +222,26 @@
             username: rowData.username,
           };
           this.dialogFormVisible = true;
+        },
+
+        /**
+         * 表格行 用户状态按钮改变
+         */
+        handleStatus(rowData){
+          this.formBase = {
+            userId: rowData.userId,
+            userStatus: rowData.userStatus
+          };
+          if (this.formBase.userId){
+            updateStatus(this.formBase).then(res => {
+              let resp  = res.data;
+              this.$message({message:resp.msg,type:resp.code===200?"success":"error"});
+              if(resp.code===200) {
+                hideLoading();
+                this.dialogFormVisible = false;
+              }
+            })
+          }
         },
 
         /**

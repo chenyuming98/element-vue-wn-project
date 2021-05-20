@@ -23,10 +23,10 @@
                   <el-input v-model="requestParameters.ipAddr" placeholder="用户ip地址" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label=""  prop="createTime">
-                  <el-date-picker v-model="formBase.createTime" type="date"  placeholder="请选择开始时间" > </el-date-picker>
+                  <el-date-picker v-model="requestParameters.createTime" type="date"  placeholder="请选择开始时间" > </el-date-picker>
                 </el-form-item>
                 <el-form-item label=""  prop="createTimeEnd">
-                  <el-date-picker v-model="formBase.createTimeEnd" type="date"  placeholder="请选择结束时间" > </el-date-picker>
+                  <el-date-picker v-model="requestParameters.createTimeEnd" type="date"  placeholder="请选择结束时间" > </el-date-picker>
                 </el-form-item>
                 <el-form-item>
                   <el-button style="margin-left: 15px;" size="mini" type="primary" icon="el-icon-refresh-left" @click="resetForm('searchRefForm')">重置</el-button>
