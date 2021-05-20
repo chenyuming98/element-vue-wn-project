@@ -27,7 +27,6 @@ const routes = [
       { path: '/dictionarypage',component: dictionaryPage},
       { path: '/syslogpage',component: sysLogPage},
       { path: '/employee',component: employeePage},
-      { path: '/employee',component: employeePage},
     ]},
 ];
 

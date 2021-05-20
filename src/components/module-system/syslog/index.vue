@@ -55,13 +55,13 @@
         <el-table-column  prop="ipAddr"  label="用户地址"  width="135"> </el-table-column>
         <el-table-column  prop="createTime"  label="开始时间"  width="190"> </el-table-column>
         <el-table-column  prop="url"  label="请求路径"  width="180"> </el-table-column>
-        <el-table-column  prop="args"  label="请求参数"  width="180"> </el-table-column>
+<!--        <el-table-column  prop="args"  label="请求参数"  width="180"> </el-table-column>-->
         <el-table-column  prop="method"  label="请求方法"  width="180"> </el-table-column>
         <el-table-column  prop="endTime"  label="结束时间"  width="190"> </el-table-column>
         <el-table-column  prop="error"  label="错误提示"  width="180"> </el-table-column>
         <el-table-column  fixed="right"  label="操作"  width="100">
           <template slot-scope="scope">
-            <el-button @click="handleRowDetail(scope.row)"  type="text" style="margin-left: 16px;">详情</el-button>
+            <el-button @click="handleRowDetail(scope.row)"  type="text" >详情</el-button>
           </template>
         </el-table-column>
       </el-table>
