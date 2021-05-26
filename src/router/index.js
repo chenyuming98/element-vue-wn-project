@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '../components/Login.vue'
+import login from '../components/login.vue'
 import frameComponent from '../components/module-other/frame.vue'
 import homePage from '../components/module-home/home.vue'
 import userPage from '../components/module-system/user/index.vue'
@@ -15,7 +15,7 @@ import notFoundPage from '../components/module-other/404.vue'
 Vue.use(VueRouter);
 
 const routes = [
-  { path: '/login' , component: Login},
+  { path: '/login' , component: login},
   { path: '/index' , component: frameComponent,redirect:'/homepage'
     ,children:[
       { path: '/homepage',component: homePage},
