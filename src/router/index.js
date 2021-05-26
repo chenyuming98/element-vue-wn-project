@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
-import Index from '../components/Index.vue'
+import frameComponent from '../components/module-other/frame.vue'
 import homePage from '../components/module-home/home.vue'
 import userPage from '../components/module-system/user/index.vue'
 import rolePage from '../components/module-system/role/index.vue'
@@ -10,13 +10,13 @@ import dictionaryPage from '../components/module-system/dictionary/index.vue'
 import companyPage from '../components/module-company/company/index.vue'
 import employeePage from '../components/module-company/employee/index.vue'
 import sysLogPage from '../components/module-system/syslog/index.vue'
+import notFoundPage from '../components/module-other/404.vue'
+
 Vue.use(VueRouter);
 
 const routes = [
-  // { path: '/', redirect:'/login'},
-  { path: '/', redirect:'/index'},
   { path: '/login' , component: Login},
-  { path: '/index' , component: Index,redirect:'/homepage'
+  { path: '/index' , component: frameComponent,redirect:'/homepage'
     ,children:[
       { path: '/homepage',component: homePage},
       { path: '/userpage',component: userPage},
@@ -26,8 +26,12 @@ const routes = [
       { path: '/dictionarypage',component: dictionaryPage},
       { path: '/syslogpage',component: sysLogPage},
       { path: '/employee',component: employeePage},
+      { path: '/404' , component: notFoundPage, hidden: true},
     ]},
+  {path: '*', redirect: '/404', hidden: true},
 ];
+
+
 
 const router = new VueRouter({
   mode: 'history',

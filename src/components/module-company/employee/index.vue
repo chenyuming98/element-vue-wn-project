@@ -123,6 +123,7 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
+          :current-page.sync="cur_page"
           :current-page="requestParameters.page"
           :page-size="requestParameters.size"
           layout="total, sizes, prev, pager, next, jumper"
@@ -301,6 +302,7 @@
             phone:undefined,
             identityCard: undefined,
           },
+          cur_page:0,   //设置一个默认值
           defaultProps: {//绑定树结构映射基础参数
             label: 'name',
             children: 'children'
@@ -364,6 +366,7 @@
         */
         doQuery(params) {
           showLoading();
+          this.cur_page = 1;
           list(this.requestParameters)
             .then(res => {
               let resp = res.data;
