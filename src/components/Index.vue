@@ -179,7 +179,7 @@
       },
 
       // 前端收到服务器消息
-      getMessage(e){ //数据接收
+      getMessage(e){
         console.log(e.data);
       },
 
