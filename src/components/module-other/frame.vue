@@ -37,8 +37,36 @@
       <el-header style="text-align: right; font-size: 12px;" height="60px">
         <el-button  style="float: left;margin-top: 10px;"  icon="fa fa-outdent"  @click="toggleCollapse"  ></el-button>
         <div class="app-breadcrumb">
-<!--          服刑人员补贴管理系统-->
+            <!--管理系统-->
         </div>
+
+
+<!--        <el-popover  trigger="click" placement="bottom-end" class="el-icon-message-solid" style="margin-right: 15px">-->
+<!--          <el-button >hover 激活</el-button>-->
+<!--        </el-popover>-->
+
+        <el-popover
+          trigger="click"
+          placement="bottom-end"
+          width="250">
+            <el-tabs v-model="activeName"  >
+              <el-tab-pane :label="mTitle" name="first">
+                <div v-for="o in 4" :key="o" class="text item">
+                  {{'列表内容 ' + o }}
+                </div>
+                <el-button style="width: 250px;" round size="mini" @click="">查看更多</el-button>
+              </el-tab-pane>
+              <el-tab-pane :label="sTitle" name="second">
+                <div v-for="o in 15" :key="o" class="text item">
+                  {{'系统列表内容 ' + o }}
+                </div>
+                <el-button style="width: 250px;" round size="mini" @click="">查看更多</el-button>
+              </el-tab-pane>
+            </el-tabs>
+          <el-button   icon="el-icon-message-solid" slot="reference"></el-button>
+<!--          <i class="el-icon-message-solid"  slot="reference"></i>-->
+        </el-popover>
+
         <span> 你好！ {{this.username}}</span>
         <el-dropdown>
           <i class="el-icon-setting" style="margin-right: 15px"></i>
@@ -66,6 +94,8 @@
 
       </el-main>
 
+
+
     </el-container>
   </el-container>
 </template>
@@ -92,7 +122,10 @@
         // }],
         tabIndex: 2,
         path:"ws://127.0.0.1:9001/websocket/",
-        socket:""
+        socket:"",
+        activeName: 'first',
+        mTitle: '通知',
+        sTitle: '系统通知',
       }
     },
 
@@ -181,6 +214,15 @@
       // 前端收到服务器消息
       getMessage(e){
         console.log(e.data);
+        let mData = JSON.parse(e.data);//将json字符串转换成json对象
+        let mTitleNew = "通知";
+        let mCount = mData.mTitleSize;
+        this.mTitle = mTitleNew + "(" + mCount  + ")";
+
+        let sTitleNew = "系统通知";
+        let sCount = mData.sTitleSize;
+        this.sTitle = sTitleNew + "(" + sCount  + ")";
+
       },
 
     },
