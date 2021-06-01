@@ -75,7 +75,6 @@
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
-
       <!--右侧主要内容区域-->
       <el-main >
         <router-view/>
@@ -93,13 +92,9 @@
 <!--        </div>-->
 
       </el-main>
-
-
-
     </el-container>
   </el-container>
 </template>
-
 <script>
   import {getMenuList} from "@/api/base/permission";
   export default {

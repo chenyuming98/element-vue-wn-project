@@ -1,10 +1,10 @@
-html,body,#app,.el-container,.el-card{
-  /*设置内部填充为0，几个布局元素之间没有间距*/
-  padding: 0px;
-  /*外部间距也是如此设置*/
-  margin: 0px;
-  height: 100%;
-}
+/*html,body,#app,.el-container,.el-card{*/
+/*  !*设置内部填充为0，几个布局元素之间没有间距*!*/
+/*  padding: 0px;*/
+/*  !*外部间距也是如此设置*!*/
+/*  margin: 0px;*/
+/*  height: 100%;*/
+/*}*/
 /*
 * 第一格卡片和上方面包屑的字体大小 和距离顶部距离
 */

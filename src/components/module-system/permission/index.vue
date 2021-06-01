@@ -123,6 +123,9 @@
                   <el-form-item label="url地址">
                     <el-input v-model="permForm.href" :readonly="readForm"></el-input>
                   </el-form-item>
+                  <el-form-item label="组件">
+                    <el-input v-model="permForm.component" :readonly="readForm"></el-input>
+                  </el-form-item>
 
                   <el-form-item label="是否展开">
                     <el-switch v-model="permForm.spread"  :active-value= 1 :inactive-value= 0 :disabled="disabledForm" ></el-switch>
@@ -202,6 +205,7 @@
           sortNumber: 99,
           spread: 1,
           enable: 1,
+          component:""
         },
       };
     },
